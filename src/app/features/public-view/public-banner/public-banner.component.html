@@ -1,0 +1,58 @@
+<div class="main-media-container">
+  @if (banners.length > 0) {
+  <ng-container>
+    <div class="supermain-div">
+      <div class="media-container">
+        @if (showPhoto || !banners[currentMediaIndex].teaser) {
+        <img
+          [src]="banners[currentMediaIndex].banner"
+          [alt]="banners[currentMediaIndex].title"
+        />
+        } @if (!showPhoto && banners[currentMediaIndex].teaser) {
+        <video
+          #video
+          [src]="banners[currentMediaIndex].teaser"
+          [autoplay]="true"
+          [muted]="true"
+          (ended)="showPhoto = true"
+        ></video>
+        }
+      </div>
+      <div class="overlay">
+        <div class="details">
+          <h1 class="title">{{ banners[currentMediaIndex].title }}</h1>
+          <p class="description">
+            {{ banners[currentMediaIndex].description }}
+          </p>
+          <div class="action-container">
+            <div class="watch">
+              <button class="buttonMS" mat-icon-button>
+                <div>Subscribe Now!</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  }
+  <div class="select-plan">
+    <div class="card">
+      <p class="title">Monthly</p>
+      <div>
+        <p class="price">₱99</p>
+        <p class="for">for 1 month</p>
+      </div>
+      <button class="buttonMS" mat-stroked-button>Subscribe</button>
+    </div>
+    <div class="card">
+      <p class="title">Annual</p>
+      <div>
+        <p class="old-price">₱1,188</p>
+        <p class="price">₱599</p>
+        <p class="for">for 1 year</p>
+      </div>
+      <button class="buttonMS" mat-stroked-button>Subscribe</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,170 @@
+.main-header {
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+  padding: 0.5em 2em 0.5em 0.5em;
+  width: auto;
+}
+
+.scrolled {
+  background-color: var(--primary);
+  width: auto;
+}
+
+.contents {
+  width: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: center;
+  justify-content: space-between;
+
+  .header-logo {
+    width: auto;
+
+    img {
+      width: auto;
+      height: 4em;
+    }
+  }
+
+  .menu {
+    display: none;
+
+    button {
+      background-color: var(--primary);
+
+      mat-icon {
+        color: var(--tertiary);
+      }
+    }
+    :hover {
+      background-color: var(--primary-hovered);
+    }
+  }
+
+  div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+
+    .search {
+      background-color: var(--primary);
+
+      mat-icon {
+        color: var(--tertiary);
+      }
+    }
+
+    .search:hover {
+      background-color: var(--primary-hovered);
+    }
+
+    .header-right {
+      display: flex;
+      gap: 0.5em;
+      align-items: center;
+
+      button {
+        border: 1px solid var(--tertiary);
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+          color: var(--tertiary);
+        }
+      }
+
+      button:hover {
+        border: 1px solid var(--primary-hovered);
+      }
+    }
+  }
+}
+
+mat-card-content {
+  display: flex;
+
+  button {
+    mat-icon {
+      color: var(--primary);
+    }
+
+    span {
+      color: #808191;
+    }
+  }
+}
+
+mat-card-actions {
+  button {
+    mat-icon {
+      color: var(--primary);
+    }
+
+    span {
+      color: #808191;
+    }
+  }
+}
+
+.user {
+  display: flex;
+  gap: 1em;
+  padding: 1em;
+
+  button {
+    border: 1px solid var(--primary);
+    color: var(--primary);
+  }
+
+  div {
+    mat-card-title {
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 1em;
+    }
+
+    mat-card-subtitle {
+      color: #b4b4b4;
+      font-size: 0.813em;
+    }
+  }
+}
+
+.mat-mdc-card-header {
+  padding: 0;
+}
+
+.mat-mdc-card-content {
+  padding: 0 8px;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+@media (max-width: 767px) {
+  .contents {
+    .header-logo {
+      img {
+        width: auto;
+        height: 3em;
+      }
+    }
+
+    .hide {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .contents {
+    .hide {
+      transition: 0.3s ease;
+      display: none;
+    }
+    .menu {
+      display: block;
+    }
+  }
+}

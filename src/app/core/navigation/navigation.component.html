@@ -1,0 +1,22 @@
+<nav class="navbar">
+  <ul class="nav-list">
+    @for (item of navItems; track item) {
+    <li class="nav-item">
+      <a
+        [routerLink]="item.routeLink"
+        routerLinkActive="active"
+        [class.active]="item.routeLink === currentRoute"
+      >
+        <span
+          class="label"
+          [ngClass]="{ 'focus-label': item.routeLink === currentRoute }"
+          >{{ item.label }}</span
+        >
+        @if (item.routeLink === currentRoute) {
+        <span class="dot" [class.focus-dot]="isScrolled"></span>
+        }
+      </a>
+    </li>
+    }
+  </ul>
+</nav>

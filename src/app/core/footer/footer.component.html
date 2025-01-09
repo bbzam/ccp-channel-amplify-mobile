@@ -1,0 +1,56 @@
+<footer class="footer-main">
+  <div class="level2">
+    <div class="navigations">
+      <div>
+        <img src="logo.png" alt="ccp-logo" />
+      </div>
+      @for (section of footerContents; track section) {
+      <div>
+        <div class="footer-section">
+          <h4>{{ section.title }}</h4>
+          @if (section.items) {
+          <ul>
+            @for (item of section.items; track item) {
+            <li>
+              <a [href]="item.url">{{ item.label }}</a>
+            </li>
+            }
+          </ul>
+          } @if (section.email || section.phone) {
+          <div>
+            @if (section.email) {
+            <p>
+              <a [href]="'mailto:' + section.email">{{ section.email }}</a>
+            </p>
+            } @if (section.phone) {
+            <p>
+              <a [href]="'tel:' + section.phone">{{ section.phone }}</a>
+            </p>
+            }
+          </div>
+          } @if (section.items) {
+          <div class="socials">
+            @for (item of section.items; track item) {
+            <div>
+              @if (item.icon) {
+              <div>
+                <a [href]="item.url">
+                  <button mat-icon-button>
+                    <i class="{{ item.icon }}"></i>
+                  </button>
+                </a>
+              </div>
+              }
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  <div class="level1">
+    <p class="copyright">© 2024 CCP. All Rights Reserved.</p>
+  </div>
+</footer>

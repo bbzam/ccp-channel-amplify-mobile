@@ -1,0 +1,41 @@
+import { Component, HostListener, inject, OnInit } from '@angular/core';
+import { navItems } from './navItems';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterModule,
+} from '@angular/router';
+import { NgClass } from '@angular/common';
+import { filter } from 'rxjs';
+
+@Component({
+  selector: 'app-navigation',
+  standalone: true,
+  imports: [RouterModule, NgClass],
+  templateUrl: './navigation.component.html',
+  styleUrl: './navigation.component.css'
+})
+export class NavigationComponent implements OnInit {
+  isScrolled: boolean = false;
+  navItems:any[] = navItems;
+  currentRoute!: string;
+
+  readonly router = inject(Router);
+  readonly activatedRoute = inject(ActivatedRoute);
+
+  ngOnInit(): void {
+    // Get the initial route and listen for route changes
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.currentRoute = event.urlAfterRedirects;
+      });
+  }
+
+  constructor() {}
+
+  @HostListener('window:scroll') onWindowScroll(): void {
+    this.isScrolled = window.scrollY > 0;
+  }
+}
