@@ -36,8 +36,7 @@
       mat-icon {
         color: var(--tertiary);
       }
-    }
-    :hover {
+    }:hover {
       background-color: var(--primary-hovered);
     }
   }

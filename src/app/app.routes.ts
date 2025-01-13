@@ -8,12 +8,13 @@ import { DanceComponent } from './features/subscriber/dance/dance.component';
 import { EducationComponent } from './features/subscriber/education/education.component';
 import { CcpspecialComponent } from './features/subscriber/ccpspecial/ccpspecial.component';
 import { CcpclassicComponent } from './features/subscriber/ccpclassic/ccpclassic.component';
+import { authGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'landing-page', pathMatch: 'full'},
     { path: '**', redirectTo: 'notfound', pathMatch: 'full'},
     { path: 'landing-page', component: HomePageComponent},
-    { path: 'home', children: [
+    { path: 'home', canActivate: [authGuard], children: [
         {path: '', component: SubscriberComponent},
         {path: 'theater', component: TheaterComponent},
         {path: 'film', component: FilmComponent},

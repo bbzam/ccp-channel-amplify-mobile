@@ -11,10 +11,9 @@ import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-navigation',
-  standalone: true,
   imports: [RouterModule, NgClass],
   templateUrl: './navigation.component.html',
-  styleUrl: './navigation.component.css'
+  styleUrl: './navigation.component.css',
 })
 export class NavigationComponent implements OnInit {
   isScrolled: boolean = false;

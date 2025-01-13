@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   HostListener,
@@ -17,10 +18,11 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ConfirmationDialogComponent } from '../../shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { AuthServiceService } from '../../auth/auth-service.service';
+import { CoreServiceService } from '../core-service.service';
 
 @Component({
   selector: 'app-header',
-  standalone: true,
   imports: [
     MatButtonModule,
     MatDialogModule,
@@ -31,25 +33,22 @@ import { filter } from 'rxjs';
     MatDividerModule,
   ],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrl: './header.component.css',
 })
 export class HeaderComponent implements OnInit {
   isScrolled: boolean = false;
-  isAuthenticated!: string;
-  username: string = 'Username';
-  email: string = 'username@gmail.com';
-  currentRoute!: string;
+  currentRoute: string = '';
   path: string = '/landing-page';
 
   @Output() menuClicked = new EventEmitter<void>();
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
+  readonly cdr = inject(ChangeDetectorRef);
   readonly activatedRoute = inject(ActivatedRoute);
+  readonly authService = inject(AuthServiceService);
+  readonly coreService = inject(CoreServiceService);
 
   ngOnInit(): void {
-    this.isAuthenticated = String(sessionStorage.getItem('isAuthenticated'));
-    console.log(this.isAuthenticated);
-
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
@@ -61,6 +60,19 @@ export class HeaderComponent implements OnInit {
 
   @HostListener('window:scroll') onWindowScroll(): void {
     this.isScrolled = window.scrollY > 0;
+  }
+
+  
+  get isAuthenticated(): string {
+    return String(sessionStorage.getItem('isAuthenticated'));
+  }
+
+  get username(): string {
+    return String(sessionStorage.getItem('username'));
+  }
+
+  get email(): string {
+    return String(sessionStorage.getItem('email'));
   }
 
   signInOnClick() {
@@ -78,7 +90,7 @@ export class HeaderComponent implements OnInit {
       .afterClosed()
       .subscribe((data) => {
         if (data) {
-          this.router.navigate(['landing-page']);
+          this.authService.logout();
         }
       });
   }

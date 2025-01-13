@@ -16,7 +16,8 @@
             </li>
             }
           </ul>
-          } @if (section.email || section.phone) {
+          } 
+          @if (section.email || section.phone) {
           <div>
             @if (section.email) {
             <p>
@@ -28,7 +29,8 @@
             </p>
             }
           </div>
-          } @if (section.items) {
+          } 
+          @if (section.items) {
           <div class="socials">
             @for (item of section.items; track item) {
             <div>

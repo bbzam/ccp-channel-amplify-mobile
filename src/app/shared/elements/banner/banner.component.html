@@ -1,1 +1,101 @@
-<p>banner works!</p>
+<div class="main-media-container">
+  @if (banners.length > 0) {
+  <ng-container>
+    <div class="supermain-div">
+      <div class="media-container">
+        @if (showPhoto || !banners[currentMediaIndex].teaser) {
+        <img
+          [src]="banners[currentMediaIndex].banner"
+          [alt]="banners[currentMediaIndex].title"
+        />
+        } @if (!showPhoto && banners[currentMediaIndex].teaser) {
+        <video
+          preload="metadata"
+          #video
+          [src]="banners[currentMediaIndex].teaser"
+          [autoplay]="true"
+          [muted]="true"
+          (ended)="showPhoto = true"
+        ></video>
+        }
+      </div>
+      <div class="overlay">
+        <div class="details">
+          <h1 class="title">{{ banners[currentMediaIndex].title }}</h1>
+          <p class="description">
+            {{ banners[currentMediaIndex].description }}
+          </p>
+          <div class="metadata">
+            <p>
+              <span>CATEGORY : </span
+              ><span class="categ">{{
+                banners[currentMediaIndex].category
+              }}</span>
+            </p>
+            <p>•</p>
+            <p>{{ banners[currentMediaIndex].resolution }}</p>
+            <p>•</p>
+            <p>{{ banners[currentMediaIndex].runtime }}</p>
+          </div>
+          <div class="action-container">
+            <div class="watch">
+              <button class="buttonMS" mat-icon-button>
+                <div>WATCH</div>
+                <mat-icon matSuffix>play_arrow</mat-icon>
+              </button>
+            </div>
+            <div class="info">
+              <button
+                (click)="moreInfo(banners[currentMediaIndex])"
+                class="buttonMS"
+                mat-icon-button
+              >
+                <div>MORE INFO</div>
+                <mat-icon matSuffix>info</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  }
+</div>
+<!-- <div class="supermain-div">
+  <img src="Thumbnails/Tukso/Banner.png" alt="Tukso" />
+  <div class="overlay">
+    <div class="details">
+      <h1 class="title">Tukso</h1>
+      <p class="description">
+        A young village lass is found dead. An investigator (Adel) is assigned
+        to look into the case and gets to learn more about the girl and the
+        people whose lives have been affected by her and her death: her father
+        (Bal), a young architect (Carlo), a businessman (David), her childhood
+        friend (Emer), and a widow (Fe). A young village lass is found dead. An
+        investigator (Adel) is assigned to look into the case and gets to learn
+        more about the girl and the people whose lives have been affected by her
+        and her death: her father (Bal), a young architect (Carlo), a
+        businessman (David), her childhood friend (Emer), and a widow (Fe).
+      </p>
+      <div class="metadata">
+        <p><span>CATEGORY : </span><span class="categ">THEATER</span></p>
+        <p>•</p>
+        <p>720p</p>
+        <p>•</p>
+        <p>1 hr 16 mins</p>
+      </div>
+      <div class="action-container">
+        <div class="watch">
+            <button class="buttonMS" mat-icon-button>
+              <div>WATCH</div> <mat-icon matSuffix>play_arrow</mat-icon>
+            </button>
+        </div>
+        <div class="info">
+            <button class="buttonMS" mat-icon-button>
+              <div>MORE INFO</div> <mat-icon matSuffix>info</mat-icon>
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->

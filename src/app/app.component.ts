@@ -1,25 +1,41 @@
-import { Component } from '@angular/core';
-// import { RouterOutlet } from '@angular/router';
-// import { TodosComponent } from './todos/todos.component';
-// import { Amplify } from 'aws-amplify';
-// import outputs from '../../amplify_outputs.json';
-// import { AmplifyAuthenticatorModule, AuthenticatorService } from '@aws-amplify/ui-angular';
+import {
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  Renderer2,
+} from '@angular/core';
 import { MainLayoutComponent } from './core/main-layout/main-layout.component';
-
-// Amplify.configure(outputs);
+import { Amplify } from 'aws-amplify';
+import outputs from '../../amplify_outputs.json';
+import {
+  AmplifyAuthenticatorModule,
+  AuthenticatorService,
+} from '@aws-amplify/ui-angular';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
+  imports: [MainLayoutComponent, AmplifyAuthenticatorModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
-  imports: [MainLayoutComponent],
 })
+export class AppComponent implements OnInit {
+  title = 'CCP Channel';
+  readonly authenticator = inject(AuthenticatorService);
+  readonly renderer = inject(Renderer2);
+  readonly elementRef = inject(ElementRef);
 
-export class AppComponent {
-  title = 'amplify-angular-template';
-    
-  // constructor(public authenticator: AuthenticatorService) {
-  //   Amplify.configure(outputs);
-  // }
+  ngOnInit(): void {
+    const activeElement = document.activeElement as HTMLElement;
+    const hiddenContainer = this.elementRef.nativeElement.querySelector(
+      '[aria-hidden="true"]'
+    );
+    if (hiddenContainer?.contains(activeElement)) {
+      activeElement.blur();
+    }
+  }
+
+  constructor() {
+    Amplify.configure(outputs);
+  }
 }

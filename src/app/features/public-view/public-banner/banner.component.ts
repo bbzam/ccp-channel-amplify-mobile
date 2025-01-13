@@ -14,13 +14,12 @@ import { MoreInfoComponent } from '../../../shared/dialogs/more-info/more-info.c
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-public-banner',
-  standalone: true,
+  selector: 'app-banner',
   imports: [MatButtonModule, MatIconModule],
-  templateUrl: './public-banner.component.html',
-  styleUrl: './public-banner.component.css'
+  templateUrl: './banner.component.html',
+  styleUrl: './banner.component.css',
 })
-export class PublicBannerComponent implements OnInit, AfterViewInit {
+export class BannerComponent implements OnInit, AfterViewInit {
   @ViewChild('video') videoElement!: ElementRef<HTMLVideoElement>;
   @Input() banners!: any[];
   readonly dialog = inject(MatDialog);

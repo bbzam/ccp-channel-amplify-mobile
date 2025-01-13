@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PublicBannerComponent } from './public-banner.component';
+import { VerifyAccountComponent } from './verify-account.component';
 
-describe('PublicBannerComponent', () => {
-  let component: PublicBannerComponent;
-  let fixture: ComponentFixture<PublicBannerComponent>;
+describe('VerifyAccountComponent', () => {
+  let component: VerifyAccountComponent;
+  let fixture: ComponentFixture<VerifyAccountComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PublicBannerComponent]
+      imports: [VerifyAccountComponent]
     })
     .compileComponents();
-    
-    fixture = TestBed.createComponent(PublicBannerComponent);
+
+    fixture = TestBed.createComponent(VerifyAccountComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

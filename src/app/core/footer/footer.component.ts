@@ -5,7 +5,6 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-footer',
-  standalone: true,
   imports: [MatButtonModule, MatIconModule],
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.css'
@@ -13,5 +12,4 @@ import { MatIconModule } from '@angular/material/icon';
 export class FooterComponent {
 
   footerContents = contents;
-
 }

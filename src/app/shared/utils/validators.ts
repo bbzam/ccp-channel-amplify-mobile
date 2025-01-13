@@ -168,7 +168,6 @@ export function hasMinimumLength(): (
 //validator for matching values
 export function isMatch(value: string): (control: AbstractControl) => ValidationErrors | null {
     return (control: AbstractControl): ValidationErrors | null => {
-        console.log(control.value, value)
         const isNotMatch = control.value !== value;
     
         return isNotMatch ? { isNotMatch: true } : null;

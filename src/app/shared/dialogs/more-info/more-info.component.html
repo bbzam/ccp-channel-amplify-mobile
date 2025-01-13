@@ -1,1 +1,58 @@
-<p>more-info works!</p>
+<div class="supermain-div">
+  <div class="main-div">
+    <div class="banner-container">
+      <div class="close-button-container">
+        <button class="close-button" mat-icon-button (click)="close()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      @if (item.teaser == '') {
+      <div class="media-container">
+        <img class="media" [src]="item.banner" [alt]="item.title" />
+      </div>
+      } @else {
+      <div class="media-container">
+        <video
+          preload="metadata"
+          class="media"
+          #video
+          [src]="item.teaser"
+          autoplay
+          loop
+          [muted]="true"
+        ></video>
+      </div>
+      }
+    </div>
+    <div class="gradient">
+      <div class="details-container">
+        <div class="poster">
+          <img class="image" [src]="item.poster" [alt]="item.title" />
+        </div>
+        <div class="details">
+          <h1>{{ item.title }}</h1>
+          <div class="metadata">
+            <p>{{ item.category }}</p>
+            <p>•</p>
+            <p>{{ item.resolution }}</p>
+            <p>•</p>
+            <p>{{ item.runtime }}</p>
+          </div>
+          <p class="description">{{ item.description }}</p>
+          <div class="actions">
+            <div class="watch">
+              <button class="buttonMS" mat-icon-button>
+                <div>WATCH</div>
+                <mat-icon matSuffix>play_arrow</mat-icon>
+              </button>
+            </div>
+            <div class="icons">
+              <mat-icon>thumb_up_alt</mat-icon>
+              <mat-icon>add_circle</mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

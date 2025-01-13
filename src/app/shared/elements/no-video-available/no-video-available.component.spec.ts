@@ -11,7 +11,7 @@ describe('NoVideoAvailableComponent', () => {
       imports: [NoVideoAvailableComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(NoVideoAvailableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

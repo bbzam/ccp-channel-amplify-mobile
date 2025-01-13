@@ -11,7 +11,7 @@ describe('NavigationComponent', () => {
       imports: [NavigationComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(NavigationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

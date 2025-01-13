@@ -11,7 +11,7 @@ describe('ContinueWatchingComponent', () => {
       imports: [ContinueWatchingComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(ContinueWatchingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

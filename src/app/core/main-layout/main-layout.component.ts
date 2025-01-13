@@ -14,10 +14,9 @@ import { SidenavComponent } from '../sidenav/sidenav.component';
 
 @Component({
   selector: 'app-main-layout',
-  standalone: true,
   imports: [RouterOutlet, HeaderComponent, FooterComponent, MatSidenavModule, SidenavComponent],
   templateUrl: './main-layout.component.html',
-  styleUrl: './main-layout.component.css'
+  styleUrl: './main-layout.component.css',
 })
 export class MainLayoutComponent implements OnInit {
   @ViewChild('sidenav') sidenav!: SidenavComponent;
@@ -36,15 +35,12 @@ export class MainLayoutComponent implements OnInit {
         this.currentRoute = event.urlAfterRedirects;
       });
     this.currentRouteIndex = this.routes.findIndex(route => route.routeLink === this.currentRoute);
-    console.log(this.routes.findIndex(route => route.routeLink === this.currentRoute));
-    
   }
 
   @HostListener('window:scroll') onScroll() {
     const scrollTop = window.scrollY; // Current scroll position from top
     const scrollHeight = document.body.scrollHeight; // Total document height
     const viewportHeight = window.innerHeight; // Viewport height
-    console.log(scrollTop, scrollHeight, viewportHeight);
 
     // // Prevent actions if already loading
     // if (this.isLoading) return;

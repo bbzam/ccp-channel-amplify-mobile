@@ -1,5 +1,25 @@
 <div class="super-main">
   <div class="banner">
-    <app-public-banner [banners]="banners" />
+    <app-banner [banners]="banners" />
+  </div>
+  <div class="featured-images">
+    <h1>Gain premier access to the best local productions</h1>
+    <div class="featured-container">
+      @for (item of images; track item) {
+      <div class="card">
+        <img [src]="item.src" [alt]="item.name">
+      </div>
+      }
+    </div>
+  </div>
+  <div class="gallery">
+    <h1>Explore an ever-growing library of CCP originals</h1>
+    <div class="gallery-container">
+      @for (item of allFeatured; track item) {
+      <div class="card">
+        <img [src]="item.banner" [alt]="item.title">
+      </div>
+      }
+    </div>
   </div>
 </div>

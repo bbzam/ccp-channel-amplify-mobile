@@ -11,7 +11,7 @@ describe('CcpclassicComponent', () => {
       imports: [CcpclassicComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(CcpclassicComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -1,0 +1,50 @@
+<div class="signin-main">
+  <form>
+    <div class="form-field-container">
+      <h2>Email Confirmation</h2>
+      <p>Enter the code we emailed to {{destination}}</p>
+    </div>
+    <div class="form-field-container">
+      <label>Confirmation Code</label>
+      <input
+        matInput
+        [(ngModel)]="code"
+        placeholder="Enter your code"
+        [formControl]="codeControl"
+        (blur)="updateCodeErrorMessage()"
+        required
+      />
+      @if (codeControl.invalid) {
+      <mat-error>{{ codeErrorMessage() }}</mat-error>
+      }
+    </div>
+
+    <div class="form-field-container">
+      <button
+        class="buttonSignIn"
+        mat-raised-button
+        type="submit"
+        [disabled]="confirming || codeControl.invalid"
+        (click)="confirm()"
+      >
+        {{ confirming ? "Confirming..." : "Confirm" }}
+      </button>
+    </div>
+
+    <div class="form-field-container">
+        <br>
+      <mat-divider></mat-divider>
+    </div>
+
+    <div class="form-field-container">
+      <button
+        class="buttonSignUp"
+        mat-raised-button
+        type="button"
+        (click)="resendCodeOnClick()"
+      >
+        Resend Code
+      </button>
+    </div>
+  </form>
+</div>

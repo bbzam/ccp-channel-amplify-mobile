@@ -29,6 +29,7 @@ mat-card-content {
   button {
     width: 100%;
     justify-content: flex-start;
+    border-radius: 5em;
 
     mat-icon {
       color: var(--primary);
@@ -62,6 +63,7 @@ mat-card-content {
   display: flex;
   gap: 1em;
   padding: 1em;
+  align-items: center;
 
   button {
     border: 1px solid var(--primary);
@@ -76,7 +78,7 @@ mat-card-content {
     }
 
     mat-card-subtitle {
-      color: #b4b4b4;
+      color: var(--secondary);
       font-size: 0.813em;
     }
   }

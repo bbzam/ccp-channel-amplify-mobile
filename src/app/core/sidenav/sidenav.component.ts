@@ -17,10 +17,10 @@ import { ConfirmationDialogComponent } from '../../shared/dialogs/confirmation-d
 import { MatDialog } from '@angular/material/dialog';
 import { NgClass } from '@angular/common';
 import { filter } from 'rxjs';
+import { AuthServiceService } from '../../auth/auth-service.service';
 
 @Component({
   selector: 'app-sidenav',
-  standalone: true,
   imports: [
     MatSidenavModule,
     MatIconModule,
@@ -31,16 +31,15 @@ import { filter } from 'rxjs';
     NgClass,
   ],
   templateUrl: './sidenav.component.html',
-  styleUrl: './sidenav.component.css'
+  styleUrl: './sidenav.component.css',
 })
 export class SidenavComponent implements OnInit {
   navItems: any[] = navItems;
-  username: string = 'Username';
-  email: string = 'username@gmail.com';
   currentRoute!: string;
   readonly router = inject(Router);
   readonly activatedRoute = inject(ActivatedRoute);
   readonly dialog = inject(MatDialog);
+  readonly authService = inject(AuthServiceService)
 
   ngOnInit(): void {
     // Get the initial route and listen for route changes
@@ -57,6 +56,14 @@ export class SidenavComponent implements OnInit {
     if (width >= 1025) {
       this.closeToggleDrawer();
     }
+  }
+
+  get username(): string {
+    return String(sessionStorage.getItem('username'));
+  }
+
+  get email(): string {
+    return String(sessionStorage.getItem('email'));
   }
 
   toggleDrawer() {
@@ -80,7 +87,7 @@ export class SidenavComponent implements OnInit {
       .afterClosed()
       .subscribe((data) => {
         if (data) {
-          this.router.navigate(['landing-page']);
+          this.authService.logout();
         }
       });
   }

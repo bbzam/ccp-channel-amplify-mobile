@@ -30,6 +30,7 @@
 }
 
 .overlay {
+  display: flex;
   color: var(--tertiary);
   position: absolute;
   top: 0;
@@ -82,61 +83,65 @@
       }
     }
   }
-}
 
-.select-plan {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 5em;
-  margin: 10em 0;
-
-  .card {
+  .rates {
+    height: 100%;
+    width: 50%;
     display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
-    align-items: center;
-    min-width: 14em;
-    min-height: 18.75em;
-    border-radius: 1.25em;
-    box-shadow: 0 0 19px 10px rgba(255, 255, 255, 0.2);
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 2em;
+    padding-bottom: 3em;
 
-    .title {
-      color: var(--tertiary);
-      font-size: 1.375em;
-    }
+    .card {
+      box-shadow: 0 0 19px 10px rgba(255, 255, 255, 0.2);
+      /* background-color: var(--primary); */
+      border: 1px solid var(--tertiary);
+      padding: 1em;
+      min-width: 15em;
+      min-height: 7em;
+      border-radius: 5em;
+      line-height: 1;
+      text-align: center;
+      align-content: center;
 
-    div {
-      min-height: 10em;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      .title {
+        color: var(--gray);
+        font-size: 1.5em;
+        margin: 0;
+      }
 
       .old-price {
-        margin: 0.1em;
-        font-size: 1.563em;
-        color: var(--primary);
+        margin: 0;
+        font-size: 1.2em;
+        color: var(--tertiary);
         text-decoration: line-through;
       }
 
       .price {
         font-weight: bold;
-        margin: 0.1em;
+        margin: 0;
         font-size: 2.5em;
-        color: var(--primary);
-      }
-
-      .for {
-        font-size: 0.875em;
         color: var(--tertiary);
       }
     }
   }
 }
 
+@media (max-width: 1137px) {
+  .overlay {
+    .rates {
+      align-content: center;
+    }
+  }
+
+}
+
 @media (max-width: 767px) {
   .overlay {
+    flex-direction: column;
+
     .details {
       width: auto;
       margin: 1em;
@@ -147,6 +152,39 @@
 
       .description {
         font-size: 0.8em;
+      }
+    }
+
+    .rates {
+      width: 100%;
+      height: auto;
+      align-items: flex-start;
+      justify-content: flex-start;
+      margin: 0 1em;
+
+      .card {
+        min-width: 10em;
+        min-height: 5.4em;
+
+        .title {
+          color: var(--gray);
+          font-size: 1em;
+          margin: 0;
+        }
+
+        .old-price {
+          margin: 0;
+          font-size: 0.7em;
+          color: var(--tertiary);
+          text-decoration: line-through;
+        }
+
+        .price {
+          font-weight: bold;
+          margin: 0;
+          font-size: 1.5em;
+          color: var(--tertiary);
+        }
       }
     }
   }

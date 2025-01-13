@@ -39,7 +39,7 @@
     border-radius: 0.5em;
     color: var(--tertiary) !important;
     min-height: 2.5em;
-    min-width: 19.2em;
+    min-width: 17.6em;
     font-size: 0.875em;
     font-weight: 600;
     margin-top: 1em;
@@ -69,6 +69,10 @@
   .cdk-overlay-pane {
     border-radius: 0.625em;
     background-color: var(--tertiary);
+  }
+
+  button {
+    font: icon;
   }
 
   @media (max-width: 767px) {

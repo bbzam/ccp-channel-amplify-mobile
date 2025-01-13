@@ -1,13 +1,74 @@
-<!-- <amplify-authenticator
-  [signUpAttributes]="['given_name', 'family_name', 'birthdate']"
->
-  <ng-template
-    amplifySlot="authenticated"
-    let-user="user"
-    let-signOut="signOut"
-  >
-    <app-todos></app-todos>
-    <h1>Welcome {{ user.username }}!</h1>
-    <button (click)="signOut()">Sign Out</button>
-  </ng-template>
-</amplify-authenticator> -->
+<div class="signin-main">
+  <div class="header-logo">
+    <img src="ccp-logo-rmvbg.PNG" alt="header-logo" />
+  </div>
+  <form>
+    <div class="form-field-container">
+      <h2>Sign In</h2>
+    </div>
+    <div class="form-field-container">
+      <!-- Email Field -->
+      <label>Email</label>
+      <input
+        matInput
+        [(ngModel)]="inputEmail"
+        placeholder="Enter your email"
+        [formControl]="email"
+        (blur)="updateEmailErrorMessage()"
+        required
+      />
+      @if (email.invalid) {
+      <mat-error>{{ emailErrorMessage() }}</mat-error>
+      }
+    </div>
+
+    <div class="form-field-container">
+      <!-- Password Field -->
+      <label>Password</label>
+      <input
+        matInput
+        [(ngModel)]="inputPassword"
+        [type]="isPasswordVisible ? 'text' : 'password'"
+        placeholder="Enter your password"
+        [formControl]="password"
+        (blur)="updatePasswordErrorMessage()"
+        required
+      />
+      <!-- <button type="button" mat-icon-button (click)="isPasswordVisible = !isPasswordVisible">
+        <mat-icon>{{ isPasswordVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button> -->
+      @if (password.invalid) {
+      <mat-error>{{ passwordErrorMessage() }}</mat-error>
+      }
+    </div>
+
+    <div class="form-field-container">
+      <button
+        class="buttonSignIn"
+        mat-raised-button
+        type="submit"
+        [disabled]="signingIn || email.invalid || password.invalid"
+        (click)="login()"
+      >
+        {{ signingIn ? "Signing In..." : "Sign In" }}
+      </button>
+    </div>
+
+    <div class="form-field-container">
+      <br />
+      <p>Forgot Password?</p>
+      <mat-divider></mat-divider>
+    </div>
+
+    <div class="form-field-container">
+      <button
+        class="buttonSignUp"
+        mat-raised-button
+        type="button"
+        (click)="signUpOnClick()"
+      >
+        Sign Up
+      </button>
+    </div>
+  </form>
+</div>

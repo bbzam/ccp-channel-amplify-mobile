@@ -1,1 +1,141 @@
-<p>signup works!</p>
+<div class="signup-main">
+  <div class="header-logo">
+    <img src="ccp-logo-rmvbg.PNG" alt="header-logo" />
+  </div>
+  <form>
+    <div class="form-field-container">
+      <h2>Sign Up</h2>
+    </div>
+
+    <div class="form-field-container">
+      <!-- First Name Field -->
+      <label>First Name</label>
+      <input
+        matInput
+        [(ngModel)]="inputFirstname"
+        placeholder="Enter your Firstname"
+        [formControl]="formControlFirstname"
+        (blur)="updateFirstnameErrorMessage()"
+        required
+      />
+      @if (formControlFirstname.invalid) {
+      <mat-error>{{ firstnameErrorMessage() }}</mat-error>
+      }
+    </div>
+
+    <div class="form-field-container">
+      <!-- Last Name Field -->
+      <label>Last name</label>
+      <input
+        matInput
+        [(ngModel)]="inputLastname"
+        placeholder="Enter your Lastname"
+        [formControl]="formControlLastname"
+        (blur)="updateLastnameErrorMessage()"
+        required
+      />
+      @if (formControlLastname.invalid) {
+      <mat-error>{{ lastnameErrorMessage() }}</mat-error>
+      }
+    </div>
+
+    <div class="form-field-container">
+      <!-- Email Field -->
+      <label>Email</label>
+      <input
+        matInput
+        [(ngModel)]="inputEmail"
+        placeholder="Enter your email"
+        [formControl]="formControlEmail"
+        (blur)="updateEmailErrorMessage()"
+        required
+      />
+      @if (formControlEmail.invalid) {
+      <mat-error>{{ emailErrorMessage() }}</mat-error>
+      }
+    </div>
+
+    <div class="form-field-container">
+      <!-- Age Field -->
+      <label>Birthdate</label>
+      <input
+        matInput
+        type="date"
+        [(ngModel)]="inputBirthdate"
+        placeholder="Enter your Birthdate"
+        [formControl]="formControlAge"
+        (blur)="updateAgeErrorMessage()"
+        required
+      />
+      @if (formControlAge.invalid) {
+      <mat-error>{{ ageErrorMessage() }}</mat-error>
+      }
+    </div>
+
+    <div class="form-field-container">
+      <!-- Password Field -->
+      <label>Password</label>
+      <input
+        matInput
+        [(ngModel)]="inputPassword"
+        placeholder="Enter your password"
+        [formControl]="formControlPassword"
+        (blur)="updatePasswordErrorMessage()"
+        required
+      />
+      @if (formControlPassword.invalid) {
+      <mat-error>{{ passwordErrorMessage() }}</mat-error>
+      }
+    </div>
+
+    <!-- <div class="form-field-container">
+      <label>Confirm Password</label>
+      <input
+        matInput
+        [(ngModel)]="inputConfirmPassword"
+        placeholder="Confirm your password"
+        [formControl]="formControlConfirmpassword"
+        (blur)="updateConfirmPassswordErrorMessage()"
+        required
+      />
+      @if (formControlConfirmpassword.invalid) {
+      <mat-error>{{ confirmPasswordErrorMessage() }}</mat-error>
+      }
+    </div> -->
+
+    <div class="form-field-container">
+      <button
+        class="buttonSignIn"
+        mat-raised-button
+        type="submit"
+        [disabled]="
+          signingUp ||
+          formControlFirstname.invalid ||
+          formControlLastname.invalid ||
+          formControlEmail.invalid ||
+          formControlAge.invalid ||
+          formControlPassword.invalid
+        "
+        (click)="signUpOnClick()"
+      >
+        {{ signingUp ? "Signing Up..." : "Sign Up" }}
+      </button>
+    </div>
+
+    <div class="form-field-container">
+      <br />
+      <mat-divider></mat-divider>
+    </div>
+
+    <div class="form-field-container">
+      <button
+        class="buttonSignUp"
+        mat-raised-button
+        type="button"
+        (click)="signInOnClick()"
+      >
+        Sign In
+      </button>
+    </div>
+  </form>
+</div>
