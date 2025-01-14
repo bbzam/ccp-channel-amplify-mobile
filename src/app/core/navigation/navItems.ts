@@ -1,34 +1,34 @@
 export const navItems = [
     {
         label: 'Home',
-        routeLink: '/home'
+        routeLink: '/subscriber'
     },
     {
         label: 'Theater',
-        routeLink: '/home/theater'
+        routeLink: '/subscriber/theater'
     },
     {
         label: 'Films',
-        routeLink: '/home/film'
+        routeLink: '/subscriber/film'
     },
     {
         label: 'Music',
-        routeLink: '/home/music'
+        routeLink: '/subscriber/music'
     },
     {
         label: 'Dance',
-        routeLink: '/home/dance'
+        routeLink: '/subscriber/dance'
     },
     {
         label: 'Education',
-        routeLink: '/home/education'
+        routeLink: '/subscriber/education'
     },
     {
         label: 'CCP Special',
-        routeLink: '/home/ccpspecial'
+        routeLink: '/subscriber/ccpspecial'
     },
     {
         label: 'CCP Classics',
-        routeLink: '/home/ccpclassic'
+        routeLink: '/subscriber/ccpclassic'
     }
 ]

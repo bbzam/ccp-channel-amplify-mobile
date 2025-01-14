@@ -125,7 +125,12 @@ body {
   text-align: center;
 
   h1 {
-    color: var(--gray);
+    color: var(--accent);
     font-size: 1.5em;
+    margin: 0;
+  }
+
+  p {
+    color: var(--gray);
   }
 }

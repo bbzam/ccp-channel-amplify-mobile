@@ -1,6 +1,6 @@
 <header class="main-header" [class.scrolled]="isScrolled">
   <div class="contents">
-    @if (currentRoute === path) {
+    @if (!isAuthenticated) {
     <div class="header-logo">
       <a href="/landing-page"
         ><img src="ccp-logo-rmvbg.PNG" alt="header-logo"
@@ -13,7 +13,7 @@
     </div>
     } @else {
     <div class="header-logo">
-      <a href="/home"><img src="ccp-logo-rmvbg.PNG" alt="header-logo" /></a>
+      <a href="/subscriber"><img src="ccp-logo-rmvbg.PNG" alt="header-logo" /></a>
     </div>
     <div class="hide">
       <app-navigation />

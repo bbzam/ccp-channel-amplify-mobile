@@ -9,19 +9,25 @@ import { EducationComponent } from './features/subscriber/education/education.co
 import { CcpspecialComponent } from './features/subscriber/ccpspecial/ccpspecial.component';
 import { CcpclassicComponent } from './features/subscriber/ccpclassic/ccpclassic.component';
 import { authGuard } from './auth/auth.guard';
+import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'landing-page', pathMatch: 'full'},
-    { path: '**', redirectTo: 'notfound', pathMatch: 'full'},
-    { path: 'landing-page', component: HomePageComponent},
-    { path: 'home', canActivate: [authGuard], children: [
-        {path: '', component: SubscriberComponent},
-        {path: 'theater', component: TheaterComponent},
-        {path: 'film', component: FilmComponent},
-        {path: 'music', component: MusicComponent},
-        {path: 'dance', component: DanceComponent},
-        {path: 'education', component: EducationComponent},
-        {path: 'ccpspecial', component: CcpspecialComponent},
-        {path: 'ccpclassic', component: CcpclassicComponent},
-    ]},
+  { path: '', redirectTo: 'landing-page', pathMatch: 'full' },
+  { path: 'notfound', component: PageNotFoundComponent },
+  { path: 'landing-page', component: HomePageComponent },
+  {
+    path: 'subscriber',
+    canActivate: [authGuard],
+    children: [
+      { path: '', component: SubscriberComponent },
+      { path: 'theater', component: TheaterComponent },
+      { path: 'film', component: FilmComponent },
+      { path: 'music', component: MusicComponent },
+      { path: 'dance', component: DanceComponent },
+      { path: 'education', component: EducationComponent },
+      { path: 'ccpspecial', component: CcpspecialComponent },
+      { path: 'ccpclassic', component: CcpclassicComponent },
+    ],
+  },
+  { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
 ];

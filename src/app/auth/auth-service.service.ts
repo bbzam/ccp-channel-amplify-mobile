@@ -40,7 +40,7 @@ export class AuthServiceService {
         sessionStorage.setItem('email', String(idToken?.payload['email']));
         sessionStorage.setItem('isLoggedIn', 'true');
         this.isLoggedIn = true;
-        this.router.navigate(['home']);
+        this.router.navigate(['subscriber']);
       } else {
         this.isLoggedIn = false;
         sessionStorage.setItem('isLoggedIn', 'false');
@@ -157,6 +157,8 @@ export class AuthServiceService {
   async logout() {
     try {
       const logout = await signOut({ global: true });
+      sessionStorage.clear();
+      localStorage.clear();
       this.router.navigate(['landing-page']);
     } catch (error) {
       console.log(error);

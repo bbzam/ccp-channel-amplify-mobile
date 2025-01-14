@@ -62,9 +62,15 @@ export class HeaderComponent implements OnInit {
     this.isScrolled = window.scrollY > 0;
   }
 
-  
-  get isAuthenticated(): string {
-    return String(sessionStorage.getItem('isAuthenticated'));
+  get isAuthenticated(): boolean {
+    if (
+      sessionStorage.getItem('isLoggedIn') == 'false' ||
+      sessionStorage.getItem('isLoggedIn') == null
+    ) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   get username(): string {

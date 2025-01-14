@@ -15,8 +15,6 @@ export class HomePageComponent implements OnInit {
   images = featuredImages;
   allFeatured = allFeatured;
 
-  ngOnInit(): void {
-    sessionStorage.clear();
-  }
+  ngOnInit(): void {}
 
 }
