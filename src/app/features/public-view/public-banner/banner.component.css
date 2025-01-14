@@ -160,7 +160,7 @@
       height: auto;
       align-items: flex-start;
       justify-content: flex-start;
-      margin: 0 1em;
+      padding: 0 1em;
 
       .card {
         min-width: 10em;

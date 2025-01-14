@@ -123,6 +123,8 @@ body {
   width: 100%;
   min-height: 30em;
   text-align: center;
+  flex-direction: column;
+  padding: 0 0.5em;
 
   h1 {
     color: var(--accent);
