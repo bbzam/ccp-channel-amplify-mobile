@@ -29,7 +29,7 @@
 
           button {
             i {
-              color: var(--primary);
+              color: var(--primary-hovered);
             }
           }
         }
@@ -52,12 +52,12 @@
 
       .footer-section ul li a {
         text-decoration: none;
-        color: var(--primary);
+        color: var(--primary-hovered);
       }
 
       .footer-section ul li a:hover {
         text-decoration: underline;
-        color: var(--primary-hovered);
+        color: var(--gray);
       }
 
       .footer-section p {
@@ -65,13 +65,13 @@
       }
 
       .footer-section a {
-        color: var(--primary);
+        color: var(--primary-hovered);
         text-decoration: none;
       }
 
       .footer-section a:hover {
         text-decoration: underline;
-        color: var(--primary-hovered);
+        color: var(--gray);
       }
     }
   }

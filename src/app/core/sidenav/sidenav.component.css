@@ -2,7 +2,7 @@ mat-drawer-container {
   z-index: 1000;
 
   .sidenav {
-    background-color: var(--gray);
+    background-color: var(--secondary);
     min-width: 20vw;
     height: 100%;
     color: var(--primary);
@@ -15,7 +15,7 @@ mat-drawer-container {
       justify-content: flex-end;
 
       .close-button {
-        color: var(--primary);
+        color: var(--accent);
         position: fixed;
         z-index: 1;
       }
@@ -32,16 +32,16 @@ mat-card-content {
     border-radius: 5em;
 
     mat-icon {
-      color: var(--primary);
+      color: var(--gray);
     }
 
     span {
-      color: #808191;
+      color: var(--gray);
     }
   }
 
   button:hover {
-    background-color: var(--primary-hovered);
+    background-color: #725c00;
 
     mat-icon,
     span {
@@ -50,7 +50,7 @@ mat-card-content {
   }
 
   .focus-menu {
-    background-color: var(--primary);
+    background-color: var(--accent);
 
     mat-icon,
     span {
@@ -66,19 +66,19 @@ mat-card-content {
   align-items: center;
 
   button {
-    border: 1px solid var(--primary);
-    color: var(--primary);
+    border: 1px solid var(--accent);
+    color: var(--accent);
   }
 
   div {
     mat-card-title {
-      color: var(--primary);
+      color: var(--accent);
       font-weight: bold;
       font-size: 1em;
     }
 
     mat-card-subtitle {
-      color: var(--secondary);
+      color: var(--gray);
       font-size: 0.813em;
     }
   }
