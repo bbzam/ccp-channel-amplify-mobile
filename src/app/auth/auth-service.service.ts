@@ -10,6 +10,7 @@ import {
   confirmSignUp,
   signIn,
   resendSignUpCode,
+  ResendSignUpCodeOutput,
 } from 'aws-amplify/auth';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
 
@@ -26,32 +27,33 @@ export class AuthServiceService {
   async currentSession() {
     try {
       const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
-      console.log(idToken);
-      if (accessToken && idToken) {
-        sessionStorage.setItem('auth', String(idToken));
-        sessionStorage.setItem(
-          'username',
-          String(
-            idToken?.payload['given_name'] +
-              ' ' +
-              String(idToken?.payload['family_name'])
-          )
-        );
-        sessionStorage.setItem('email', String(idToken?.payload['email']));
-        sessionStorage.setItem('isLoggedIn', 'true');
-        this.isLoggedIn = true;
-        this.router.navigate(['subscriber']);
-      } else {
-        this.isLoggedIn = false;
-        sessionStorage.setItem('isLoggedIn', 'false');
+      if (!accessToken || !idToken) {
+        this.handleLogout();
+        return false;
       }
+  
+      this.setSessionData(idToken);
+      return true;
     } catch (error) {
-      console.log(error);
-      this.dialog
-        .open(ErrorMessageDialogComponent, { data: { message: String(error) } })
-        .afterClosed()
-        .subscribe((data) => {});
+      this.handleError(error);
+      return false;
     }
+  }
+
+  private setSessionData(idToken: any) {
+    sessionStorage.setItem('auth', String(idToken));
+    sessionStorage.setItem(
+      'username',
+      `${idToken?.payload['given_name']} ${idToken?.payload['family_name']}`
+    );
+    sessionStorage.setItem('email', String(idToken?.payload['email']));
+    sessionStorage.setItem('isLoggedIn', 'true');
+    this.isLoggedIn = true;
+  }
+
+  private handleLogout() {
+    this.isLoggedIn = false;
+    sessionStorage.setItem('isLoggedIn', 'false');
   }
 
   async signIn(username: string, password: string): Promise<boolean> {
@@ -80,7 +82,7 @@ export class AuthServiceService {
       this.dialog
         .open(ErrorMessageDialogComponent, { data: { message: String(error) } })
         .afterClosed()
-        .subscribe(() => {});
+        .subscribe();
       throw error; // Re-throw to let the caller handle it
     }
     return false; // Default to false if no condition matches
@@ -120,7 +122,7 @@ export class AuthServiceService {
       this.dialog
         .open(ErrorMessageDialogComponent, { data: { message: String(error) } })
         .afterClosed()
-        .subscribe((data) => {});
+        .subscribe();
       throw error;
     }
     return false;
@@ -141,7 +143,7 @@ export class AuthServiceService {
             data: { message: 'SignUp Completed!' },
           })
           .afterClosed()
-          .subscribe((data) => {});
+          .subscribe();
         return true;
       }
     } catch (error) {
@@ -149,19 +151,19 @@ export class AuthServiceService {
       this.dialog
         .open(ErrorMessageDialogComponent, { data: { message: String(error) } })
         .afterClosed()
-        .subscribe((data) => {});
+        .subscribe();
     }
     return false;
   }
 
   async logout() {
     try {
-      const logout = await signOut({ global: true });
+      await signOut({ global: true });
       sessionStorage.clear();
       localStorage.clear();
       this.router.navigate(['landing-page']);
     } catch (error) {
-      console.log(error);
+      this.handleError(error)
     }
   }
 
@@ -171,33 +173,35 @@ export class AuthServiceService {
         data: { destination: destination, username: username },
       })
       .afterClosed()
-      .subscribe((isSuccess) => {});
+      .subscribe();
   }
 
-  async resendSignUpCode(username: string) {
-    // Resend sign up code to the registered user
-    const { destination, deliveryMedium } = await resendSignUpCode({
+  async resendSignUpCode(username: string): Promise<ResendSignUpCodeOutput> {
+    return await resendSignUpCode({
       username,
     });
   }
 
   async isAuthenticated(): Promise<boolean> {
     try {
-      if (sessionStorage.getItem('isLoggedIn') == 'true') {
-        return true;
-      } else if (
-        sessionStorage.getItem('isLoggedIn') == 'false' ||
-        sessionStorage.getItem('isLoggedIn') == null
-      ) {
-        return false;
-      } else {
-        const { accessToken, idToken } =
-          (await fetchAuthSession()).tokens ?? {};
-        return !!accessToken && !!idToken;
-      }
+      const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+      if (isLoggedIn === 'true') return true;
+      if (isLoggedIn === 'false' || isLoggedIn === null) return false;
+  
+      const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
+      return !!accessToken && !!idToken;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return false;
     }
+  }
+
+  private handleError(error: any) {
+    console.error(error);
+    return this.dialog
+      .open(ErrorMessageDialogComponent, { 
+        data: { message: String(error) } 
+      })
+      .afterClosed();
   }
 }
