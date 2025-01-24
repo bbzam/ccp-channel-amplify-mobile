@@ -1,7 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
+  FormBuilder,
   FormControl,
+  FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
@@ -29,8 +31,6 @@ import { AuthServiceService } from '../../auth-service.service';
     MatIconModule,
     MatButtonModule,
     MatDividerModule,
-    FormsModule,
-    ReactiveFormsModule,
   ],
   templateUrl: './signin.component.html',
   styleUrl: './signin.component.css',
@@ -43,88 +43,79 @@ export class SigninComponent implements OnInit {
   emailErrorMessage = signal('');
   passwordErrorMessage = signal('');
 
-  ngOnInit(): void {}
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly fb = inject(FormBuilder);
+  private readonly dialog = inject(MatDialog);
+  private readonly dialogRef = inject(MatDialogRef<SigninComponent>);
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthServiceService);
 
-  readonly dialog = inject(MatDialog);
-  readonly dialogRef = inject(MatDialogRef<SigninComponent>);
-  readonly router = inject(Router);
-  readonly authService = inject(AuthServiceService);
-
-  // Form Controls
-  readonly email = new FormControl('', [
-    Validators.required,
-    disallowCharacters(),
-  ]);
-
-  readonly password = new FormControl('', [
-    Validators.required,
-    disallowCharacters(),
-  ]);
+  signInForm: FormGroup = this.fb.group({
+    email: ['', [Validators.required, disallowCharacters()]],
+    password: ['', [Validators.required, disallowCharacters()]],
+  });
 
   constructor() {
-    // Email validation error updates
-    merge(this.email.statusChanges, this.email.valueChanges)
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updateEmailErrorMessage());
-
-    // Password validation error updates
-    merge(this.password.statusChanges, this.password.valueChanges)
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updatePasswordErrorMessage());
+    this.setupFormValidation();
   }
 
-  updateEmailErrorMessage() {
-    if (this.email.hasError('required')) {
-      this.emailErrorMessage.set(errorMessages.REQUIRED);
-    } else if (this.email.hasError('disallowedCharacters')) {
-      this.emailErrorMessage.set(errorMessages.DISALLOWEDCHARACTERS);
-    } else {
-      this.emailErrorMessage.set('');
-    }
-  }
+  ngOnInit(): void {}
 
-  updatePasswordErrorMessage() {
-    if (this.password.hasError('required')) {
-      this.passwordErrorMessage.set(errorMessages.REQUIRED);
-    } else if (this.password.hasError('disallowedCharacters')) {
-      this.passwordErrorMessage.set(errorMessages.DISALLOWEDCHARACTERS);
-    } else {
-      this.passwordErrorMessage.set('');
-    }
-  }
+  private setupFormValidation(): void {
+    const emailControl = this.signInForm.get('email');
+    const passwordControl = this.signInForm.get('password');
 
-  async login() {
-    this.signingIn = true;
-    try {
-      const isSuccess = await this.authService.signIn(
-        this.inputEmail,
-        this.inputPassword
+    emailControl?.statusChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() =>
+        this.updateErrorMessage(emailControl, this.emailErrorMessage)
       );
+
+    passwordControl?.statusChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() =>
+        this.updateErrorMessage(passwordControl, this.passwordErrorMessage)
+      );
+  }
+
+  private updateErrorMessage(control: any, errorSignal: any): void {
+    if (control.hasError('required')) {
+      errorSignal.set(errorMessages.REQUIRED);
+    } else if (control.hasError('disallowedCharacters')) {
+      errorSignal.set(errorMessages.DISALLOWEDCHARACTERS);
+    } else {
+      errorSignal.set('');
+    }
+  }
+
+  async login(): Promise<void> {
+    if (this.signInForm.invalid) {
+      return;
+    }
+
+    try {
+      this.signingIn = true;
+      const { email, password } = this.signInForm.value;
+      const isSuccess = await this.authService.signIn(email, password);
+
       if (isSuccess) {
-        this.dialogRef.close();
-        this.signingIn = false;
+        this.dialogRef.close(true);
       } else {
-        this.signingIn = false;
-        this.dialogRef.close();
         console.log('Sign-in requires further confirmation.');
       }
     } catch (error) {
-      this.signingIn = false;
       console.error('Sign-in failed:', error);
     } finally {
       this.signingIn = false;
     }
   }
 
-  signUpOnClick() {
+  signUpOnClick(): void {
     this.dialogRef.close();
-    this.dialog
-      .open(SignupComponent)
-      .afterClosed()
-      .subscribe((data) => {});
+    this.dialog.open(SignupComponent).afterClosed().subscribe();
   }
 
-  togglePasswordVisibility() {
+  togglePasswordVisibility(): void {
     this.isPasswordVisible = !this.isPasswordVisible;
   }
 }

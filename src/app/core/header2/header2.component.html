@@ -1,0 +1,43 @@
+<div class="main-header">
+  <div class="menu">
+    <button mat-icon-button (click)="menu()"><mat-icon>menu</mat-icon></button>
+  </div>
+  <div class="hide">
+    <button class="search" mat-icon-button>
+      <mat-icon>notifications</mat-icon>
+    </button>
+    <div class="header-right">
+      <button mat-icon-button [matMenuTriggerFor]="beforeMenu">
+        <mat-icon>person</mat-icon>
+      </button>
+      <mat-menu #beforeMenu="matMenu" xPosition="before">
+        <mat-card>
+          <mat-card-header>
+            <div class="user">
+              <button mat-icon-button>
+                <mat-icon>person</mat-icon>
+              </button>
+              <div>
+                <mat-card-title> {{ username }}</mat-card-title>
+                <mat-card-subtitle>{{ email }}</mat-card-subtitle>
+              </div>
+            </div>
+          </mat-card-header>
+          <mat-card-content>
+            <button mat-raised-button color="primary">
+              <mat-icon>settings</mat-icon><span>Settings</span>
+            </button>
+          </mat-card-content>
+          <div class="divider">
+            <mat-divider></mat-divider>
+          </div>
+          <mat-card-actions>
+            <button mat-raised-button color="primary" (click)="logout()">
+              <mat-icon>logout</mat-icon><span>Logout</span>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </mat-menu>
+    </div>
+  </div>
+</div>

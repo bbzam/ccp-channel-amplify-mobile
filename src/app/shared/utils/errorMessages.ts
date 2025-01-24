@@ -8,6 +8,7 @@ export const errorMessages = {
     HASNUMBER: 'Must have at least 1 numeric',
     HASSPECIALCHARACTER: 'Must have special character',
     PASSWORDNOTMATCH: 'Password not match',
+    MAX6CHARACTERS: 'Maximum 6 characters',
     MAX50CHARACTERS: 'Maximum 50 characters',
     MAX100CHARACTERS: 'Maximum 100 characters',
     MAX3NUMERIC: 'Maximum 3 numbers',

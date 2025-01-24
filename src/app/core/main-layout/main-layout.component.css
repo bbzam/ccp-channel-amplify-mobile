@@ -40,3 +40,56 @@
   z-index: 1000;
   font-size: 1.5em;
 }
+
+.super-main {
+  height: 100vh;
+  width: 100vw;
+}
+
+.mainLayout2 {
+  display: grid;
+  grid-template-columns: auto 1fr; /* Sidebar and content split */
+  grid-template-rows: auto 1fr; /* Header auto height, body fills remaining */
+  grid-template-areas:
+    "sidebar content"
+    "sidebar content";
+  height: 100%; /* Occupy full height */
+  width: 100%; /* Occupy full width */
+}
+
+.sidenav2 {
+  grid-area: sidebar; /* Place in sidebar area */
+  width: 12em; /* Fixed sidebar width */
+  background-color: #f4f4f4; /* Example color */
+  height: 100%; /* Full height */
+  padding: 1em;
+}
+
+.content {
+  grid-area: content; /* Place in content area */
+  display: grid;
+  grid-template-rows: auto 1fr; /* Header auto height, body fills remaining */
+  grid-template-areas:
+    "header"
+    "body";
+  height: 100%; /* Full height */
+  width: 100%; /* Full width */
+}
+
+.header2 {
+  grid-area: header; /* Place in header area */
+  height: auto; /* Automatically adjust height */
+  width: 100%; /* Full width */
+  padding: 1em;
+  color: #ffffff;
+  background-color: aqua;
+}
+
+.body2 {
+  grid-area: body; /* Place in body area */
+  overflow: auto; /* Enable scrolling if content exceeds height */
+  padding: 1em;
+  background-color: bisque;
+  height: 100%; /* Ensure it stretches to fill remaining space */
+  width: 100%;
+}

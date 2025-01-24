@@ -14,6 +14,10 @@ import {
 } from 'aws-amplify/auth';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
 
+interface CognitoIdTokenPayload {
+  'cognito:groups'?: string[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -27,12 +31,31 @@ export class AuthServiceService {
   async currentSession() {
     try {
       const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
+      const payload = idToken?.payload as CognitoIdTokenPayload;
+      const userRole = payload['cognito:groups']?.[0];
       if (!accessToken || !idToken) {
         this.handleLogout();
         return false;
       }
-  
       this.setSessionData(idToken);
+      switch (userRole) {
+        case 'USER':
+        case 'SUBSCRIBER':
+          this.router.navigate(['/subscriber']);
+          break;
+        case 'CONTENT_CREATOR':
+          this.router.navigate(['/content-curator']);
+          break;
+        case 'IT_ADMIN':
+          this.router.navigate(['/it-admin']);
+          break;
+        case 'SUPER_ADMIN':
+          this.router.navigate(['/super-admin']);
+          break;
+        default:
+          this.router.navigate(['/landing-page']);
+          break;
+      }
       return true;
     } catch (error) {
       this.handleError(error);
@@ -48,6 +71,10 @@ export class AuthServiceService {
     );
     sessionStorage.setItem('email', String(idToken?.payload['email']));
     sessionStorage.setItem('isLoggedIn', 'true');
+    sessionStorage.setItem(
+      'role',
+      String(idToken?.payload['cognito:groups'][0])
+    );
     this.isLoggedIn = true;
   }
 
@@ -78,12 +105,8 @@ export class AuthServiceService {
         return false;
       }
     } catch (error) {
-      console.log(error);
-      this.dialog
-        .open(ErrorMessageDialogComponent, { data: { message: String(error) } })
-        .afterClosed()
-        .subscribe();
-      throw error; // Re-throw to let the caller handle it
+      this.handleError(error);
+      return false;
     }
     return false; // Default to false if no condition matches
   }
@@ -118,12 +141,8 @@ export class AuthServiceService {
         return false;
       }
     } catch (error) {
-      console.log(error);
-      this.dialog
-        .open(ErrorMessageDialogComponent, { data: { message: String(error) } })
-        .afterClosed()
-        .subscribe();
-      throw error;
+      this.handleError(error);
+      return false;
     }
     return false;
   }
@@ -147,11 +166,8 @@ export class AuthServiceService {
         return true;
       }
     } catch (error) {
-      console.log(error);
-      this.dialog
-        .open(ErrorMessageDialogComponent, { data: { message: String(error) } })
-        .afterClosed()
-        .subscribe();
+      this.handleError(error);
+      return false;
     }
     return false;
   }
@@ -163,7 +179,7 @@ export class AuthServiceService {
       localStorage.clear();
       this.router.navigate(['landing-page']);
     } catch (error) {
-      this.handleError(error)
+      this.handleError(error);
     }
   }
 
@@ -185,9 +201,9 @@ export class AuthServiceService {
   async isAuthenticated(): Promise<boolean> {
     try {
       const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-      if (isLoggedIn === 'true') return true;
-      if (isLoggedIn === 'false' || isLoggedIn === null) return false;
-  
+      const auth = sessionStorage.getItem('auth');
+      if (!isLoggedIn || !auth) return false;
+
       const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
       return !!accessToken && !!idToken;
     } catch (err) {
@@ -199,8 +215,8 @@ export class AuthServiceService {
   private handleError(error: any) {
     console.error(error);
     return this.dialog
-      .open(ErrorMessageDialogComponent, { 
-        data: { message: String(error) } 
+      .open(ErrorMessageDialogComponent, {
+        data: { message: String(error) },
       })
       .afterClosed();
   }

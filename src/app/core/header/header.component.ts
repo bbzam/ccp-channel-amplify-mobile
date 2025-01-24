@@ -19,7 +19,6 @@ import { ConfirmationDialogComponent } from '../../shared/dialogs/confirmation-d
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthServiceService } from '../../auth/auth-service.service';
-import { CoreServiceService } from '../core-service.service';
 
 @Component({
   selector: 'app-header',
@@ -46,7 +45,6 @@ export class HeaderComponent implements OnInit {
   readonly cdr = inject(ChangeDetectorRef);
   readonly activatedRoute = inject(ActivatedRoute);
   readonly authService = inject(AuthServiceService);
-  readonly coreService = inject(CoreServiceService);
 
   ngOnInit(): void {
     this.router.events
@@ -63,14 +61,11 @@ export class HeaderComponent implements OnInit {
   }
 
   get isAuthenticated(): boolean {
-    if (
-      sessionStorage.getItem('isLoggedIn') == 'false' ||
-      sessionStorage.getItem('isLoggedIn') == null
-    ) {
-      return false;
-    } else {
-      return true;
-    }
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    const auth = sessionStorage.getItem('auth');
+    if (!isLoggedIn || !auth) return false;
+
+    return true;
   }
 
   get username(): string {

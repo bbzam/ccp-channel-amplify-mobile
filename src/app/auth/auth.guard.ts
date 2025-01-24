@@ -20,6 +20,7 @@ export const authGuard: CanActivateFn = (route, state) => {
         })
         .afterClosed()
         .subscribe((data) => {
+          authService.logout();
           router.navigate(['/landing-page']); // Redirect to landing page if not authenticated
         });
       return false; // Deny access

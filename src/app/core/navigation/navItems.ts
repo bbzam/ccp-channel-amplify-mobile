@@ -8,7 +8,7 @@ export const navItems = [
         routeLink: '/subscriber/theater'
     },
     {
-        label: 'Films',
+        label: 'Film',
         routeLink: '/subscriber/film'
     },
     {
@@ -24,7 +24,7 @@ export const navItems = [
         routeLink: '/subscriber/education'
     },
     {
-        label: 'CCP Special',
+        label: 'CCP Specials',
         routeLink: '/subscriber/ccpspecial'
     },
     {

@@ -12,10 +12,15 @@ import {
   AmplifyAuthenticatorModule,
   AuthenticatorService,
 } from '@aws-amplify/ui-angular';
+import { ContentCuratorComponent } from './features/content-curator/content-curator.component';
 
 @Component({
   selector: 'app-root',
-  imports: [MainLayoutComponent, AmplifyAuthenticatorModule],
+  imports: [
+    MainLayoutComponent,
+    AmplifyAuthenticatorModule,
+    ContentCuratorComponent,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -37,5 +42,9 @@ export class AppComponent implements OnInit {
 
   constructor() {
     Amplify.configure(outputs);
+  }
+
+  get userRole(): string {
+    return String(sessionStorage.getItem('role'));
   }
 }

@@ -10,9 +10,12 @@ import { CcpspecialComponent } from './features/subscriber/ccpspecial/ccpspecial
 import { CcpclassicComponent } from './features/subscriber/ccpclassic/ccpclassic.component';
 import { authGuard } from './auth/auth.guard';
 import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
+import { DashboardComponent } from './features/content-curator/dashboard/dashboard.component';
+import { PublishedComponent } from './features/content-curator/published/published.component';
+import { ScheduledComponent } from './features/content-curator/scheduled/scheduled.component';
+import { ContentCuratorComponent } from './features/content-curator/content-curator.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'landing-page', pathMatch: 'full' },
   { path: 'notfound', component: PageNotFoundComponent },
   { path: 'landing-page', component: HomePageComponent },
   {
@@ -29,5 +32,15 @@ export const routes: Routes = [
       { path: 'ccpclassic', component: CcpclassicComponent },
     ],
   },
+  {
+    path: 'content-curator',
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: DashboardComponent},
+      { path: 'published', component: PublishedComponent},
+      { path: 'scheduled', component: ScheduledComponent},
+    ]
+  },
+  { path: '', redirectTo: 'landing-page', pathMatch: 'full' },  
   { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
 ];

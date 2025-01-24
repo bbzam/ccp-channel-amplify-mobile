@@ -1,6 +1,6 @@
 export const topFeatured = [
   {
-    title: 'Rediscover Filipino arts and culture',
+    title: 'Celebrate Filipino Arts and Culture',
     description:
       'Subscribe now for exclusive access to our diverse collection of original CCP productions and performances.',
     banner: 'Thumbnails/Doc Resureccion_ Gagamutin ang Bayan/Banner.png',

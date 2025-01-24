@@ -1,0 +1,162 @@
+<div class="signin-main">
+  <h1>UPLOAD NEW CONTENT</h1>
+  <mat-divider></mat-divider>
+  <form (ngSubmit)="publishContent()" #uploadForm="ngForm">
+    <!-- Title -->
+    <div class="form-field-container">
+      <label for="title">Title</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        [(ngModel)]="inputTitle"
+        required
+        placeholder="Enter title"
+      />
+    </div>
+
+    <!-- Description -->
+    <div class="form-field-container">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        name="description"
+        [(ngModel)]="inputDescription"
+        required
+        rows="4"
+        placeholder="Enter description"
+      ></textarea>
+    </div>
+
+    <!-- Category -->
+    <div class="form-field-container">
+      <label for="category">Category</label>
+      <select
+        id="category"
+        name="category"
+        [(ngModel)]="inputCategory"
+        required
+        placeholder="Select category"
+      >
+        <option value="theater">Theater</option>
+        <option value="film">Film</option>
+        <option value="music">Music</option>
+        <option value="dance">Dance</option>
+        <option value="education">Education</option>
+        <option value="ccpspecials">CCP Specials</option>
+        <option value="ccpclassics">CCP Classics</option>
+      </select>
+    </div>
+
+    <!-- Sub Category -->
+    <div class="form-field-container">
+      <label for="subCategory">Sub Category</label>
+      <input
+        type="text"
+        id="subCategory"
+        name="subCategory"
+        [(ngModel)]="inputSubCategory"
+        placeholder="Enter Sub Category"
+      />
+    </div>
+
+    <!-- User Type -->
+    <div class="form-field-container">
+      <label for="userType">User Type</label>
+      <select
+        id="userType"
+        name="userType"
+        [(ngModel)]="inputUserType"
+        required
+      >
+        <option value="free">Free</option>
+        <option value="subscriber">Subscriber</option>
+      </select>
+    </div>
+
+    <!-- Landscape Image -->
+    <div class="form-field-container">
+      <label for="landscapeImage">Landscape Image</label>
+      <input
+        type="file"
+        id="landscapeImage"
+        (change)="onLandscapeImageSelected($event)"
+        accept="image/*"
+        class="form-control-file"
+        required
+      />
+      <!-- <small class="form-text text-muted">Recommended size: 1920x1080px</small> -->
+    </div>
+
+    <!-- Portrait Image -->
+    <div class="form-field-container">
+      <label for="portraitImage">Portrait Image</label>
+      <input
+        type="file"
+        id="portraitImage"
+        (change)="onPortraitImageSelected($event)"
+        accept="image/*"
+        class="form-control-file"
+        required
+      />
+      <!-- <small class="form-text text-muted">Recommended size: 1080x1920px</small> -->
+    </div>
+
+    <!-- Preview Video -->
+    <div class="form-field-container">
+      <label for="previewVideo">Preview Video</label>
+      <input
+        type="file"
+        id="previewVideo"
+        (change)="onPreviewVideoSelected($event)"
+        accept="video/*"
+        class="form-control-file"
+        required
+      />
+      <!-- <small class="form-text text-muted">Maximum duration: 2 minutes</small> -->
+    </div>
+
+    <!-- Full Video -->
+    <div class="form-field-container">
+      <label for="fullVideo">Full Video</label>
+      <input
+        type="file"
+        id="fullVideo"
+        (change)="onFullVideoSelected($event)"
+        accept="video/*"
+        class="form-control-file"
+        required
+      />
+      <!-- <small class="form-text text-muted">Supported formats: MP4, MOV</small> -->
+    </div>
+  </form>
+
+  <div class="action-buttons">
+    <button
+      class="buttonTertiary"
+      mat-raised-button
+      type="button"
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+    <button
+      class="buttonSecondary"
+      mat-raised-button
+      type="button"
+      (click)="schedulePublish()"
+      [disabled]="!uploadForm.form.valid || isLoading"
+    >
+      Schedule
+    </button>
+    <button
+      class="buttonPrimary"
+      mat-raised-button
+      type="button"
+      (click)="publishContent()"
+      [disabled]="!uploadForm.form.valid || isLoading"
+    >
+      {{ isLoading ? "Publishing..." : "Publish" }}
+    </button>
+  </div>
+</div>

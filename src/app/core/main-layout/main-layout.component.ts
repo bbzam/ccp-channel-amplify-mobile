@@ -1,4 +1,10 @@
-import { Component, HostListener, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -14,7 +20,13 @@ import { SidenavComponent } from '../sidenav/sidenav.component';
 
 @Component({
   selector: 'app-main-layout',
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, MatSidenavModule, SidenavComponent],
+  imports: [
+    RouterOutlet,
+    HeaderComponent,
+    FooterComponent,
+    MatSidenavModule,
+    SidenavComponent,
+  ],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.css',
 })
@@ -34,7 +46,13 @@ export class MainLayoutComponent implements OnInit {
       .subscribe((event: NavigationEnd) => {
         this.currentRoute = event.urlAfterRedirects;
       });
-    this.currentRouteIndex = this.routes.findIndex(route => route.routeLink === this.currentRoute);
+    this.currentRouteIndex = this.routes.findIndex(
+      (route) => route.routeLink === this.currentRoute
+    );
+  }
+
+  get userRole(): string {
+    return String(sessionStorage.getItem('role'));
   }
 
   @HostListener('window:scroll') onScroll() {

@@ -1,5 +1,5 @@
 <div class="signin-main">
-  <form>
+  <form [formGroup]="verifyForm" (ngSubmit)="confirm()">
     <div class="form-field-container">
       <h2>Email Confirmation</h2>
       <p>Enter the code we emailed to {{destination}}</p>
@@ -8,15 +8,12 @@
       <label>Confirmation Code</label>
       <input
         matInput
-        [(ngModel)]="code"
         placeholder="Enter your code"
-        [formControl]="codeControl"
-        (blur)="updateCodeErrorMessage()"
+        formControlName="code"
+        autocomplete="off"
         required
       />
-      @if (codeControl.invalid) {
       <mat-error>{{ codeErrorMessage() }}</mat-error>
-      }
     </div>
 
     <div class="form-field-container">
@@ -24,10 +21,9 @@
         class="buttonSignIn"
         mat-raised-button
         type="submit"
-        [disabled]="confirming || codeControl.invalid"
-        (click)="confirm()"
+        [disabled]="verifyForm.invalid || isLoading()"
       >
-        {{ confirming ? "Confirming..." : "Confirm" }}
+        {{ isLoading() ? 'Verifying...' : 'Verify' }}
       </button>
     </div>
 
@@ -41,7 +37,8 @@
         class="buttonSignUp"
         mat-raised-button
         type="button"
-        (click)="resendCodeOnClick()"
+        (click)="resendCode()"
+        [disabled]="isLoading()"
       >
         Resend Code
       </button>

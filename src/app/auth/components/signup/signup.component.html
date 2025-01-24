@@ -2,7 +2,7 @@
   <div class="header-logo">
     <img src="ccp-logo-rmvbg.png" alt="header-logo" />
   </div>
-  <form>
+  <form [formGroup]="signupForm" (ngSubmit)="signUpOnClick()">
     <div class="form-field-container">
       <h2>Sign Up</h2>
     </div>
@@ -12,15 +12,11 @@
       <label>First Name</label>
       <input
         matInput
-        [(ngModel)]="inputFirstname"
         placeholder="Enter your Firstname"
-        [formControl]="formControlFirstname"
-        (blur)="updateFirstnameErrorMessage()"
+        formControlName="firstname"
         required
       />
-      @if (formControlFirstname.invalid) {
       <mat-error>{{ firstnameErrorMessage() }}</mat-error>
-      }
     </div>
 
     <div class="form-field-container">
@@ -28,15 +24,11 @@
       <label>Last name</label>
       <input
         matInput
-        [(ngModel)]="inputLastname"
         placeholder="Enter your Lastname"
-        [formControl]="formControlLastname"
-        (blur)="updateLastnameErrorMessage()"
+        formControlName="lastname"
         required
       />
-      @if (formControlLastname.invalid) {
       <mat-error>{{ lastnameErrorMessage() }}</mat-error>
-      }
     </div>
 
     <div class="form-field-container">
@@ -44,32 +36,24 @@
       <label>Email</label>
       <input
         matInput
-        [(ngModel)]="inputEmail"
         placeholder="Enter your email"
-        [formControl]="formControlEmail"
-        (blur)="updateEmailErrorMessage()"
+        formControlName="email"
         required
       />
-      @if (formControlEmail.invalid) {
       <mat-error>{{ emailErrorMessage() }}</mat-error>
-      }
     </div>
 
     <div class="form-field-container">
-      <!-- Age Field -->
+      <!-- Bithdate Field -->
       <label>Birthdate</label>
       <input
         matInput
         type="date"
-        [(ngModel)]="inputBirthdate"
         placeholder="Enter your Birthdate"
-        [formControl]="formControlAge"
-        (blur)="updateAgeErrorMessage()"
+        formControlName="birthdate"
         required
       />
-      @if (formControlAge.invalid) {
-      <mat-error>{{ ageErrorMessage() }}</mat-error>
-      }
+      <mat-error>{{ birthdateErrorMessage() }}</mat-error>
     </div>
 
     <div class="form-field-container">
@@ -77,48 +61,31 @@
       <label>Password</label>
       <input
         matInput
-        [(ngModel)]="inputPassword"
         placeholder="Enter your password"
-        [formControl]="formControlPassword"
-        (blur)="updatePasswordErrorMessage()"
+        formControlName="password"
         required
       />
-      @if (formControlPassword.invalid) {
       <mat-error>{{ passwordErrorMessage() }}</mat-error>
-      }
     </div>
 
-    <!-- <div class="form-field-container">
+    <div class="form-field-container">
       <label>Confirm Password</label>
       <input
         matInput
-        [(ngModel)]="inputConfirmPassword"
         placeholder="Confirm your password"
-        [formControl]="formControlConfirmpassword"
-        (blur)="updateConfirmPassswordErrorMessage()"
+        formControlName="confirmPassword"
         required
       />
-      @if (formControlConfirmpassword.invalid) {
       <mat-error>{{ confirmPasswordErrorMessage() }}</mat-error>
-      }
-    </div> -->
+    </div>
 
     <div class="form-field-container">
       <button
         class="buttonSignIn"
         mat-raised-button
         type="submit"
-        [disabled]="
-          signingUp ||
-          formControlFirstname.invalid ||
-          formControlLastname.invalid ||
-          formControlEmail.invalid ||
-          formControlAge.invalid ||
-          formControlPassword.invalid
-        "
-        (click)="signUpOnClick()"
-      >
-        {{ signingUp ? "Signing Up..." : "Sign Up" }}
+        [disabled]="signupForm.invalid || isLoading()">
+        {{ isLoading() ? "Signing Up..." : "Sign Up" }}
       </button>
     </div>
 

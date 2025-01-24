@@ -1,0 +1,83 @@
+.main-sidenav {
+  background-color: var(--secondary);
+  color: var(--tertiary);
+  height: 100%;
+  width: 100%;
+
+  .header-logo {
+    display: flex;
+    justify-content: center;
+    padding: 1em 0;
+
+    img {
+      width: 100%;
+    }
+  }
+}
+
+mat-card-content {
+  display: flex;
+
+  button {
+    width: 100%;
+    justify-content: flex-start;
+    border-radius: 5em;
+
+    mat-icon {
+      color: var(--gray);
+    }
+
+    span {
+      color: var(--gray);
+    }
+  }
+
+  button:hover {
+    background-color: var(--primary-hovered);
+
+    mat-icon,
+    span {
+      color: var(--gray);
+    }
+  }
+
+  .new {
+    max-width: 75%;
+    background-color: var(--tertiary);
+    margin-bottom: 1em;
+
+    span {
+      color: var(--primary);
+      font-size: 0.9em;
+    }
+
+    mat-icon {
+      color: var(--primary);
+      font-weight: bolder;
+    }
+  }
+
+  .new:hover {
+    background-color: var(--gray);
+
+    span,
+    mat-icon {
+      color: var(--secondary);
+    }
+  }
+
+  .focus-menu {
+    background-color: var(--primary);
+
+    mat-icon,
+    span {
+      color: var(--tertiary);
+    }
+  }
+}
+
+.mat-mdc-card-content {
+  padding: 0 8px;
+  flex-direction: column;
+  align-items: flex-start;
+}

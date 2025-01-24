@@ -1,7 +1,8 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  FormControl,
+  FormBuilder,
+  FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
@@ -10,12 +11,10 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { merge } from 'rxjs';
+import { distinctUntilChanged, merge } from 'rxjs';
 import { errorMessages } from '../../../shared/utils/errorMessages';
 import {
   allowMax100,
-  allowMax3,
-  allowOnlyNumeric,
   disallowCharacters,
   emailValidator,
   hasLowercase,
@@ -24,7 +23,6 @@ import {
   hasSpecialCharacter,
   hasUppercase,
   isMatch,
-  passwordValidator,
 } from '../../../shared/utils/validators';
 import { MatDividerModule } from '@angular/material/divider';
 import { SigninComponent } from '../signin/signin.component';
@@ -44,218 +42,180 @@ import { AuthServiceService } from '../../auth-service.service';
   styleUrl: './signup.component.css',
 })
 export class SignupComponent implements OnInit {
-  signingUp: boolean = false;
-  inputFirstname!: string;
-  inputLastname!: string;
-  inputEmail!: string;
-  inputBirthdate!: number;
-  inputPassword!: string;
-  inputConfirmPassword!: string;
+  private readonly dialog = inject(MatDialog);
+  private readonly dialogRef = inject(MatDialogRef<SignupComponent>);
+  private readonly authService = inject(AuthServiceService);
+  private readonly fb = inject(FormBuilder);
 
+  signupForm!: FormGroup;
+  readonly isLoading = signal(false);
+
+  // Error message signals
   firstnameErrorMessage = signal('');
   lastnameErrorMessage = signal('');
   emailErrorMessage = signal('');
-  ageErrorMessage = signal('');
+  birthdateErrorMessage = signal('');
   passwordErrorMessage = signal('');
   confirmPasswordErrorMessage = signal('');
 
-  ngOnInit(): void {}
-
-  readonly dialog = inject(MatDialog);
-  readonly dialogRef = inject(MatDialogRef<SignupComponent>);
-  readonly authService = inject(AuthServiceService);
-
-  // Form Controls
-  readonly formControlFirstname = new FormControl('', [
-    Validators.required,
-    allowMax100(),
-    disallowCharacters(),
-  ]);
-
-  readonly formControlLastname = new FormControl('', [
-    Validators.required,
-    allowMax100(),
-    disallowCharacters(),
-  ]);
-
-  readonly formControlEmail = new FormControl('', [
-    Validators.required,
-    emailValidator(),
-    disallowCharacters(),
-  ]);
-
-  readonly formControlAge = new FormControl('', [
-    Validators.required,
-    disallowCharacters(),
-  ]);
-
-  readonly formControlPassword = new FormControl('', [
-    Validators.required,
-    hasUppercase(),
-    hasLowercase(),
-    hasSpecialCharacter(),
-    hasNumber(),
-    hasMinimumLength(),
-    disallowCharacters(),
-  ]);
-
-  readonly formControlConfirmpassword = new FormControl('', [
-    Validators.required,
-    isMatch(this.inputPassword),
-    disallowCharacters(),
-  ]);
+  // Form status computed value
+  readonly formStatus = computed(() => ({
+    isValid: this.signupForm.valid,
+    isDirty: this.signupForm.dirty,
+    isPristine: this.signupForm.pristine,
+  }));
 
   constructor() {
-    // Firstname validation error updates
-    merge(
-      this.formControlFirstname.statusChanges,
-      this.formControlFirstname.valueChanges
-    )
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updateFirstnameErrorMessage());
-
-    // Lastname validation error updates
-    merge(
-      this.formControlLastname.statusChanges,
-      this.formControlLastname.valueChanges
-    )
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updateLastnameErrorMessage());
-
-    // Email validation error updates
-    merge(
-      this.formControlEmail.statusChanges,
-      this.formControlEmail.valueChanges
-    )
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updateEmailErrorMessage());
-
-    // Age validation error updates
-    merge(this.formControlAge.statusChanges, this.formControlAge.valueChanges)
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updateAgeErrorMessage());
-
-    // Password validation error updates
-    merge(
-      this.formControlPassword.statusChanges,
-      this.formControlPassword.valueChanges
-    )
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updatePasswordErrorMessage());
-
-    // Confirm Password validation error updates
-    merge(
-      this.formControlConfirmpassword.statusChanges,
-      this.formControlConfirmpassword.valueChanges
-    )
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updateConfirmPassswordErrorMessage());
+    this.createForm();
+    this.setupValidationSubscriptions();
   }
 
-  updateFirstnameErrorMessage() {
-    if (this.formControlFirstname.hasError('required')) {
-      this.firstnameErrorMessage.set(errorMessages.REQUIRED);
-    } else if (this.formControlFirstname.hasError('notMax100')) {
-      this.firstnameErrorMessage.set(errorMessages.MAX100CHARACTERS);
-    } else if (this.formControlFirstname.hasError('disallowedCharacters')) {
-      this.firstnameErrorMessage.set(errorMessages.DISALLOWEDCHARACTERS);
+  ngOnInit(): void {}
+
+  private createForm(): void {
+    this.signupForm = this.fb.group({
+      firstname: [
+        '',
+        [Validators.required, allowMax100(), disallowCharacters()],
+      ],
+      lastname: [
+        '',
+        [Validators.required, allowMax100(), disallowCharacters()],
+      ],
+      email: [
+        '',
+        [Validators.required, emailValidator(), disallowCharacters()],
+      ],
+      birthdate: ['', [Validators.required, disallowCharacters()]],
+      password: [
+        '',
+        [
+          Validators.required,
+          hasUppercase(),
+          hasLowercase(),
+          hasSpecialCharacter(),
+          hasNumber(),
+          hasMinimumLength(),
+          disallowCharacters(),
+        ],
+      ],
+      confirmPassword: ['', [Validators.required, disallowCharacters()]],
+    });
+
+    // Password matching validator to confirm password field
+    const passwordControl = this.signupForm.get('password');
+    const confirmPasswordControl = this.signupForm.get('confirmPassword');
+
+    if (passwordControl && confirmPasswordControl) {
+      confirmPasswordControl.addValidators(isMatch(passwordControl));
     }
   }
 
-  updateLastnameErrorMessage() {
-    if (this.formControlLastname.hasError('required')) {
-      this.lastnameErrorMessage.set(errorMessages.REQUIRED);
-    } else if (this.formControlLastname.hasError('notMax100')) {
-      this.lastnameErrorMessage.set(errorMessages.MAX100CHARACTERS);
-    } else if (this.formControlLastname.hasError('disallowedCharacters')) {
-      this.lastnameErrorMessage.set(errorMessages.DISALLOWEDCHARACTERS);
+  private setupValidationSubscriptions(): void {
+    const controls = [
+      'firstname',
+      'lastname',
+      'email',
+      'birthdate',
+      'password',
+      'confirmPassword',
+    ];
+
+    controls.forEach((controlName) => {
+      const control = this.signupForm.get(controlName);
+      if (control) {
+        merge(control.statusChanges, control.valueChanges)
+          .pipe(takeUntilDestroyed(), distinctUntilChanged())
+          .subscribe(() => this.updateErrorMessage(controlName));
+      }
+    });
+
+    // Update confirm password validation when password changes
+    const passwordControl = this.signupForm.get('password');
+    const confirmPasswordControl = this.signupForm.get('confirmPassword');
+
+    if (passwordControl && confirmPasswordControl) {
+      passwordControl.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+        confirmPasswordControl.updateValueAndValidity();
+      });
     }
   }
 
-  updateEmailErrorMessage() {
-    if (this.formControlEmail.hasError('required')) {
-      this.emailErrorMessage.set(errorMessages.REQUIRED);
-    } else if (this.formControlEmail.hasError('invalidEmailAddress')) {
-      this.emailErrorMessage.set(errorMessages.INVALIDEMAIL);
-    } else if (this.formControlEmail.hasError('disallowedCharacters')) {
-      this.emailErrorMessage.set(errorMessages.DISALLOWEDCHARACTERS);
+  private updateErrorMessage(controlName: string): void {
+    const control = this.signupForm.get(controlName);
+    if (!control) return;
+
+    const errorSignalMap: { [key: string]: any } = {
+      firstname: this.firstnameErrorMessage,
+      lastname: this.lastnameErrorMessage,
+      email: this.emailErrorMessage,
+      birthdate: this.birthdateErrorMessage,
+      password: this.passwordErrorMessage,
+      confirmPassword: this.confirmPasswordErrorMessage,
+    };
+
+    const signal = errorSignalMap[controlName];
+
+    if (control.hasError('required')) {
+      signal.set(errorMessages.REQUIRED);
+    } else if (control.hasError('notMax100')) {
+      signal.set(errorMessages.MAX100CHARACTERS);
+    } else if (control.hasError('disallowedCharacters')) {
+      signal.set(errorMessages.DISALLOWEDCHARACTERS);
+    } else if (control.hasError('invalidEmailAddress')) {
+      signal.set(errorMessages.INVALIDEMAIL);
+    } else if (control.hasError('notNumeric')) {
+      signal.set(errorMessages.ONLYNUMERICAL);
+    } else if (control.hasError('notMax3')) {
+      signal.set(errorMessages.MAX3NUMERIC);
+    } else if (control.hasError('noUppercase')) {
+      signal.set(errorMessages.HASUPPERCASE);
+    } else if (control.hasError('noLowercase')) {
+      signal.set(errorMessages.HASLOWERCASE);
+    } else if (control.hasError('noSpecialCharacter')) {
+      signal.set(errorMessages.HASSPECIALCHARACTER);
+    } else if (control.hasError('noNumber')) {
+      signal.set(errorMessages.HASNUMBER);
+    } else if (control.hasError('noMinimumLength')) {
+      signal.set(errorMessages.PASSWORDMINLENGTH);
+    } else if (control.hasError('isNotMatch')) {
+      signal.set(errorMessages.PASSWORDNOTMATCH);
+    } else {
+      signal.set('');
     }
   }
 
-  updateAgeErrorMessage() {
-    if (this.formControlAge.hasError('required')) {
-      this.ageErrorMessage.set(errorMessages.REQUIRED);
-    } else if (this.formControlAge.hasError('notNumeric')) {
-      this.ageErrorMessage.set(errorMessages.ONLYNUMERICAL);
-    } else if (this.formControlAge.hasError('notMax3')) {
-      this.ageErrorMessage.set(errorMessages.MAX3NUMERIC);
-    } else if (this.formControlAge.hasError('disallowedCharacters')) {
-      this.ageErrorMessage.set(errorMessages.DISALLOWEDCHARACTERS);
-    }
-  }
+  async signUpOnClick(): Promise<void> {
+    console.log(this.signupForm);
 
-  updatePasswordErrorMessage() {
-    if (this.formControlPassword.hasError('required')) {
-      this.passwordErrorMessage.set(errorMessages.REQUIRED);
-    } else if (this.formControlPassword.hasError('noUppercase')) {
-      this.passwordErrorMessage.set(errorMessages.HASUPPERCASE);
-    } else if (this.formControlPassword.hasError('noLowercase')) {
-      this.passwordErrorMessage.set(errorMessages.HASLOWERCASE);
-    } else if (this.formControlPassword.hasError('noSpecialCharacter')) {
-      this.passwordErrorMessage.set(errorMessages.HASSPECIALCHARACTER);
-    } else if (this.formControlPassword.hasError('noNumber')) {
-      this.passwordErrorMessage.set(errorMessages.HASNUMBER);
-    } else if (this.formControlPassword.hasError('noMinimumLegnth')) {
-      this.passwordErrorMessage.set(errorMessages.PASSWORDMINLENGTH);
-    } else if (this.formControlPassword.hasError('disallowedCharacters')) {
-      this.passwordErrorMessage.set(errorMessages.DISALLOWEDCHARACTERS);
-    }
-  }
+    if (this.signupForm.invalid) return;
 
-  updateConfirmPassswordErrorMessage() {
-    if (this.formControlConfirmpassword.hasError('required')) {
-      this.confirmPasswordErrorMessage.set(errorMessages.REQUIRED);
-    } else if (this.formControlConfirmpassword.hasError('isNotMatch')) {
-      this.confirmPasswordErrorMessage.set(errorMessages.PASSWORDNOTMATCH);
-    } else if (
-      this.formControlConfirmpassword.hasError('disallowedCharacters')
-    ) {
-      this.confirmPasswordErrorMessage.set(errorMessages.DISALLOWEDCHARACTERS);
-    }
-  }
-
-  async signUpOnClick() {
-    this.signingUp = true;
+    this.isLoading.set(true);
     try {
+      const formData = this.signupForm.value;
       const data = {
-        firstname: this.inputFirstname,
-        lastname: this.inputLastname,
-        email: this.inputEmail,
-        birthdate: this.inputBirthdate,
-        password: this.inputPassword,
+        firstname: formData.firstname,
+        lastname: formData.lastname,
+        email: formData.email,
+        birthdate: formData.birthdate,
+        password: formData.password,
       };
+
       const isSuccess = await this.authService.signUp(data);
-      if (isSuccess) {
-        this.dialogRef.close();
-        this.signingUp = false;
-      } else {
-        this.dialogRef.close();
-        this.signingUp = false;
+      this.dialogRef.close();
+
+      if (!isSuccess) {
         console.log('Sign-in requires further confirmation.');
       }
     } catch (error) {
-      this.signingUp = false;
       console.error('Sign-up failed:', error);
     } finally {
-      this.signingUp = false;
+      this.isLoading.set(false);
     }
   }
 
-  signInOnClick() {
+  signInOnClick(): void {
     this.dialogRef.close();
-    this.dialog
-      .open(SigninComponent)
-      .afterClosed()
-      .subscribe((data) => {});
+    this.dialog.open(SigninComponent).afterClosed().subscribe();
   }
 }

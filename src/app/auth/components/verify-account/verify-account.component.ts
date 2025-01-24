@@ -8,7 +8,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  FormControl,
+  FormBuilder,
+  FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
@@ -21,8 +22,9 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { merge } from 'rxjs';
+import { distinctUntilChanged, merge } from 'rxjs';
 import {
+  allowMax6,
   allowOnlyNumeric,
   disallowCharacters,
 } from '../../../shared/utils/validators';
@@ -31,6 +33,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { AuthServiceService } from '../../auth-service.service';
+import { VerifyAccountData } from '../../models/verify.model';
 
 @Component({
   selector: 'app-verify-account',
@@ -49,70 +52,108 @@ import { AuthServiceService } from '../../auth-service.service';
   styleUrl: './verify-account.component.css',
 })
 export class VerifyAccountComponent implements OnInit {
-  readonly dialog = inject(MatDialog);
-  readonly dialogRef = inject(MatDialogRef<VerifyAccountComponent>);
-  readonly router = inject(Router);
-  readonly authService = inject(AuthServiceService);
+  private readonly dialog = inject(MatDialog);
+  private readonly dialogRef = inject(MatDialogRef<VerifyAccountComponent>);
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthServiceService);
+  private readonly fb = inject(FormBuilder);
+
+  // Input properties
   @Input() destination!: string;
   @Input() username!: string;
-  code!: string;
-  confirming: boolean = false;
-  codeErrorMessage = signal('');
+
+  // Form and state management
+  verifyForm!: FormGroup;
+  readonly isLoading = signal(false);
+  readonly codeErrorMessage = signal('');
+
+  constructor(@Inject(MAT_DIALOG_DATA) private data: VerifyAccountData) {
+    this.initializeData();
+    this.createForm();
+    this.setupValidation();
+  }
 
   ngOnInit(): void {}
 
-  // Form Controls
-  readonly codeControl = new FormControl('', [
-    Validators.required,
-    allowOnlyNumeric,
-    disallowCharacters(),
-  ]);
-
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
+  // Initialize component data from dialog input
+  private initializeData(): void {
     this.destination = this.data.destination;
     this.username = this.data.username;
-    // Code validation error updates
-    merge(this.codeControl.statusChanges, this.codeControl.valueChanges)
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.updateCodeErrorMessage());
   }
 
-  updateCodeErrorMessage() {
-    if (this.codeControl.hasError('required')) {
+  // Create and initialize the form
+  private createForm(): void {
+    this.verifyForm = this.fb.group({
+      code: [
+        '',
+        [
+          Validators.required,
+          allowOnlyNumeric(),
+          disallowCharacters(),
+          allowMax6(),
+        ],
+      ],
+    });
+  }
+
+  // Setup form validation subscription
+  private setupValidation(): void {
+    const codeControl = this.verifyForm.get('code');
+
+    if (codeControl) {
+      codeControl.valueChanges
+        .pipe(takeUntilDestroyed(), distinctUntilChanged())
+        .subscribe(() => this.updateCodeErrorMessage());
+    }
+  }
+
+  // Update error message based on validation state
+  private updateCodeErrorMessage(): void {
+    const control = this.verifyForm.get('code');
+    if (!control) return;
+
+    if (control.hasError('required')) {
       this.codeErrorMessage.set(errorMessages.REQUIRED);
-    } else if (this.codeControl.hasError('disallowedCharacters')) {
+    } else if (control.hasError('disallowedCharacters')) {
       this.codeErrorMessage.set(errorMessages.DISALLOWEDCHARACTERS);
-    } else if (this.codeControl.hasError('notNumeric')) {
+    } else if (control.hasError('notMax6')) {
+      this.codeErrorMessage.set(errorMessages.MAX6CHARACTERS);
+    } else if (control.hasError('notNumeric')) {
       this.codeErrorMessage.set(errorMessages.ONLYNUMERICAL);
     } else {
       this.codeErrorMessage.set('');
     }
   }
 
-  async confirm() {
-    this.confirming = true;
+  async confirm(): Promise<void> {
+    if (this.verifyForm.invalid) return;
+
+    this.isLoading.set(true);
     try {
+      const code = this.verifyForm.get('code')?.value;
       const isSuccess = await this.authService.confirmSignUp(
         this.username,
-        this.code
+        code
       );
+
       if (isSuccess) {
         this.dialogRef.close(true);
-        this.confirming = false;
-      } else {
-        this.confirming = false;
       }
     } catch (error) {
-      this.confirming = false;
-      console.error('Confirm failed:', error);
+      console.error('Confirmation failed:', error);
     } finally {
-      this.confirming = false;
+      this.isLoading.set(false);
     }
   }
 
-  async resendCodeOnClick() {
+  async resendCode(): Promise<void> {
+    this.isLoading.set(true);
     try {
       await this.authService.resendSignUpCode(this.username);
-    } catch (error) {}
+    } catch (error) {
+      console.error('Resend code failed:', error);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 }

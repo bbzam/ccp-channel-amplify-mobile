@@ -2,7 +2,7 @@
   <div class="header-logo">
     <img src="ccp-logo-rmvbg.png" alt="header-logo" />
   </div>
-  <form>
+  <form [formGroup]="signInForm" (ngSubmit)="login()">
     <div class="form-field-container">
       <h2>Sign In</h2>
     </div>
@@ -11,15 +11,12 @@
       <label>Email</label>
       <input
         matInput
-        [(ngModel)]="inputEmail"
+        type="email"
+        formControlName="email"
         placeholder="Enter your email"
-        [formControl]="email"
-        (blur)="updateEmailErrorMessage()"
         required
       />
-      @if (email.invalid) {
       <mat-error>{{ emailErrorMessage() }}</mat-error>
-      }
     </div>
 
     <div class="form-field-container">
@@ -27,19 +24,24 @@
       <label>Password</label>
       <input
         matInput
-        [(ngModel)]="inputPassword"
         [type]="isPasswordVisible ? 'text' : 'password'"
         placeholder="Enter your password"
-        [formControl]="password"
-        (blur)="updatePasswordErrorMessage()"
+        formControlName="password"
         required
       />
-      <!-- <button type="button" mat-icon-button (click)="isPasswordVisible = !isPasswordVisible">
-        <mat-icon>{{ isPasswordVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+      <!-- <button
+        type="button"
+        mat-icon-button
+        matSuffix
+        (click)="togglePasswordVisibility()"
+        [attr.aria-label]="'Hide password'"
+        [attr.aria-pressed]="isPasswordVisible"
+      >
+        <mat-icon>{{
+          isPasswordVisible ? "visibility_off" : "visibility"
+        }}</mat-icon>
       </button> -->
-      @if (password.invalid) {
       <mat-error>{{ passwordErrorMessage() }}</mat-error>
-      }
     </div>
 
     <div class="form-field-container">
@@ -47,8 +49,7 @@
         class="buttonSignIn"
         mat-raised-button
         type="submit"
-        [disabled]="signingIn || email.invalid || password.invalid"
-        (click)="login()"
+        [disabled]="signInForm.invalid || signingIn"
       >
         {{ signingIn ? "Signing In..." : "Sign In" }}
       </button>

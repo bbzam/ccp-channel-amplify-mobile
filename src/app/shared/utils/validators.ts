@@ -1,4 +1,4 @@
-import { AbstractControl, ValidationErrors } from '@angular/forms';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 //validator for disallowing charaters for input fields
 export function disallowCharacters(): (
@@ -37,13 +37,24 @@ export function allowMax100(): (
 
 //validator that will accept max of 3 characters
 export function allowMax3(): (
-    control: AbstractControl
-  ) => ValidationErrors | null {
-    const regex = /^.{1,3}$/; // Regex to accept max of 3 characters
-  
-    return (control: AbstractControl): ValidationErrors | null => {
-      return !regex.test(control.value || '') ? { notMax3: true } : null;
-    };
+  control: AbstractControl
+) => ValidationErrors | null {
+  const regex = /^.{1,3}$/; // Regex to accept max of 3 characters
+
+  return (control: AbstractControl): ValidationErrors | null => {
+    return !regex.test(control.value || '') ? { notMax3: true } : null;
+  };
+}
+
+//validator that will accept max of 6 characters
+export function allowMax6(): (
+  control: AbstractControl
+) => ValidationErrors | null {
+  const regex = /^.{1,6}$/; // Regex to accept max of 6 characters
+
+  return (control: AbstractControl): ValidationErrors | null => {
+    return !regex.test(control.value || '') ? { notMax6: true } : null;
+  };
 }
 
 //validator for accepting only numbers
@@ -166,10 +177,19 @@ export function hasMinimumLength(): (
 }
 
 //validator for matching values
-export function isMatch(value: string): (control: AbstractControl) => ValidationErrors | null {
-    return (control: AbstractControl): ValidationErrors | null => {
-        const isNotMatch = control.value !== value;
-    
-        return isNotMatch ? { isNotMatch: true } : null;
-      };
+export function isMatch(passwordControl: AbstractControl): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control || !passwordControl) {
+      return null;
+    }
+
+    const password = passwordControl.value;
+    const confirmPassword = control.value;
+
+    if (!password || !confirmPassword) {
+      return null;
+    }
+
+    return password === confirmPassword ? null : { isNotMatch: true };
+  };
 }
