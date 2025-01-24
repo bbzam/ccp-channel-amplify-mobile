@@ -1,0 +1,38 @@
+@if (banners.length || featured.length || recommended.length ||
+continueWatching.length) {
+<div class="home-div">
+  <div class="banner">
+    <app-banner [banners]="banners" />
+  </div>
+  <div class="frc">
+    <h1 class="label">Featured</h1>
+    @if (featured.length) {
+    <app-featured [featured]="featured" />
+    } @else {
+    <app-no-video-available />
+    }
+  </div>
+  <div class="frc">
+    <h1 class="label">Recommended</h1>
+    @if (recommended.length) {
+    <app-recommended [recommended]="recommended" />
+    } @else {
+    <app-no-video-available />
+    }
+  </div>
+  @if (continueWatching.length) {
+  <div class="frc">
+    <h1 class="label">Continue watching</h1>
+    @if (continueWatching.length) {
+    <app-continue-watching [continueWatching]="continueWatching" />
+    } @else {
+    <app-no-video-available />
+    }
+  </div>
+  }
+</div>
+} @else {
+<div class="noData">
+  <h1>No Videos Available at the Moment.</h1>
+</div>
+}

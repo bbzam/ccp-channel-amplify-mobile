@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
-import { HomePageComponent } from './features/public-view/home-page/home-page.component';
-import { SubscriberComponent } from './features/subscriber/subscriber/subscriber.component';
 import { TheaterComponent } from './features/subscriber/theater/theater.component';
 import { FilmComponent } from './features/subscriber/film/film.component';
 import { MusicComponent } from './features/subscriber/music/music.component';
@@ -13,16 +11,26 @@ import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.co
 import { DashboardComponent } from './features/content-curator/dashboard/dashboard.component';
 import { PublishedComponent } from './features/content-curator/published/published.component';
 import { ScheduledComponent } from './features/content-curator/scheduled/scheduled.component';
-import { ContentCuratorComponent } from './features/content-curator/content-curator.component';
+import { PublicViewComponent } from './features/public-view/public-view/public-view.component';
+import { HomeComponent } from './features/subscriber/home/home.component';
+import { roleGuard } from './auth/role.guard';
+import { ItAdminDashboardComponent } from './features/IT-admin/dashboard/dashboard.component';
+import { SuperAdminDashboardComponent } from './features/super-admin/dashboard/dashboard.component';
 
 export const routes: Routes = [
-  { path: 'notfound', component: PageNotFoundComponent },
-  { path: 'landing-page', component: HomePageComponent },
+  {
+    path: '',
+    children: [
+      { path: '', redirectTo: 'landing-page', pathMatch: 'full' },
+      { path: 'landing-page', component: PublicViewComponent },
+    ],
+  },
   {
     path: 'subscriber',
-    canActivate: [authGuard],
+    canActivate: [roleGuard, authGuard],
+    data: { roles: ['SUBSCRIBER'] },
     children: [
-      { path: '', component: SubscriberComponent },
+      { path: '', component: HomeComponent },
       { path: 'theater', component: TheaterComponent },
       { path: 'film', component: FilmComponent },
       { path: 'music', component: MusicComponent },
@@ -34,13 +42,33 @@ export const routes: Routes = [
   },
   {
     path: 'content-curator',
+    canActivate: [roleGuard, authGuard],
+    data: { roles: ['CONTENT_CREATOR'] },
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: DashboardComponent},
-      { path: 'published', component: PublishedComponent},
-      { path: 'scheduled', component: ScheduledComponent},
-    ]
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'published', component: PublishedComponent },
+      { path: 'scheduled', component: ScheduledComponent },
+    ],
   },
-  { path: '', redirectTo: 'landing-page', pathMatch: 'full' },  
+  {
+    path: 'it-admin',
+    canActivate: [roleGuard, authGuard],
+    data: { roles: ['IT_ADMIN'] },
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: ItAdminDashboardComponent},
+    ],
+  },
+  {
+    path: 'super-admin',
+    canActivate: [roleGuard, authGuard],
+    data: { roles: ['SUPER_ADMIN'] },
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: SuperAdminDashboardComponent},
+    ],
+  },
+  { path: 'notfound', component: PageNotFoundComponent },
   { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
 ];

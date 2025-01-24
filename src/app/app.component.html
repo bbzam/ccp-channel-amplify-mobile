@@ -1,12 +1,13 @@
 @switch (userRole) { @case ("USER") {
 <app-main-layout />
 } @case ("SUBSCRIBER") {
-<app-main-layout />
+<app-subscriber />
 } @case ("CONTENT_CREATOR") {
 <app-content-curator />
-} 
-@case ("IT_ADMIN") {} 
-@case ("SUPER_ADMIN") {} 
-@default {
-<app-main-layout />
+} @case ("IT_ADMIN") {
+<app-it-admin />
+} @case ("SUPER_ADMIN") {
+<app-super-admin />
+} @default {
+<app-public-view />
 } }

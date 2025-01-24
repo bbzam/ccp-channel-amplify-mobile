@@ -14,15 +14,12 @@ export const authGuard: CanActivateFn = (route, state) => {
     if (isAuthenticated) {
       return true; // Allow access to the route
     } else {
+      authService.logout();
       dialog
         .open(ErrorMessageDialogComponent, {
           data: { message: 'You must be logged in to access this page.' },
         })
-        .afterClosed()
-        .subscribe((data) => {
-          authService.logout();
-          router.navigate(['/landing-page']); // Redirect to landing page if not authenticated
-        });
+        .afterClosed();
       return false; // Deny access
     }
   });
