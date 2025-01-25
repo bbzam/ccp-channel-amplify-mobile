@@ -11,6 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { MoreInfoComponent } from '../../dialogs/more-info/more-info.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-featured',
@@ -21,6 +22,7 @@ import { MoreInfoComponent } from '../../dialogs/more-info/more-info.component';
 export class FeaturedComponent implements AfterViewInit, OnInit {
   @Input() featured!: any[];
   readonly dialog = inject(MatDialog);
+  readonly router = inject(Router);
   items: any[] = allFeatured;
 
   visibleItems: any[] = [];
@@ -52,6 +54,12 @@ export class FeaturedComponent implements AfterViewInit, OnInit {
       this.itemsToShow = 6; // Ultra-wide desktop
     }
     this.updateVisibleItems();
+  }
+
+  watchVideo(videoUrl: string) {
+    this.router.navigate(['subscriber/video-player'], {
+      queryParams: { videoUrl },
+    });
   }
 
   moreInfo(item: any) {

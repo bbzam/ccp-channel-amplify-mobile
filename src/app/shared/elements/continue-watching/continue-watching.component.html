@@ -5,14 +5,14 @@
       <img
         class="image"
         mat-card-image
-        [src]="item.banner"
+        [src]="item.landscapeImageUrl"
         [alt]="item.title"
       />
       <video
         preload="metadata"
         class="video"
         #video
-        [src]="item.teaser"
+        [src]="item.previewVideoUrl"
         autoplay
         loop
         [muted]="true"
@@ -25,7 +25,9 @@
         <label>{{ item.title }}</label>
         <div class="action-buttons">
           <div>
-            <mat-icon>play_circle_filled</mat-icon>
+            <mat-icon (click)="(item.fullVideoUrl)"
+              >play_circle_filled</mat-icon
+            >
             <mat-icon (click)="moreInfo(item)">info</mat-icon>
             <mat-icon>add_circle</mat-icon>
           </div>

@@ -5,7 +5,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { uploadData } from 'aws-amplify/storage';
+import { isCancelError, uploadData } from 'aws-amplify/storage';
 import { FeaturesService } from '../../features.service';
 
 @Component({
@@ -33,6 +33,8 @@ export class UploadContentComponent {
   inputFullVideo!: any;
   isLoading: boolean = false;
 
+  uploadFullVideo!: any;
+
   readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
   readonly featureService = inject(FeaturesService);
 
@@ -47,52 +49,76 @@ export class UploadContentComponent {
       this.isLoading = true;
 
       // Upload landscape image
-      const landscapeImageKey = `images/landscape/${Date.now()}-${
+      const landscapeImageKey = `landscape-images/${Date.now()}-${
         this.inputLandscapeImage.name
       }`;
-      const landscapeUpload = await uploadData({
-        key: landscapeImageKey,
-        data: this.inputLandscapeImage,
-        options: {
-          contentType: this.inputLandscapeImage.type,
-        },
-      }).result;
+
+      try {
+        console.log('inputLandscapeImage data:', this.inputLandscapeImage);
+
+        await uploadData({
+          data: this.inputLandscapeImage,
+          path: landscapeImageKey,
+        });
+      } catch (e) {
+        console.log('error', e);
+      }
 
       // Upload portrait image
-      const portraitImageKey = `images/portrait/${Date.now()}-${
+      const portraitImageKey = `portrait-images/${Date.now()}-${
         this.inputPortraitImage.name
       }`;
-      const portraitUpload = await uploadData({
-        key: portraitImageKey,
-        data: this.inputPortraitImage,
-        options: {
-          contentType: this.inputPortraitImage.type,
-        },
-      }).result;
+
+      try {
+        await uploadData({
+          data: this.inputPortraitImage,
+          path: portraitImageKey,
+        });
+      } catch (e) {
+        console.log('error', e);
+      }
 
       // Upload preview video
-      const previewVideoKey = `videos/preview/${Date.now()}-${
+      const previewVideoKey = `preview-videos/${Date.now()}-${
         this.inputPreviewVideo.name
       }`;
-      const previewUpload = await uploadData({
-        key: previewVideoKey,
-        data: this.inputPreviewVideo,
-        options: {
-          contentType: this.inputPreviewVideo.type,
-        },
-      }).result;
+
+      try {
+        await uploadData({
+          data: this.inputPreviewVideo,
+          path: previewVideoKey,
+        });
+      } catch (e) {
+        console.log('error', e);
+      }
 
       // Upload full video
-      const fullVideoKey = `videos/full/${Date.now()}-${
+      const fullVideoKey = `full-videos/${Date.now()}-${
         this.inputFullVideo.name
       }`;
-      const fullVideoUpload = await uploadData({
-        key: fullVideoKey,
+
+      const uploadFullVideo = uploadData({
         data: this.inputFullVideo,
-        options: {
-          contentType: this.inputFullVideo.type,
-        },
-      }).result;
+        path: fullVideoKey,
+      });
+      // uploadFullVideo.pause();
+      // uploadFullVideo.resume();
+      // uploadFullVideo.cancel();
+
+      try {
+        const result = await uploadFullVideo.result;
+        // return {
+        //   key: fullVideoKey,
+        //   result,
+        // };
+        console.log(result);
+      } catch (e) {
+        if (isCancelError(e)) {
+          console.log('isCancelError', e);
+        } else {
+          console.log('error', e);
+        }
+      }
 
       // Create content metadata object
       const contentMetadata = {
@@ -105,17 +131,31 @@ export class UploadContentComponent {
         portraitImageUrl: portraitImageKey,
         previewVideoUrl: previewVideoKey,
         fullVideoUrl: fullVideoKey,
-        createdAt: new Date().toISOString(),
+        // createdAt: new Date().toISOString(),
       };
 
-      await this.featureService.createContent(contentMetadata);
+      await this.featureService.createContent(contentMetadata).then(
+        async (result) => {
+          console.log(result.data);
 
-      this.resetForm();
+          result.data
+            ? this.featureService.handleSuccess('Successfully Uploaded!')
+            : this.featureService.handleError(
+                'Uploading Error, Please try again.'
+              );
+          this.dialogRef.close();
+        },
+        (error) => {
+          this.isLoading = false;
+          this.featureService.handleError(error);
+        }
+      );
     } catch (error) {
       console.error('Error publishing content:', error);
     } finally {
       this.isLoading = false;
     }
+    return;
   }
 
   // File selection handlers

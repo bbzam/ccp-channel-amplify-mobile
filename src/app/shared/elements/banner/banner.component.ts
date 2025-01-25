@@ -12,6 +12,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { allFeatured } from '../../mock-data';
 import { MoreInfoComponent } from '../../dialogs/more-info/more-info.component';
 import { MatDialog } from '@angular/material/dialog';
+import { VideoPlayerComponent } from '../../component/video-player/video-player.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-banner',
@@ -23,6 +25,7 @@ export class BannerComponent implements OnInit, AfterViewInit {
   @ViewChild('video') videoElement!: ElementRef<HTMLVideoElement>;
   @Input() banners!: any[];
   readonly dialog = inject(MatDialog);
+  readonly router = inject(Router);
   currentMediaIndex: number = 0;
   showPhoto: boolean = true;
   teaserDuration!: number;
@@ -32,6 +35,12 @@ export class BannerComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {}
+
+  watchVideo(videoUrl: string) {
+    this.router.navigate(['subscriber/video-player'], {
+      queryParams: { videoUrl }
+    });
+  }
 
   moreInfo(item: any) {
     this.dialog
@@ -62,10 +71,10 @@ export class BannerComponent implements OnInit, AfterViewInit {
 
   getVideoDuration(): number {
     const videoElement = document.createElement('video');
-    videoElement.src = this.banners[this.currentMediaIndex].teaser;
+    videoElement.src = this.banners[this.currentMediaIndex].previewVideoUrl;
 
     // Listen for the loadedmetadata event to ensure duration is available
-    if (this.banners[this.currentMediaIndex].teaser) {
+    if (this.banners[this.currentMediaIndex].previewVideoUrl) {
       videoElement.addEventListener('loadedmetadata', () => {
         this.teaserDuration = videoElement.duration * 1000; // Duration in milliseconds
       });

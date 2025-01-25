@@ -1,0 +1,25 @@
+<div class="video-container">
+  @if (isLoading) {
+  <div class="loading-state">
+    <mat-spinner></mat-spinner>
+    <p>Loading video...</p>
+  </div>
+  } @if (errorMessage) {
+  <div class="error-state">
+    <p>{{ errorMessage }}</p>
+    <button (click)="goBack()">Go Back</button>
+  </div>
+  }
+  <video
+    #videoPlayer
+    [src]="videoUrl"
+    controls
+    class="fullscreen-video"
+    (loadstart)="onLoadStart()"
+    (loadedmetadata)="onVideoLoaded()"
+    (error)="onError($event)"
+  ></video>
+  <button class="back-button" (click)="goBack()">
+    <i class="fas fa-arrow-left"></i> Back
+  </button>
+</div>

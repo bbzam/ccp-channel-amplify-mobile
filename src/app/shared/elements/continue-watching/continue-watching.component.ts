@@ -4,18 +4,19 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MoreInfoComponent } from '../../dialogs/more-info/more-info.component';
 import { MatIcon } from '@angular/material/icon';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-continue-watching',
   imports: [MatCardModule, MatIcon],
   templateUrl: './continue-watching.component.html',
-  styleUrl: './continue-watching.component.css'
+  styleUrl: './continue-watching.component.css',
 })
-export class ContinueWatchingComponent implements AfterViewInit, OnInit{
-
-  @Input() continueWatching!:any[];
+export class ContinueWatchingComponent implements AfterViewInit, OnInit {
+  @Input() continueWatching!: any[];
   readonly dialog = inject(MatDialog);
-  items:any[] = allFeatured;
+  readonly router = inject(Router);
+  items: any[] = allFeatured;
 
   visibleItems: any[] = [];
   startIndex: number = 0;
@@ -25,21 +26,28 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit{
     this.updateVisibleItems();
   }
 
-  ngAfterViewInit(): void {
-      
+  ngAfterViewInit(): void {}
+
+  constructor() {}
+
+  watchVideo(videoUrl: string) {
+    this.router.navigate(['subscriber/video-player'], {
+      queryParams: { videoUrl },
+    });
   }
 
-  constructor() {
-  }
-
-  moreInfo(item:any) {
-    this.dialog.open(MoreInfoComponent, {data: { data: item}}).afterClosed().subscribe(data => {
-
-    })
+  moreInfo(item: any) {
+    this.dialog
+      .open(MoreInfoComponent, { data: { data: item } })
+      .afterClosed()
+      .subscribe((data) => {});
   }
 
   updateVisibleItems(): void {
-    this.visibleItems = this.continueWatching?.slice(this.startIndex, this.startIndex + this.itemsToShow);
+    this.visibleItems = this.continueWatching?.slice(
+      this.startIndex,
+      this.startIndex + this.itemsToShow
+    );
   }
 
   nextPage(): void {

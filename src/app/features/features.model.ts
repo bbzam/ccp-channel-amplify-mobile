@@ -1,4 +1,3 @@
-// Interface for the content metadata
 export interface ContentMetadata {
   title: string;
   description: string;
@@ -9,5 +8,5 @@ export interface ContentMetadata {
   portraitImageUrl: string;
   previewVideoUrl: string;
   fullVideoUrl: string;
-  createdAt: string;
+  // createdAt: string;
 }

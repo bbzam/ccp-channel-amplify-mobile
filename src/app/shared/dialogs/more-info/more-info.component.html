@@ -8,7 +8,7 @@
       </div>
       @if (item.teaser == '') {
       <div class="media-container">
-        <img class="media" [src]="item.banner" [alt]="item.title" />
+        <img class="media" [src]="item.landscapeImageUrl" [alt]="item.title" />
       </div>
       } @else {
       <div class="media-container">
@@ -16,7 +16,7 @@
           preload="metadata"
           class="media"
           #video
-          [src]="item.teaser"
+          [src]="item.previewVideoUrl"
           autoplay
           loop
           [muted]="true"
@@ -27,7 +27,7 @@
     <div class="gradient">
       <div class="details-container">
         <div class="poster">
-          <img class="image" [src]="item.poster" [alt]="item.title" />
+          <img class="image" [src]="item.portraitImageUrl" [alt]="item.title" />
         </div>
         <div class="details">
           <h1>{{ item.title }}</h1>
@@ -41,7 +41,7 @@
           <p class="description">{{ item.description }}</p>
           <div class="actions">
             <div class="watch">
-              <button class="buttonMS" mat-icon-button>
+              <button class="buttonMS" mat-icon-button (click)="watchVideo(item.fullVideoUrl)">
                 <div>WATCH</div>
                 <mat-icon matSuffix>play_arrow</mat-icon>
               </button>

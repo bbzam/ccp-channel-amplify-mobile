@@ -5,14 +5,14 @@
       <img
         class="image"
         mat-card-image
-        [src]="item.banner"
+        [src]="item.landscapeImageUrl"
         [alt]="item.title"
       />
       <video
         preload="metadata"
         class="video"
         #video
-        [src]="item.teaser"
+        [src]="item.previewVideoUrl"
         autoplay
         loop
         [muted]="true"
@@ -25,7 +25,9 @@
         <label>{{ item.title }}</label>
         <div class="action-buttons">
           <div>
-            <mat-icon>play_circle_filled</mat-icon>
+            <mat-icon (click)="watchVideo(item.fullVideoUrl)"
+              >play_circle_filled</mat-icon
+            >
             <mat-icon (click)="moreInfo(item)">info</mat-icon>
             <mat-icon>add_circle</mat-icon>
           </div>
@@ -43,12 +45,3 @@
   <button class="scroll-btn right" (click)="nextPage()">&#8250;</button>
   }
 </div>
-<!-- <div class="supermain-div">
-    <div class="main-div">
-        @for (item of items; track item) {
-            <mat-card class="card">
-              <img mat-card-image [src]="item.banner" [alt]="item.title" />
-            </mat-card>
-        }
-    </div>
-</div> -->

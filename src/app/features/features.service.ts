@@ -3,31 +3,40 @@ import { ErrorMessageDialogComponent } from '../shared/dialogs/error-message-dia
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ContentMetadata } from './features.model';
-import { post } from 'aws-amplify/api';
+import { generateClient, post } from 'aws-amplify/api';
+import { SuccessMessageDialogComponent } from '../shared/dialogs/success-message-dialog/success-message-dialog.component';
+import { environment } from '../../environments/environment.development';
+import { Schema } from '../../../amplify/data/resource';
+import { getUrl } from 'aws-amplify/storage';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FeaturesService {
+  UPLOADCONTENT_URL = environment.APIURL + '/';
+
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
+  readonly client = generateClient<Schema>();
+
   constructor() {}
 
   async createContent(contentMetadata: ContentMetadata): Promise<any> {
     try {
-      const restOperation = post({
-        apiName: 'ContentAPI', //  API name configured in Amplify
-        path: '/content', //  API endpoint path
-        options: {
-          body: JSON.stringify(contentMetadata),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      });
+      console.log('create content service');
 
-      const response = await restOperation.response;
-      const data = await response.body.json();
+      const data = await this.client.models.Content.create({
+        title: contentMetadata.title,
+        description: contentMetadata.description,
+        category: contentMetadata.category,
+        subCategory: contentMetadata.subCategory,
+        userType: contentMetadata.userType,
+        landscapeImageUrl: contentMetadata.landscapeImageUrl,
+        portraitImageUrl: contentMetadata.portraitImageUrl,
+        previewVideoUrl: contentMetadata.previewVideoUrl,
+        fullVideoUrl: contentMetadata.fullVideoUrl,
+      });
+      console.log(data);
 
       return data;
     } catch (error) {
@@ -36,11 +45,67 @@ export class FeaturesService {
     }
   }
 
-  private handleError(error: any) {
+  async getAllContents(): Promise<any> {
+    try {
+      const { data, errors } = await this.client.models.Content.list();
+      if (data) {
+        console.log('Original data:', data);
+
+        // Process each content item and update their URLs
+        const updatedData = await Promise.all(
+          data.map(async (content: any) => {
+            const urlLandscape = await this.getFileUrl(
+              content.landscapeImageUrl
+            );
+            const urlPortrait = await this.getFileUrl(content.portraitImageUrl);
+            const urlPreviewVideo = await this.getFileUrl(
+              content.previewVideoUrl
+            );
+            const urlFullVideo = await this.getFileUrl(content.fullVideoUrl);
+
+            // Return updated content object with new URLs
+            return {
+              ...content,
+              landscapeImageUrl: urlLandscape,
+              portraitImageUrl: urlPortrait,
+              previewVideoUrl: urlPreviewVideo,
+              fullVideoUrl: urlFullVideo,
+            };
+          })
+        );
+
+        console.log('Updated data with URLs:', updatedData);
+        return updatedData;
+      }
+      return [];
+    } catch (error) {
+      console.error('Error fetching content metadata:', error);
+      throw error; // Re-throw to handle in the component
+    }
+  }
+
+  async getFileUrl(path: any) {
+    const linkToStorageFile = await getUrl({
+      path: path,
+    });
+    console.log(linkToStorageFile);
+
+    return String(linkToStorageFile.url);
+  }
+
+  public handleError(error: any) {
     console.error(error);
     return this.dialog
       .open(ErrorMessageDialogComponent, {
         data: { message: String(error) },
+      })
+      .afterClosed();
+  }
+
+  public handleSuccess(message: string) {
+    return this.dialog
+      .open(SuccessMessageDialogComponent, {
+        data: { message: String(message) },
       })
       .afterClosed();
   }

@@ -3,16 +3,16 @@
   <ng-container>
     <div class="supermain-div">
       <div class="media-container">
-        @if (showPhoto || !banners[currentMediaIndex].teaser) {
+        @if (showPhoto || !banners[currentMediaIndex].previewVideoUrl) {
         <img
-          [src]="banners[currentMediaIndex].banner"
+          [src]="banners[currentMediaIndex].landscapeImageUrl"
           [alt]="banners[currentMediaIndex].title"
         />
-        } @if (!showPhoto && banners[currentMediaIndex].teaser) {
+        } @if (!showPhoto && banners[currentMediaIndex].previewVideoUrl) {
         <video
           preload="metadata"
           #video
-          [src]="banners[currentMediaIndex].teaser"
+          [src]="banners[currentMediaIndex].previewVideoUrl"
           [autoplay]="true"
           [muted]="true"
           (ended)="showPhoto = true"
@@ -39,7 +39,11 @@
           </div>
           <div class="action-container">
             <div class="watch">
-              <button class="buttonMS" mat-icon-button>
+              <button
+                class="buttonMS"
+                mat-icon-button
+                (click)="watchVideo(banners[currentMediaIndex].fullVideoUrl)"
+              >
                 <div>WATCH</div>
                 <mat-icon matSuffix>play_arrow</mat-icon>
               </button>
@@ -61,41 +65,3 @@
   </ng-container>
   }
 </div>
-<!-- <div class="supermain-div">
-  <img src="Thumbnails/Tukso/Banner.png" alt="Tukso" />
-  <div class="overlay">
-    <div class="details">
-      <h1 class="title">Tukso</h1>
-      <p class="description">
-        A young village lass is found dead. An investigator (Adel) is assigned
-        to look into the case and gets to learn more about the girl and the
-        people whose lives have been affected by her and her death: her father
-        (Bal), a young architect (Carlo), a businessman (David), her childhood
-        friend (Emer), and a widow (Fe). A young village lass is found dead. An
-        investigator (Adel) is assigned to look into the case and gets to learn
-        more about the girl and the people whose lives have been affected by her
-        and her death: her father (Bal), a young architect (Carlo), a
-        businessman (David), her childhood friend (Emer), and a widow (Fe).
-      </p>
-      <div class="metadata">
-        <p><span>CATEGORY : </span><span class="categ">THEATER</span></p>
-        <p>•</p>
-        <p>720p</p>
-        <p>•</p>
-        <p>1 hr 16 mins</p>
-      </div>
-      <div class="action-container">
-        <div class="watch">
-            <button class="buttonMS" mat-icon-button>
-              <div>WATCH</div> <mat-icon matSuffix>play_arrow</mat-icon>
-            </button>
-        </div>
-        <div class="info">
-            <button class="buttonMS" mat-icon-button>
-              <div>MORE INFO</div> <mat-icon matSuffix>info</mat-icon>
-            </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div> -->

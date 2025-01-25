@@ -4,6 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MoreInfoComponent } from '../../dialogs/more-info/more-info.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-recommended',
@@ -15,6 +16,7 @@ export class RecommendedComponent implements AfterViewInit, OnInit{
 
   @Input() recommended!:any[];
   readonly dialog = inject(MatDialog);
+  readonly router = inject(Router);
 
   visibleItems: any[] = [];
   startIndex: number = 0;
@@ -29,6 +31,12 @@ export class RecommendedComponent implements AfterViewInit, OnInit{
   }
 
   constructor() {
+  }
+
+  watchVideo(videoUrl: string) {
+    this.router.navigate(['subscriber/video-player'], {
+      queryParams: { videoUrl },
+    });
   }
 
   moreInfo(item:any) {

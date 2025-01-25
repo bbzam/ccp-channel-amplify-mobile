@@ -43,7 +43,7 @@
     height: 100%;
     width: 50%;
     display: grid;
-    justify-content: space-evenly;
+    /* justify-content: space-evenly; */
     align-content: center;
     margin: 3em;
 
@@ -127,5 +127,19 @@
       width: auto;
       margin: 1em;
     }
+  }
+}
+
+.fullscreen-dialog {
+  .mat-dialog-container {
+    padding: 0;
+    border-radius: 0;
+    background: black;
+  }
+
+  .mat-dialog-content {
+    margin: 0;
+    padding: 0;
+    max-height: 100vh;
   }
 }
