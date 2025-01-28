@@ -31,10 +31,14 @@
             <mat-icon (click)="moreInfo(item)">info</mat-icon>
             <mat-icon>add_circle</mat-icon>
           </div>
+          @if (item.resolution) {
           <p>•</p>
           <p>{{ item.resolution }}</p>
+          } 
+          @if (item.runtime) {
           <p>•</p>
           <p>{{ item.runtime }}</p>
+          }
         </div>
       </div>
     </mat-card>

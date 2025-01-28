@@ -19,8 +19,8 @@ import { NoVideoAvailableComponent } from '../../../shared/elements/no-video-ava
   styleUrl: './film.component.css',
 })
 export class FilmComponent implements OnInit {
-  banners: any[] = films;
-  featured: any[] = films;
+  banners: any[] = [];
+  featured: any[] = [];
   recommended: any[] = [];
   continueWatching: any[] = [];
 

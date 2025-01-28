@@ -19,8 +19,8 @@ import { ccpspecial } from '../../../shared/mock-data';
   styleUrl: './ccpspecial.component.css'
 })
 export class CcpspecialComponent implements OnInit {
-  banners: any[] = ccpspecial;
-  featured: any[] = ccpspecial;
+  banners: any[] = [];
+  featured: any[] = [];
   recommended: any[] = [];
   continueWatching: any[] = [];
 

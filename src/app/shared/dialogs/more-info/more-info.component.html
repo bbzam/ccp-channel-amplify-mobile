@@ -33,15 +33,23 @@
           <h1>{{ item.title }}</h1>
           <div class="metadata">
             <p>{{ item.category }}</p>
+            @if (item.resolution) {
             <p>•</p>
             <p>{{ item.resolution }}</p>
+            } 
+            @if (item.runtime) {
             <p>•</p>
             <p>{{ item.runtime }}</p>
+            }
           </div>
           <p class="description">{{ item.description }}</p>
           <div class="actions">
             <div class="watch">
-              <button class="buttonMS" mat-icon-button (click)="watchVideo(item.fullVideoUrl)">
+              <button
+                class="buttonMS"
+                mat-icon-button
+                (click)="watchVideo(item.fullVideoUrl)"
+              >
                 <div>WATCH</div>
                 <mat-icon matSuffix>play_arrow</mat-icon>
               </button>

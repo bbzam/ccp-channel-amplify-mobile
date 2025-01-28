@@ -32,10 +32,14 @@
                 banners[currentMediaIndex].category
               }}</span>
             </p>
+            @if (banners[currentMediaIndex].resolution) {
             <p>•</p>
             <p>{{ banners[currentMediaIndex].resolution }}</p>
+            } 
+            @if (banners[currentMediaIndex].runtime) {
             <p>•</p>
             <p>{{ banners[currentMediaIndex].runtime }}</p>
+            }
           </div>
           <div class="action-container">
             <div class="watch">
