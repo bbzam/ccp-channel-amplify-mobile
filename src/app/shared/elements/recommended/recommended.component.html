@@ -44,7 +44,7 @@
     </mat-card>
     }
   </div>
-  @if (recommended.length > 5) {
+  @if (recommended.length > itemsToShow) {
   <button class="scroll-btn left" (click)="prevPage()">&#8249;</button>
   <button class="scroll-btn right" (click)="nextPage()">&#8250;</button>
   }
