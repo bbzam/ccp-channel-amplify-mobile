@@ -8,5 +8,6 @@ export interface ContentMetadata {
   portraitImageUrl: string;
   previewVideoUrl: string;
   fullVideoUrl: string;
-  // createdAt: string;
+  runtime: number | undefined;
+  resolution: string | undefined;
 }

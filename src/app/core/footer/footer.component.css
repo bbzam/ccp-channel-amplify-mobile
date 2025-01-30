@@ -77,6 +77,13 @@
   }
 }
 
+.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
 @media (max-width: 767px) {
   .footer-main {
     .level1 {

@@ -8,6 +8,15 @@ import { MatInputModule } from '@angular/material/input';
 import { isCancelError, uploadData } from 'aws-amplify/storage';
 import { FeaturesService } from '../../features.service';
 
+interface VideoMetadata {
+  duration: number;
+  width: number;
+  height: number;
+  quality: string;
+  size: number;
+  type: string;
+}
+
 @Component({
   selector: 'app-upload-content',
   imports: [
@@ -32,7 +41,7 @@ export class UploadContentComponent {
   inputPreviewVideo!: any;
   inputFullVideo!: any;
   isLoading: boolean = false;
-
+  videoMetadata: VideoMetadata | null = null;
   uploadFullVideo!: any;
 
   readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
@@ -131,8 +140,11 @@ export class UploadContentComponent {
         portraitImageUrl: portraitImageKey,
         previewVideoUrl: previewVideoKey,
         fullVideoUrl: fullVideoKey,
-        // createdAt: new Date().toISOString(),
+        runtime: this.videoMetadata?.duration,
+        resolution: this.videoMetadata?.quality,
       };
+
+      console.log(contentMetadata);
 
       await this.featureService.createContent(contentMetadata).then(
         async (result) => {
@@ -184,7 +196,46 @@ export class UploadContentComponent {
     const file = event.target.files[0];
     if (file) {
       this.inputFullVideo = file;
+
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+
+      const url = URL.createObjectURL(file);
+      video.src = url;
+
+      video.onloadedmetadata = () => {
+        const duration = video.duration;
+        const width = video.videoWidth;
+        const height = video.videoHeight;
+
+        // Determine video quality based on resolution
+        const quality = this.getVideoQuality(width, height);
+
+        console.log('Video Duration:', duration, 'seconds');
+        console.log('Video Quality:', quality);
+
+        this.videoMetadata = {
+          duration,
+          width,
+          height,
+          quality, // Add quality to metadata
+          size: file.size,
+          type: file.type,
+        };
+
+        URL.revokeObjectURL(url);
+      };
     }
+  }
+
+  // Add this helper method to determine video quality
+  private getVideoQuality(width: number, height: number): string {
+    const resolution = Math.max(width, height);
+
+    if (resolution >= 7680) return '8K';
+    if (resolution >= 3840) return '4K';
+    if (resolution >= 1920) return '1080p';
+    return '720p';
   }
 
   private resetForm() {

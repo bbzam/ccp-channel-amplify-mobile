@@ -1,7 +1,7 @@
 @switch (userRole) { @case ("USER") {
-<app-main-layout />
+<app-public-view />
 } @case ("SUBSCRIBER") {
-<app-subscriber />
+<app-public-view />
 } @case ("CONTENT_CREATOR") {
 <app-content-curator />
 } @case ("IT_ADMIN") {
@@ -9,5 +9,5 @@
 } @case ("SUPER_ADMIN") {
 <app-super-admin />
 } @default {
-<app-public-view />
+<router-outlet />
 } }

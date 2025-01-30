@@ -7,7 +7,7 @@
     <div class="featured-container">
       @for (item of images; track item) {
       <div class="card">
-        <img [src]="item.src" [alt]="item.name">
+        <img [src]="item.landscapeImageUrl" [alt]="item.name">
       </div>
       }
     </div>
@@ -17,7 +17,7 @@
     <div class="gallery-container">
       @for (item of allFeatured; track item) {
       <div class="card">
-        <img [src]="item.banner" [alt]="item.title">
+        <img [src]="item.portraitImageUrl" [alt]="item.title">
       </div>
       }
     </div>

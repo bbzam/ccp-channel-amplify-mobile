@@ -3,28 +3,29 @@
   <ng-container>
     <div class="supermain-div">
       <div class="media-container">
-        @if (showPhoto || !banners[currentMediaIndex].teaser) {
+        @if (showPhoto || !banners[currentMediaIndex].previewVideoUrl) {
         <img
-          [src]="banners[currentMediaIndex].banner"
+          [src]="banners[currentMediaIndex].landscapeImageUrl"
           [alt]="banners[currentMediaIndex].title"
         />
-        } @if (!showPhoto && banners[currentMediaIndex].teaser) {
+        } @if (!showPhoto && banners[currentMediaIndex].previewVideoUrl) {
         <video
           preload="metadata"
           #video
-          [src]="banners[currentMediaIndex].teaser"
+          [src]="banners[currentMediaIndex].previewVideoUrl"
           [autoplay]="true"
           [muted]="true"
           (ended)="showPhoto = true"
         ></video>
         }
       </div>
-      <div class="overlay">
+      <div class="overlay" [ngClass]="{'about-class' : banners[currentMediaIndex].title === 'ABOUT'}">
         <div class="details">
           <h1 class="title">{{ banners[currentMediaIndex].title }}</h1>
           <p class="description">
             {{ banners[currentMediaIndex].description }}
           </p>
+          @if (banners[currentMediaIndex].title !== 'ABOUT') {
           <div class="action-container">
             <div class="watch">
               <button class="buttonMS" mat-icon-button>
@@ -32,7 +33,9 @@
               </button>
             </div>
           </div>
+          }
         </div>
+        @if (banners[currentMediaIndex].title !== 'ABOUT') {
         <div class="rates">
           <div class="card">
             <p class="title">Monthly</p>
@@ -44,6 +47,7 @@
             <p class="price">₱599</p>
           </div>
         </div>
+        }
       </div>
     </div>
   </ng-container>

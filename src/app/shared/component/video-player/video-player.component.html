@@ -13,7 +13,8 @@
   <video
     #videoPlayer
     [src]="videoUrl"
-    controls
+    [controls]="controls"
+    [attr.controlsList]="controlsList"
     class="fullscreen-video"
     (loadstart)="onLoadStart()"
     (loadedmetadata)="onVideoLoaded()"

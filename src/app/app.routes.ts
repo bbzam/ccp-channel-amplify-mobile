@@ -3,16 +3,28 @@ import { authGuard } from './auth/auth.guard';
 import { roleGuard } from './auth/role.guard';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'landing-page', pathMatch: 'full' },
   {
-    path: '',
+    path: 'landing-page',
+    loadComponent: () =>
+      import('./features/public-view/public-view/public-view.component').then(
+        (m) => m.PublicViewComponent
+      ),
     children: [
-      { path: '', redirectTo: 'landing-page', pathMatch: 'full' },
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
       {
-        path: 'landing-page',
+        path: 'home',
         loadComponent: () =>
-          import(
-            './features/public-view/public-view/public-view.component'
-          ).then((m) => m.PublicViewComponent),
+          import('./features/public-view/home-page/home-page.component').then(
+            (m) => m.HomePageComponent
+          ),
+      },
+      {
+        path: 'about',
+        loadComponent: () =>
+          import('./features/public-view/about/about.component').then(
+            (m) => m.AboutComponent
+          ),
       },
     ],
   },
@@ -82,6 +94,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./shared/component/video-player/video-player.component').then(
             (m) => m.VideoPlayerComponent
+          ),
+      },
+      {
+        path: 'about',
+        loadComponent: () =>
+          import('./features/public-view/about/about.component').then(
+            (m) => m.AboutComponent
           ),
       },
     ],

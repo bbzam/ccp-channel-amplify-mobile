@@ -12,10 +12,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { allFeatured } from '../../../shared/mock-data';
 import { MoreInfoComponent } from '../../../shared/dialogs/more-info/more-info.component';
 import { MatDialog } from '@angular/material/dialog';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-banner',
-  imports: [MatButtonModule, MatIconModule],
+  imports: [MatButtonModule, MatIconModule, NgClass],
   templateUrl: './banner.component.html',
   styleUrl: './banner.component.css',
 })
@@ -32,13 +33,6 @@ export class BannerComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {}
-
-  moreInfo(item: any) {
-    this.dialog
-      .open(MoreInfoComponent, { data: { data: item } })
-      .afterClosed()
-      .subscribe((data) => {});
-  }
 
   autoPlayMedia() {
     const updateMedia = () => {

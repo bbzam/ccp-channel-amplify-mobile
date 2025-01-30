@@ -13,7 +13,7 @@ import {
   AuthenticatorService,
 } from '@aws-amplify/ui-angular';
 import { ContentCuratorComponent } from './features/content-curator/content-curator.component';
-import { Router } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { SubscriberComponent } from './features/subscriber/subscriber/subscriber.component';
 import { PublicViewComponent } from './features/public-view/public-view/public-view.component';
 import { AuthServiceService } from './auth/auth-service.service';
@@ -23,13 +23,12 @@ import { SuperAdminComponent } from './features/super-admin/super-admin/super-ad
 @Component({
   selector: 'app-root',
   imports: [
-    MainLayoutComponent,
     AmplifyAuthenticatorModule,
     ContentCuratorComponent,
-    SubscriberComponent,
     PublicViewComponent,
     ItAdminComponent,
-    SuperAdminComponent
+    SuperAdminComponent,
+    RouterOutlet,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
@@ -55,15 +54,22 @@ export class AppComponent implements OnInit {
   }
 
   private handleRoleBasedRedirection() {
+    const currentUrl = this.router.url;
+    const publicRoutes = ['/about'];
+
     switch (this.userRole) {
       case 'USER':
-        this.router.navigate(['/subscriber']);
+        if (publicRoutes.includes(currentUrl)) {
+          this.router.navigate(['/subscriber']);
+        }
+        break;
+      case 'SUBSCRIBER':
+        if (publicRoutes.includes(currentUrl)) {
+          this.router.navigate(['/subscriber']);
+        }
         break;
       case 'CONTENT_CREATOR':
         this.router.navigate(['/content-curator']);
-        break;
-      case 'SUBSCRIBER':
-        this.router.navigate(['/subscriber']);
         break;
       case 'IT_ADMIN':
         this.router.navigate(['/it-admin']);
@@ -72,8 +78,9 @@ export class AppComponent implements OnInit {
         this.router.navigate(['/super-admin']);
         break;
       default:
-        this.authService.logout();
-        this.router.navigate(['/landing-page']);
+        if (publicRoutes.includes(currentUrl)) {
+          this.authService.logout();
+        }
     }
   }
 }

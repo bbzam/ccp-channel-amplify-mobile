@@ -26,21 +26,22 @@
             {{ banners[currentMediaIndex].description }}
           </p>
           <div class="metadata">
+            @if (banners[currentMediaIndex].category) {
             <p>
               <span>CATEGORY : </span
               ><span class="categ">{{
                 banners[currentMediaIndex].category
               }}</span>
             </p>
-            @if (banners[currentMediaIndex].resolution) {
+            } @if (banners[currentMediaIndex].resolution) {
             <p>•</p>
             <p>{{ banners[currentMediaIndex].resolution }}</p>
-            } 
-            @if (banners[currentMediaIndex].runtime) {
+            } @if (banners[currentMediaIndex].runtime) {
             <p>•</p>
             <p>{{ banners[currentMediaIndex].runtime }}</p>
             }
           </div>
+          @if (banners[currentMediaIndex].fullVideoUrl) {
           <div class="action-container">
             <div class="watch">
               <button
@@ -63,6 +64,7 @@
               </button>
             </div>
           </div>
+          }
         </div>
       </div>
     </div>

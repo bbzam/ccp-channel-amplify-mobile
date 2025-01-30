@@ -129,13 +129,29 @@
   }
 }
 
+.about-class {
+  justify-content: center;
+
+  .details {
+    width: 70%;
+
+    .title {
+      color: var(--accent);
+    }
+
+    .description {
+      display: block;
+      color: var(--gray);
+    }
+  }
+}
+
 @media (max-width: 1137px) {
   .overlay {
     .rates {
       align-content: center;
     }
   }
-
 }
 
 @media (max-width: 767px) {

@@ -35,6 +35,8 @@ export class FeaturesService {
         portraitImageUrl: contentMetadata.portraitImageUrl,
         previewVideoUrl: contentMetadata.previewVideoUrl,
         fullVideoUrl: contentMetadata.fullVideoUrl,
+        runtime: contentMetadata.runtime,
+        resolution: contentMetadata.resolution
       });
       console.log(data);
 

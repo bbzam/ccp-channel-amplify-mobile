@@ -22,6 +22,8 @@ export class VideoPlayerComponent implements OnInit {
 
   isLoading = false;
   errorMessage = '';
+  controls: boolean = true; // Enables video controls
+  controlsList: string = 'nodownload'; // Prevents download option
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -50,6 +52,6 @@ export class VideoPlayerComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/subscriber']); // or wherever you want to return to
+    this.router.navigate(['/subscriber']);
   }
 }
