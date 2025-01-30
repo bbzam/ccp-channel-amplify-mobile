@@ -19,22 +19,22 @@ export const aboutDetails = [
 export const featuredImages = [
   {
     name: 'My Boy Superman',
-    landscapeImageUrl: 'Thumbnails/My Boy Superman/Poster.png',
+    portraitImageUrl: 'Thumbnails/My Boy Superman/Poster.png',
   },
   {
     name: 'Backstage Pass_ Life Behind the Curtains (Episode 1)',
-    landscapeImageUrl: 'Thumbnails/Backstage Pass_ Life Behind the Curtains (Episode 1)/Poster.png',
+    portraitImageUrl: 'Thumbnails/Backstage Pass_ Life Behind the Curtains (Episode 1)/Poster.png',
   },
   {
     name: 'Ang Pamilya Maguol',
-    landscapeImageUrl: 'Thumbnails/Ang Pamilya Maguol/Poster.png',
+    portraitImageUrl: 'Thumbnails/Ang Pamilya Maguol/Poster.png',
   },
   {
     name: 'Anak Ka Ng',
-    landscapeImageUrl: 'Thumbnails/Anak Ka Ng/Poster.png',
+    portraitImageUrl: 'Thumbnails/Anak Ka Ng/Poster.png',
   },
   {
     name: 'Doc Resureccion_ Gagamutin ang Bayan',
-    landscapeImageUrl: 'Thumbnails/Doc Resureccion_ Gagamutin ang Bayan/Poster.png',
+    portraitImageUrl: 'Thumbnails/Doc Resureccion_ Gagamutin ang Bayan/Poster.png',
   },
 ];
