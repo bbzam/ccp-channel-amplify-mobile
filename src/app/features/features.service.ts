@@ -26,7 +26,14 @@ export class FeaturesService {
     const keys = accessKeys;
     keys.forEach((key) => {
       console.log(key)
-      this.client.models.AccessKey.create(key);
+      console.log({
+        code: key.code,
+        isUsed: key.isUsed
+      })
+      this.client.models.AccessKey.create({
+        code: key.code,
+        isUsed: key.isUsed
+      });
     });
   }
 

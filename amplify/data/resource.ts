@@ -29,16 +29,9 @@ const schema = a.schema({
 
   AccessKey: a
     .model({
-      id: a.id().required(),
       code: a.string().required(),
       isUsed: a.boolean().required(),
     })
-    .authorization((allow) => [
-      allow.authenticated().to(['read']),
-      allow
-        .groups(['CONTENT_CREATOR', 'SUPER_ADMIN', 'SUBSCRIBER'])
-        .to(['create', 'update', 'delete']),
-    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
