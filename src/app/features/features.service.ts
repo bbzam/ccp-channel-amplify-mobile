@@ -7,7 +7,6 @@ import { generateClient, post } from 'aws-amplify/api';
 import { SuccessMessageDialogComponent } from '../shared/dialogs/success-message-dialog/success-message-dialog.component';
 import { environment } from '../../environments/environment.development';
 import { Schema } from '../../../amplify/data/resource';
-import { keySchema } from '../../../amplify/key/resource';
 import { getUrl } from 'aws-amplify/storage';
 import { accessKeys } from '../beta-test/access-keys';
 
@@ -20,7 +19,6 @@ export class FeaturesService {
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
   readonly client = generateClient<Schema>();
-  readonly keyCLient = generateClient<keySchema>();
 
   constructor() {}
 
@@ -28,7 +26,7 @@ export class FeaturesService {
     const keys = accessKeys;
     keys.forEach((key) => {
       console.log(key)
-      this.keyCLient.models.Key.create({
+      this.client.models.Key.create({
         code: key.code,
         isUsed: key.isUsed,
       });

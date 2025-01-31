@@ -26,6 +26,19 @@ const schema = a.schema({
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['create', 'update', 'delete']),
     ]),
+    
+  Key: a
+    .model({
+      id: a.id().required(),
+      code: a.string().required(),
+      isUsed: a.boolean().required(),
+    })
+    .authorization((allow) => [
+      allow.authenticated().to(['read']),
+      allow
+        .groups(['CONTENT_CREATOR', 'SUPER_ADMIN', 'SUBSCRIBER'])
+        .to(['create', 'update', 'delete']),
+    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
