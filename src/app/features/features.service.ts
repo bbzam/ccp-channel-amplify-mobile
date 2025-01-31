@@ -22,15 +22,59 @@ export class FeaturesService {
 
   constructor() {}
 
-  uploadKeys() {
-    const keys = accessKeys;
-    keys.forEach((key) => {
-      console.log(key)
-      this.client.models.Key.create({
-        code: key.code,
-        isUsed: key.isUsed,
-      });
-    });
+  // uploadKeys() {
+  //   const keys = accessKeys;
+  //   keys.forEach((key) => {
+  //     console.log(key)
+  //     this.client.models.Key.create(key);
+  //   });
+  // }
+
+  async uploadKeys() {
+    try {
+      const keys = accessKeys;
+
+      // Add logging to debug
+      console.log('Client:', this.client);
+      console.log('Models:', this.client.models);
+      console.log('Models:', this.client.models.AccessKey);
+
+      // Check if keys exist
+      if (!Array.isArray(keys) || keys.length === 0) {
+        console.error('No keys to upload');
+        return;
+      }
+
+      const results = await Promise.all(
+        keys.map(async (entry) => {
+          try {
+            // Ensure entry has the correct shape
+            const keyData = {
+              code: entry.code,
+              isUsed: entry.isUsed ?? false,
+              // Add any other required fields
+            };
+
+            const result = await this.client.models.AccessKey.create(keyData);
+            console.log('Created key:', result);
+            return result;
+          } catch (err) {
+            console.error('Error creating individual key:', err);
+            return null;
+          }
+        })
+      );
+
+      const successfulUploads = results.filter(Boolean);
+      console.log(
+        `Successfully uploaded ${successfulUploads.length} of ${keys.length} keys`
+      );
+
+      return successfulUploads;
+    } catch (error) {
+      console.error('Unexpected error during bulk upload:', error);
+      throw error;
+    }
   }
 
   async createContent(contentMetadata: ContentMetadata): Promise<any> {
