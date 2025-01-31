@@ -18,6 +18,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NgClass } from '@angular/common';
 import { filter } from 'rxjs';
 import { AuthServiceService } from '../../auth/auth-service.service';
+import { FeaturesService } from '../../features/features.service';
 
 @Component({
   selector: 'app-sidenav',
@@ -39,7 +40,8 @@ export class SidenavComponent implements OnInit {
   readonly router = inject(Router);
   readonly activatedRoute = inject(ActivatedRoute);
   readonly dialog = inject(MatDialog);
-  readonly authService = inject(AuthServiceService)
+  readonly authService = inject(AuthServiceService);
+  readonly featuresService = inject(FeaturesService);
 
   ngOnInit(): void {
     // Get the initial route and listen for route changes
@@ -76,6 +78,10 @@ export class SidenavComponent implements OnInit {
 
   navigate(routeLink: string) {
     this.router.navigate([routeLink]);
+  }
+
+  settings() {
+    this.featuresService.uploadKeys();
   }
 
   logout() {

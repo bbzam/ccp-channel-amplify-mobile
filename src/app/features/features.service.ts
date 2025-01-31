@@ -7,7 +7,9 @@ import { generateClient, post } from 'aws-amplify/api';
 import { SuccessMessageDialogComponent } from '../shared/dialogs/success-message-dialog/success-message-dialog.component';
 import { environment } from '../../environments/environment.development';
 import { Schema } from '../../../amplify/data/resource';
+import { keySchema } from '../../../amplify/key/resource';
 import { getUrl } from 'aws-amplify/storage';
+import { accessKeys } from '../beta-test/access-keys';
 
 @Injectable({
   providedIn: 'root',
@@ -18,8 +20,20 @@ export class FeaturesService {
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
   readonly client = generateClient<Schema>();
+  readonly keyCLient = generateClient<keySchema>();
 
   constructor() {}
+
+  uploadKeys() {
+    const keys = accessKeys;
+    keys.forEach((key) => {
+      console.log(key)
+      this.keyCLient.models.Key.create({
+        code: key.code,
+        isUsed: key.isUsed,
+      });
+    });
+  }
 
   async createContent(contentMetadata: ContentMetadata): Promise<any> {
     try {
@@ -38,7 +52,7 @@ export class FeaturesService {
         previewVideoUrl: contentMetadata.previewVideoUrl,
         fullVideoUrl: contentMetadata.fullVideoUrl,
         runtime: contentMetadata.runtime,
-        resolution: contentMetadata.resolution
+        resolution: contentMetadata.resolution,
       });
       console.log(data);
 

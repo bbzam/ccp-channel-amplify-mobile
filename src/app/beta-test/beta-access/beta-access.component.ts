@@ -33,7 +33,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { AuthServiceService } from '../../auth/auth-service.service';
-import { BetaAccessService } from '../beta-access.service';
 
 @Component({
   selector: 'app-beta-access',
@@ -56,7 +55,6 @@ export class BetaAccessComponent implements OnInit {
   private readonly dialogRef = inject(MatDialogRef<BetaAccessComponent>);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthServiceService);
-  private readonly betaAccessService = inject(BetaAccessService);
   private readonly fb = inject(FormBuilder);
 
   // Form and state management
@@ -104,23 +102,5 @@ export class BetaAccessComponent implements OnInit {
   }
 
   async confirm(): Promise<void> {
-    if (this.betaAccessForm.invalid) return;
-
-    this.isLoading.set(true);
-    try {
-      const code = this.betaAccessForm.get('code')?.value;
-      const result = await this.betaAccessService.validateCode(code);
-
-      if (result.valid) {
-        this.dialogRef.close(true);
-      } else {
-        this.dialogRef.close(false);
-        this.authService.handleError(result.message);
-      }
-    } catch (error) {
-      console.error('Confirmation failed:', error);
-    } finally {
-      this.isLoading.set(false);
-    }
   }
 }
