@@ -22,20 +22,20 @@ export class FeaturesService {
 
   constructor() {}
 
-  uploadKeys() {
-    const keys = accessKeys;
-    keys.forEach((key) => {
-      console.log(key)
-      console.log({
-        code: key.code,
-        isUsed: key.isUsed
-      })
-      this.client.models.AccessKey.create({
-        code: key.code,
-        isUsed: key.isUsed
-      });
-    });
-  }
+  // uploadKeys() {
+  //   const keys = accessKeys;
+  //   keys.forEach((key) => {
+  //     console.log(key)
+  //     console.log({
+  //       code: key.code,
+  //       isUsed: key.isUsed
+  //     })
+  //     this.client.models.AccessKey.create({
+  //       code: key.code,
+  //       isUsed: key.isUsed
+  //     });
+  //   });
+  // }
 
   // async uploadKeys() {
   //   try {

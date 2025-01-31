@@ -81,7 +81,7 @@ export class SidenavComponent implements OnInit {
   }
 
   settings() {
-    this.featuresService.uploadKeys();
+    
   }
 
   logout() {
