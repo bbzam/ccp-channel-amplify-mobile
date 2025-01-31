@@ -38,7 +38,7 @@
             <p>{{ banners[currentMediaIndex].resolution }}</p>
             } @if (banners[currentMediaIndex].runtime) {
             <p>•</p>
-            <p>{{ banners[currentMediaIndex].runtime }}</p>
+            <p>{{transform(banners[currentMediaIndex].runtime)}}</p>
             }
           </div>
           @if (banners[currentMediaIndex].fullVideoUrl) {

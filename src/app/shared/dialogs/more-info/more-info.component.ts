@@ -19,6 +19,28 @@ export class MoreInfoComponent {
     this.item = data.data;
   }
 
+  transform(value: number): string {
+    if (isNaN(value) || value < 0) return '00:00:00';
+
+    const hours = Math.floor(value / 3600);
+    const minutes = Math.floor((value % 3600) / 60);
+    const seconds = Math.round(value % 60);
+
+    let timeParts: string[] = [];
+
+    if (hours > 0) {
+      timeParts.push(`${hours}h`);
+    }
+    if (minutes > 0) {
+      timeParts.push(`${minutes}m`);
+    }
+    if (seconds > 0 || timeParts.length === 0) {
+      timeParts.push(`${seconds}s`);
+    }
+
+    return timeParts.join(' ');
+  }
+
   watchVideo(videoUrl: string) {
     this.dialogRef.close();
     this.router.navigate(['subscriber/video-player'], {
