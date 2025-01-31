@@ -17,7 +17,7 @@ const schema = a.schema({
       portraitImageUrl: a.string().required(),
       previewVideoUrl: a.string().required(),
       fullVideoUrl: a.string().required(),
-      runtime: a.integer(),
+      runtime: a.float(),
       resolution: a.string(),
     })
     .authorization((allow) => [
