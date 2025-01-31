@@ -30,6 +30,8 @@ export class FeaturesService {
         description: contentMetadata.description,
         category: contentMetadata.category,
         subCategory: contentMetadata.subCategory,
+        director: contentMetadata.director,
+        writer: contentMetadata.writer,
         userType: contentMetadata.userType,
         landscapeImageUrl: contentMetadata.landscapeImageUrl,
         portraitImageUrl: contentMetadata.portraitImageUrl,

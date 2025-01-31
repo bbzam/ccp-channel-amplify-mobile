@@ -35,6 +35,8 @@ export class UploadContentComponent {
   inputDescription!: string;
   inputCategory!: string;
   inputSubCategory!: string;
+  inputDirector!: string;
+  inputWriter!: string;
   inputUserType!: string;
   inputLandscapeImage!: any;
   inputPortraitImage!: any;
@@ -135,6 +137,8 @@ export class UploadContentComponent {
         description: this.inputDescription,
         category: this.inputCategory,
         subCategory: this.inputSubCategory,
+        director: this.inputDirector,
+        writer: this.inputWriter,
         userType: this.inputUserType,
         landscapeImageUrl: landscapeImageKey,
         portraitImageUrl: portraitImageKey,

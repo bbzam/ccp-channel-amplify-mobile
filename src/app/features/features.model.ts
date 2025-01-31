@@ -3,6 +3,8 @@ export interface ContentMetadata {
   description: string;
   category: string;
   subCategory: string;
+  director: string;
+  writer: string;
   userType: string;
   landscapeImageUrl: string;
   portraitImageUrl: string;

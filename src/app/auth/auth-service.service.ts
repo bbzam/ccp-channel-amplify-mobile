@@ -212,11 +212,20 @@ export class AuthServiceService {
     }
   }
 
-  private handleError(error: any) {
+  public handleError(error: any) {
     console.error(error);
     return this.dialog
       .open(ErrorMessageDialogComponent, {
         data: { message: String(error) },
+      })
+      .afterClosed();
+  }
+
+  public handleSuccess(success: any) {
+    console.log(success);
+    return this.dialog
+      .open(SuccessMessageDialogComponent, {
+        data: { message: String(success) },
       })
       .afterClosed();
   }

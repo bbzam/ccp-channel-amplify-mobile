@@ -20,6 +20,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { SignupComponent } from '../signup/signup.component';
 import { Router } from '@angular/router';
 import { AuthServiceService } from '../../auth-service.service';
+import { BetaAccessComponent } from '../../../beta-test/beta-access/beta-access.component';
 
 @Component({
   selector: 'app-signin',
@@ -113,6 +114,11 @@ export class SigninComponent implements OnInit {
   signUpOnClick(): void {
     this.dialogRef.close();
     this.dialog.open(SignupComponent).afterClosed().subscribe();
+    // this.dialog.open(BetaAccessComponent).afterClosed().subscribe(data => {
+    //   if (data) {
+    //     this.dialog.open(SignupComponent).afterClosed();
+    //   }
+    // });
   }
 
   togglePasswordVisibility(): void {

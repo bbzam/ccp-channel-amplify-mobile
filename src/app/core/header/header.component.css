@@ -156,7 +156,7 @@ mat-card-actions {
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1120px) {
   .contents {
     .hide {
       transition: 0.3s ease;

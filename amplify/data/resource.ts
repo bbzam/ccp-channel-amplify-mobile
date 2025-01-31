@@ -10,6 +10,8 @@ const schema = a.schema({
       description: a.string().required(),
       category: a.string().required(),
       subCategory: a.string(),
+      director: a.string(),
+      writer: a.string(),
       userType: a.string().required(),
       landscapeImageUrl: a.string().required(),
       portraitImageUrl: a.string().required(),

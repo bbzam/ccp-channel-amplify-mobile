@@ -32,7 +32,7 @@
         <div class="details">
           <h1>{{ item.title }}</h1>
           <div class="metadata">
-            <p>{{ item.category }}</p>
+            <p class="category">{{ item.category }}</p>
             @if (item.resolution) {
             <p>•</p>
             <p>{{ item.resolution }}</p>
@@ -40,6 +40,14 @@
             @if (item.runtime) {
             <p>•</p>
             <p>{{ item.runtime }}</p>
+            }
+          </div>
+          <div class="metadata">
+            @if (item.director) {
+              <p class="director">Directed by {{item.director}}</p>
+            }
+            @if (item.writer) {
+              <p class="writer">Written by {{item.writer}}</p>
             }
           </div>
           <p class="description">{{ item.description }}</p>

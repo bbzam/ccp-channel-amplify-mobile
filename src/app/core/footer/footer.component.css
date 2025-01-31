@@ -5,6 +5,7 @@
 
   .level1 {
     justify-items: center;
+    display: grid;
 
     .copyright {
       color: var(--tertiary);

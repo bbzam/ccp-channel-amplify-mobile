@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-video-player',
@@ -18,6 +19,7 @@ export class VideoPlayerComponent implements OnInit {
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
   readonly router = inject(Router);
   readonly route = inject(ActivatedRoute);
+  readonly location = inject(Location);
   videoUrl!: string;
 
   isLoading = false;
@@ -53,5 +55,6 @@ export class VideoPlayerComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/subscriber']);
+    // this.location.back();
   }
 }

@@ -1,0 +1,30 @@
+<div class="signin-main">
+  <form [formGroup]="betaAccessForm" (ngSubmit)="confirm()">
+    <div class="form-field-container">
+      <h2>Beta Access Key</h2>
+      <p>Enter the access code to signup</p>
+    </div>
+    <div class="form-field-container">
+      <label>Access Key</label>
+      <input
+        matInput
+        placeholder="Enter your key"
+        formControlName="code"
+        autocomplete="off"
+        required
+      />
+      <mat-error>{{ codeErrorMessage() }}</mat-error>
+    </div>
+
+    <div class="form-field-container">
+      <button
+        class="buttonSignIn"
+        mat-raised-button
+        type="submit"
+        [disabled]="betaAccessForm.invalid || isLoading()"
+      >
+        {{ isLoading() ? "Verifying..." : "Verify" }}
+      </button>
+    </div>
+  </form>
+</div>
