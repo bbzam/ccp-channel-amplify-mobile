@@ -54,7 +54,6 @@ export class VideoPlayerComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/subscriber']);
-    // this.location.back();
+    this.location.back();
   }
 }

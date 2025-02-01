@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { BannerComponent } from '../../../shared/elements/banner/banner.component';
 import { FeaturedComponent } from '../../../shared/elements/featured/featured.component';
 import { RecommendedComponent } from '../../../shared/elements/recommended/recommended.component';
 import { ContinueWatchingComponent } from '../../../shared/elements/continue-watching/continue-watching.component';
 import { NoVideoAvailableComponent } from '../../../shared/elements/no-video-available/no-video-available.component';
 import { ccpspecial } from '../../../shared/mock-data';
+import { FeaturesService } from '../../features.service';
 
 @Component({
   selector: 'app-ccpspecial',
@@ -13,16 +14,30 @@ import { ccpspecial } from '../../../shared/mock-data';
     FeaturedComponent,
     RecommendedComponent,
     ContinueWatchingComponent,
-    NoVideoAvailableComponent
+    NoVideoAvailableComponent,
   ],
   templateUrl: './ccpspecial.component.html',
-  styleUrl: './ccpspecial.component.css'
+  styleUrl: './ccpspecial.component.css',
 })
 export class CcpspecialComponent implements OnInit {
   banners: any[] = [];
   featured: any[] = [];
   recommended: any[] = [];
   continueWatching: any[] = [];
+  category: string = 'ccpspecials';
 
-  ngOnInit(): void {}
+  readonly featuresService = inject(FeaturesService);
+
+  ngOnInit(): void {
+    this.getAllContents();
+  }
+
+  getAllContents() {
+    this.featuresService.filterContent(this.category).then((data: any) => {
+      console.log(data);
+
+      this.banners = data;
+      this.featured = data;
+    });
+  }
 }

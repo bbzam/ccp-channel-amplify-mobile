@@ -151,6 +151,51 @@ export class FeaturesService {
     }
   }
 
+  async filterContent(category: string): Promise<any> {
+    try {
+      const { data, errors } = await this.client.models.Content.list({
+        filter: {
+          category: {
+            eq: category,
+          },
+        },
+      });
+      if (data) {
+        console.log('Original data:', data);
+
+        // Process each content item and update their URLs
+        const updatedData = await Promise.all(
+          data.map(async (content: any) => {
+            const urlLandscape = await this.getFileUrl(
+              content.landscapeImageUrl
+            );
+            const urlPortrait = await this.getFileUrl(content.portraitImageUrl);
+            const urlPreviewVideo = await this.getFileUrl(
+              content.previewVideoUrl
+            );
+            const urlFullVideo = await this.getFileUrl(content.fullVideoUrl);
+
+            // Return updated content object with new URLs
+            return {
+              ...content,
+              landscapeImageUrl: urlLandscape,
+              portraitImageUrl: urlPortrait,
+              previewVideoUrl: urlPreviewVideo,
+              fullVideoUrl: urlFullVideo,
+            };
+          })
+        );
+
+        console.log('Updated data with URLs:', updatedData);
+        return updatedData;
+      }
+      return [];
+    } catch (error) {
+      console.error('Error fetching content metadata:', error);
+      throw error;
+    }
+  }
+
   async getFileUrl(path: any) {
     const linkToStorageFile = await getUrl({
       path: path,
