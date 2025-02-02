@@ -63,6 +63,7 @@
       flex-wrap: wrap;
       align-content: center;
       color: var(--gray);
+      line-height: 0;
 
       p {
         font-weight: lighter;

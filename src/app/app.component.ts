@@ -13,12 +13,21 @@ import {
   AuthenticatorService,
 } from '@aws-amplify/ui-angular';
 import { ContentCuratorComponent } from './features/content-curator/content-curator.component';
-import { Router, RouterOutlet } from '@angular/router';
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  Router,
+  RouterOutlet,
+} from '@angular/router';
 import { SubscriberComponent } from './features/subscriber/subscriber/subscriber.component';
 import { PublicViewComponent } from './features/public-view/public-view/public-view.component';
 import { AuthServiceService } from './auth/auth-service.service';
 import { ItAdminComponent } from './features/IT-admin/it-admin/it-admin.component';
 import { SuperAdminComponent } from './features/super-admin/super-admin/super-admin.component';
+import { LoaderComponent } from './shared/component/loader/loader.component';
+import { SharedService } from './shared/shared.service';
 
 @Component({
   selector: 'app-root',
@@ -29,6 +38,7 @@ import { SuperAdminComponent } from './features/super-admin/super-admin/super-ad
     ItAdminComponent,
     SuperAdminComponent,
     RouterOutlet,
+    LoaderComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
@@ -40,9 +50,11 @@ export class AppComponent implements OnInit {
   readonly elementRef = inject(ElementRef);
   readonly router = inject(Router);
   readonly authService = inject(AuthServiceService);
+  readonly sharedService = inject(SharedService);
 
   ngOnInit(): void {
     this.handleRoleBasedRedirection();
+    // this.handleLoader();
   }
 
   constructor() {
@@ -83,4 +95,23 @@ export class AppComponent implements OnInit {
         }
     }
   }
+
+  // private handleLoader() {
+  //   this.router.events.subscribe((event) => {
+  //     if (event instanceof NavigationStart) {
+  //       setTimeout(() => {
+  //         this.sharedService.showLoader();
+  //       }, 100);
+  //       this.sharedService.hideLoader()
+  //     } else if (
+  //       event instanceof NavigationEnd ||
+  //       event instanceof NavigationCancel ||
+  //       event instanceof NavigationError
+  //     ) {
+  //       setTimeout(() => {
+  //         this.sharedService.hideLoader();
+  //       }, 100);
+  //     }
+  //   });
+  // }
 }

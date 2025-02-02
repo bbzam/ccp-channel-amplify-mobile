@@ -33,8 +33,6 @@ export class HomeComponent implements OnInit {
 
   getAllContents() {
     this.featuresService.getAllContents().then((data: any) => {
-      console.log(data);
-      
       this.banners = data;
       this.featured = data;
     });

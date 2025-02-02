@@ -1,11 +1,14 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
 import { roleGuard } from './auth/role.guard';
+import { loaderResolver } from './shared/component/loader/loader.resolver';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'landing-page', pathMatch: 'full' },
   {
     path: 'landing-page',
+    resolve: { loading: loaderResolver },
+    data: { loadingMessage: 'Loading Page...' },
     loadComponent: () =>
       import('./features/public-view/public-view/public-view.component').then(
         (m) => m.PublicViewComponent
@@ -21,6 +24,8 @@ export const routes: Routes = [
       },
       {
         path: 'about',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
           import('./features/public-view/about/about.component').then(
             (m) => m.AboutComponent
@@ -98,6 +103,8 @@ export const routes: Routes = [
       },
       {
         path: 'about',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
           import('./features/public-view/about/about.component').then(
             (m) => m.AboutComponent

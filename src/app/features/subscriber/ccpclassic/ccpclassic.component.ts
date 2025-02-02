@@ -33,8 +33,6 @@ export class CcpclassicComponent implements OnInit {
 
   getAllContents() {
     this.featuresService.filterContent(this.category).then((data: any) => {
-      console.log(data);
-
       this.banners = data;
       this.featured = data;
     });

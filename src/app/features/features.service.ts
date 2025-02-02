@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment.development';
 import { Schema } from '../../../amplify/data/resource';
 import { getUrl } from 'aws-amplify/storage';
 import { accessKeys } from '../beta-test/access-keys';
+import { SharedService } from '../shared/shared.service';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +20,7 @@ export class FeaturesService {
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
   readonly client = generateClient<Schema>();
+  readonly sharedService = inject(SharedService);
 
   constructor() {}
 
@@ -86,8 +88,7 @@ export class FeaturesService {
 
   async createContent(contentMetadata: ContentMetadata): Promise<any> {
     try {
-      console.log('create content service');
-
+      this.sharedService.showLoader('Uploading content...');
       const data = await this.client.models.Content.create({
         title: contentMetadata.title,
         description: contentMetadata.description,
@@ -105,8 +106,13 @@ export class FeaturesService {
       });
       console.log(data);
 
+      if (data) {
+        this.sharedService.hideLoader();
+      }
+
       return data;
     } catch (error) {
+      this.sharedService.hideLoader();
       console.error('Error saving content metadata:', error);
       throw error; // Re-throw to handle in the component
     }
@@ -114,10 +120,9 @@ export class FeaturesService {
 
   async getAllContents(): Promise<any> {
     try {
+      this.sharedService.showLoader('Fetching content...');
       const { data, errors } = await this.client.models.Content.list();
       if (data) {
-        console.log('Original data:', data);
-
         // Process each content item and update their URLs
         const updatedData = await Promise.all(
           data.map(async (content: any) => {
@@ -141,11 +146,13 @@ export class FeaturesService {
           })
         );
 
-        console.log('Updated data with URLs:', updatedData);
+        this.sharedService.hideLoader();
+
         return updatedData;
       }
       return [];
     } catch (error) {
+      this.sharedService.hideLoader();
       console.error('Error fetching content metadata:', error);
       throw error; // Re-throw to handle in the component
     }
@@ -153,6 +160,7 @@ export class FeaturesService {
 
   async filterContent(category: string): Promise<any> {
     try {
+      this.sharedService.showLoader('Fetching content...');
       const { data, errors } = await this.client.models.Content.list({
         filter: {
           category: {
@@ -186,11 +194,13 @@ export class FeaturesService {
           })
         );
 
-        console.log('Updated data with URLs:', updatedData);
+        this.sharedService.hideLoader();
+
         return updatedData;
       }
       return [];
     } catch (error) {
+      this.sharedService.hideLoader();
       console.error('Error fetching content metadata:', error);
       throw error;
     }
@@ -200,7 +210,6 @@ export class FeaturesService {
     const linkToStorageFile = await getUrl({
       path: path,
     });
-    console.log(linkToStorageFile);
 
     return String(linkToStorageFile.url);
   }
