@@ -13,6 +13,7 @@ import {
   ResendSignUpCodeOutput,
 } from 'aws-amplify/auth';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
+import { SharedService } from '../shared/shared.service';
 
 interface CognitoIdTokenPayload {
   'cognito:groups'?: string[];
@@ -25,6 +26,7 @@ export class AuthServiceService {
   isLoggedIn!: boolean;
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
+  readonly sharedService = inject(SharedService);
 
   constructor() {}
 
@@ -42,18 +44,23 @@ export class AuthServiceService {
         case 'USER':
         case 'SUBSCRIBER':
           this.router.navigate(['/subscriber']);
+          this.sharedService.hideLoader();
           break;
         case 'CONTENT_CREATOR':
           this.router.navigate(['/content-curator']);
+          this.sharedService.hideLoader();
           break;
         case 'IT_ADMIN':
           this.router.navigate(['/it-admin']);
+          this.sharedService.hideLoader();
           break;
         case 'SUPER_ADMIN':
           this.router.navigate(['/super-admin']);
+          this.sharedService.hideLoader();
           break;
         default:
           this.router.navigate(['/landing-page']);
+          this.sharedService.hideLoader();
           break;
       }
       return true;
@@ -79,12 +86,20 @@ export class AuthServiceService {
   }
 
   private handleLogout() {
+    this.sharedService.hideLoader();
     this.isLoggedIn = false;
     sessionStorage.setItem('isLoggedIn', 'false');
   }
 
   async signIn(username: string, password: string): Promise<boolean> {
     try {
+      // Check if there's anything in localStorage first
+      if (localStorage.length > 0) {
+        // Clear all items in localStorage
+        localStorage.clear();
+      }
+      
+      this.sharedService.showLoader('Signing In...');
       const { nextStep } = await signIn({
         username: username,
         password: password,
@@ -105,7 +120,14 @@ export class AuthServiceService {
         return false;
       }
     } catch (error) {
-      this.handleError(error);
+      this.sharedService.hideLoader();
+      if (
+        error ===
+        'UserAlreadyAuthenticatedException: There is already a signed in user.'
+      ) {
+      } else {
+        this.handleError(error);
+      }
       return false;
     }
     return false; // Default to false if no condition matches
@@ -113,7 +135,6 @@ export class AuthServiceService {
 
   async signUp(data: any): Promise<boolean> {
     try {
-      console.log(data);
       // Sign up using an email address
       const { nextStep: signUpNextStep } = await signUp({
         username: data.email,
@@ -129,7 +150,7 @@ export class AuthServiceService {
       });
 
       if (signUpNextStep.signUpStep === 'DONE') {
-        console.log(`SignUp Complete`);
+        this.signIn(data.email, data.password);
         return true;
       }
 

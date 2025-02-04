@@ -1,31 +1,35 @@
 <div class="signin-main">
   <h1>UPLOAD NEW CONTENT</h1>
   <mat-divider></mat-divider>
-  <form (ngSubmit)="publishContent()" #uploadForm="ngForm">
+  <form [formGroup]="uploadForm" (ngSubmit)="publishContent()">
     <!-- Title -->
     <div class="form-field-container">
       <label for="title">Title</label>
       <input
+        matInput
         type="text"
         id="title"
         name="title"
-        [(ngModel)]="inputTitle"
+        formControlName="title"
         required
         placeholder="Enter title"
       />
+      <mat-error>{{ titleErrorMessage() }}</mat-error>
     </div>
 
     <!-- Description -->
     <div class="form-field-container">
       <label for="description">Description</label>
       <textarea
+        matInput
         id="description"
         name="description"
-        [(ngModel)]="inputDescription"
+        formControlName="description"
         required
         rows="4"
         placeholder="Enter description"
       ></textarea>
+      <mat-error>{{ descriptionErrorMessage() }}</mat-error>
     </div>
 
     <!-- Category -->
@@ -34,7 +38,7 @@
       <select
         id="category"
         name="category"
-        [(ngModel)]="inputCategory"
+        formControlName="category"
         required
         placeholder="Select category"
       >
@@ -46,69 +50,78 @@
         <option value="ccpspecials">CCP Specials</option>
         <option value="ccpclassics">CCP Classics</option>
       </select>
+      <mat-error>{{ categoryErrorMessage() }}</mat-error>
     </div>
 
     <!-- Sub Category -->
     <div class="form-field-container">
       <label for="subCategory">Sub Category</label>
       <input
+        matInput
         type="text"
         id="subCategory"
         name="subCategory"
-        [(ngModel)]="inputSubCategory"
+        formControlName="subcategory"
         placeholder="Enter Sub Category"
       />
+      <mat-error>{{ subCategoryErrorMessage() }}</mat-error>
     </div>
 
     <!-- Director -->
     <div class="form-field-container">
       <label for="director">Director</label>
       <input
+        matInput
         type="text"
         id="director"
         name="director"
-        [(ngModel)]="inputDirector"
+        formControlName="director"
         placeholder="Enter director name"
       />
+      <mat-error>{{ directorErrorMessage() }}</mat-error>
     </div>
 
     <!-- Writer -->
     <div class="form-field-container">
       <label for="writer">Writer</label>
       <input
+        matInput
         type="text"
         id="writer"
         name="writer"
-        [(ngModel)]="inputWriter"
+        formControlName="writer"
         placeholder="Enter writer name"
       />
+      <mat-error>{{ writerErrorMessage() }}</mat-error>
     </div>
 
     <!-- User Type -->
     <div class="form-field-container">
       <label for="userType">For which User Type?</label>
-      <select
-        id="userType"
-        name="userType"
-        [(ngModel)]="inputUserType"
-        required
-      >
+      <select id="userType" name="userType" formControlName="usertype" required>
         <option value="free">Free</option>
         <option value="subscriber">Subscriber</option>
       </select>
+      <mat-error>{{ userTypeErrorMessage() }}</mat-error>
     </div>
 
     <!-- Landscape Image -->
     <div class="form-field-container">
       <label for="landscapeImage">Landscape Image</label>
       <input
+        matInput
         type="file"
         id="landscapeImage"
+        formControlName="landscapeimage"
         (change)="onLandscapeImageSelected($event)"
         accept="image/*"
         class="form-control-file"
         required
       />
+      <mat-error>{{ landscapeErrorMessage() }}</mat-error>
+      @if (landscapeFileURL) {
+      <img class="previewMedia" [src]="landscapeFileURL" alt="banner-img" />
+      }
       <!-- <small class="form-text text-muted">Recommended size: 1920x1080px</small> -->
     </div>
 
@@ -116,13 +129,19 @@
     <div class="form-field-container">
       <label for="portraitImage">Portrait Image</label>
       <input
+        matInput
         type="file"
         id="portraitImage"
+        formControlName="portraitimage"
         (change)="onPortraitImageSelected($event)"
         accept="image/*"
         class="form-control-file"
         required
       />
+      <mat-error>{{ portraitErrorMessage() }}</mat-error>
+      @if (portraitFileURL) {
+      <img class="previewMedia" [src]="portraitFileURL" alt="poster-img" />
+      }
       <!-- <small class="form-text text-muted">Recommended size: 1080x1920px</small> -->
     </div>
 
@@ -130,13 +149,23 @@
     <div class="form-field-container">
       <label for="previewVideo">Preview Video</label>
       <input
+        matInput
         type="file"
         id="previewVideo"
+        formControlName="previewvideo"
         (change)="onPreviewVideoSelected($event)"
         accept="video/*"
         class="form-control-file"
         required
       />
+      <mat-error>{{ previewErrorMessage() }}</mat-error>
+      @if (previewFileURL) {
+      <video
+        class="previewMedia"
+        [src]="previewFileURL"
+        alt="preview-video"
+      ></video>
+      }
       <!-- <small class="form-text text-muted">Maximum duration: 2 minutes</small> -->
     </div>
 
@@ -144,13 +173,19 @@
     <div class="form-field-container">
       <label for="fullVideo">Full Video</label>
       <input
+        matInput
         type="file"
         id="fullVideo"
+        formControlName="fullvideo"
         (change)="onFullVideoSelected($event)"
         accept="video/*"
         class="form-control-file"
         required
       />
+      <mat-error>{{ fullErrorMessage() }}</mat-error>
+      @if (fullFileURL) {
+      <video class="previewMedia" [src]="fullFileURL" alt="full-video"></video>
+      }
       <!-- <small class="form-text text-muted">Supported formats: MP4, MOV</small> -->
     </div>
   </form>
@@ -160,27 +195,26 @@
       class="buttonTertiary"
       mat-raised-button
       type="button"
-      (click)="cancel()"
+      (click)="backButton()"
     >
-      Cancel
+      Back
     </button>
     <button
       class="buttonSecondary"
       mat-raised-button
       type="button"
       (click)="schedulePublish()"
-      [disabled]="!uploadForm.form.valid || isLoading"
+      [disabled]="uploadForm.invalid || isLoading()"
     >
       Schedule
     </button>
     <button
       class="buttonPrimary"
       mat-raised-button
-      type="button"
-      (click)="publishContent()"
-      [disabled]="!uploadForm.form.valid || isLoading"
+      type="submit"
+      [disabled]="uploadForm.invalid || isLoading()"
     >
-      {{ isLoading ? "Publishing..." : "Publish" }}
+      {{ isLoading() ? "Publishing..." : "Publish" }}
     </button>
   </div>
 </div>

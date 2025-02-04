@@ -139,6 +139,15 @@ export const routes: Routes = [
             './features/content-curator/scheduled/scheduled.component'
           ).then((m) => m.ScheduledComponent),
       },
+      {
+        path: 'upload-content',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import(
+            './features/content-curator/upload-content/upload-content.component'
+          ).then((m) => m.UploadContentComponent),
+      },
     ],
   },
   {
@@ -154,6 +163,16 @@ export const routes: Routes = [
             (m) => m.ItAdminDashboardComponent
           ),
       },
+      {
+        path: 'manage-users',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+      },
+      {
+        path: 'add-user',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+      },
     ],
   },
   {
@@ -168,6 +187,39 @@ export const routes: Routes = [
           import('./features/super-admin/dashboard/dashboard.component').then(
             (m) => m.SuperAdminDashboardComponent
           ),
+      },
+      {
+        path: 'published',
+        loadComponent: () =>
+          import(
+            './features/content-curator/published/published.component'
+          ).then((m) => m.PublishedComponent),
+      },
+      {
+        path: 'scheduled',
+        loadComponent: () =>
+          import(
+            './features/content-curator/scheduled/scheduled.component'
+          ).then((m) => m.ScheduledComponent),
+      },
+      {
+        path: 'manage-users',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+      },
+      {
+        path: 'add-user',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+      },
+      {
+        path: 'upload-content',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import(
+            './features/content-curator/upload-content/upload-content.component'
+          ).then((m) => m.UploadContentComponent),
       },
     ],
   },

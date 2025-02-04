@@ -1,5 +1,11 @@
-import { Component, inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, computed, inject, signal } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -7,6 +13,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { isCancelError, uploadData } from 'aws-amplify/storage';
 import { FeaturesService } from '../../features.service';
+import { Location } from '@angular/common';
+import { distinctUntilChanged, merge } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { errorMessages } from '../../../shared/utils/errorMessages';
 
 interface VideoMetadata {
   duration: number;
@@ -42,22 +52,145 @@ export class UploadContentComponent {
   inputPortraitImage!: any;
   inputPreviewVideo!: any;
   inputFullVideo!: any;
-  isLoading: boolean = false;
   videoMetadata: VideoMetadata | null = null;
   uploadFullVideo!: any;
+  landscapeFileURL!: string;
+  portraitFileURL!: string;
+  previewFileURL!: string;
+  fullFileURL!: string;
+  uploadForm!: FormGroup;
 
-  readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
+  readonly isLoading = signal(false);
+  // readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
   readonly featureService = inject(FeaturesService);
+  readonly location = inject(Location);
+  private readonly fb = inject(FormBuilder);
+
+  // Error message signals
+  titleErrorMessage = signal('');
+  descriptionErrorMessage = signal('');
+  categoryErrorMessage = signal('');
+  subCategoryErrorMessage = signal('');
+  directorErrorMessage = signal('');
+  writerErrorMessage = signal('');
+  userTypeErrorMessage = signal('');
+  landscapeErrorMessage = signal('');
+  portraitErrorMessage = signal('');
+  previewErrorMessage = signal('');
+  fullErrorMessage = signal('');
+
+  // Form status computed value
+  readonly formStatus = computed(() => ({
+    isValid: this.uploadForm.valid,
+    isDirty: this.uploadForm.dirty,
+    isPristine: this.uploadForm.pristine,
+  }));
+
+  constructor() {
+    this.createForm();
+    this.setupValidationSubscriptions();
+  }
+
+  private createForm(): void {
+    this.uploadForm = this.fb.group({
+      title: ['', [Validators.required]],
+      description: ['', [Validators.required]],
+      category: ['', [Validators.required]],
+      subcategory: ['', [Validators.required]],
+      director: ['', [Validators.required]],
+      writer: ['', [Validators.required]],
+      usertype: ['', [Validators.required]],
+      landscapeimage: ['', [Validators.required]],
+      portraitimage: ['', [Validators.required]],
+      previewvideo: ['', [Validators.required]],
+      fullvideo: ['', [Validators.required]],
+    });
+  }
+
+  private setupValidationSubscriptions(): void {
+    const controls = [
+      'title',
+      'description',
+      'category',
+      'subcategory',
+      'director',
+      'writer',
+      'usertype',
+      'landscapeimage',
+      'portraitimage',
+      'previewvideo',
+      'fullvideo',
+    ];
+
+    controls.forEach((controlName) => {
+      const control = this.uploadForm.get(controlName);
+      if (control) {
+        merge(control.statusChanges, control.valueChanges)
+          .pipe(takeUntilDestroyed(), distinctUntilChanged())
+          .subscribe(() => this.updateErrorMessage(controlName));
+      }
+    });
+  }
+
+  private updateErrorMessage(controlName: string): void {
+    const control = this.uploadForm.get(controlName);
+    if (!control) return;
+
+    const errorSignalMap: { [key: string]: any } = {
+      title: this.titleErrorMessage,
+      description: this.descriptionErrorMessage,
+      category: this.categoryErrorMessage,
+      subcategory: this.subCategoryErrorMessage,
+      director: this.directorErrorMessage,
+      writer: this.writerErrorMessage,
+      usertype: this.userTypeErrorMessage,
+      landscapeimage: this.landscapeErrorMessage,
+      portraitimage: this.portraitErrorMessage,
+      previewvideo: this.previewErrorMessage,
+      fullvideo: this.fullErrorMessage,
+    };
+
+    const signal = errorSignalMap[controlName];
+
+    if (control.hasError('required')) {
+      signal.set(errorMessages.REQUIRED);
+    } else if (control.hasError('notMax100')) {
+      signal.set(errorMessages.MAX100CHARACTERS);
+    } else if (control.hasError('disallowedCharacters')) {
+      signal.set(errorMessages.DISALLOWEDCHARACTERS);
+    } else if (control.hasError('invalidEmailAddress')) {
+      signal.set(errorMessages.INVALIDEMAIL);
+    } else if (control.hasError('notNumeric')) {
+      signal.set(errorMessages.ONLYNUMERICAL);
+    } else if (control.hasError('notMax3')) {
+      signal.set(errorMessages.MAX3NUMERIC);
+    } else if (control.hasError('noUppercase')) {
+      signal.set(errorMessages.HASUPPERCASE);
+    } else if (control.hasError('noLowercase')) {
+      signal.set(errorMessages.HASLOWERCASE);
+    } else if (control.hasError('noSpecialCharacter')) {
+      signal.set(errorMessages.HASSPECIALCHARACTER);
+    } else if (control.hasError('noNumber')) {
+      signal.set(errorMessages.HASNUMBER);
+    } else if (control.hasError('noMinimumLength')) {
+      signal.set(errorMessages.PASSWORDMINLENGTH);
+    } else if (control.hasError('isNotMatch')) {
+      signal.set(errorMessages.PASSWORDNOTMATCH);
+    } else {
+      signal.set('');
+    }
+  }
 
   schedulePublish() {}
 
-  cancel() {
-    this.dialogRef.close();
+  backButton() {
+    this.location.back();
+    // this.dialogRef.close();
   }
 
   async publishContent() {
     try {
-      this.isLoading = true;
+      this.isLoading.set(true);
 
       // Upload landscape image
       const landscapeImageKey = `landscape-images/${Date.now()}-${
@@ -159,17 +292,17 @@ export class UploadContentComponent {
             : this.featureService.handleError(
                 'Uploading Error, Please try again.'
               );
-          this.dialogRef.close();
+          // this.dialogRef.close();
         },
         (error) => {
-          this.isLoading = false;
+          this.isLoading.set(false);
           this.featureService.handleError(error);
         }
       );
     } catch (error) {
       console.error('Error publishing content:', error);
     } finally {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }
     return;
   }
@@ -179,6 +312,13 @@ export class UploadContentComponent {
     const file = event.target.files[0];
     if (file) {
       this.inputLandscapeImage = file;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.landscapeFileURL = String(reader.result);
+      };
+
+      reader.readAsDataURL(file);
     }
   }
 
@@ -186,6 +326,13 @@ export class UploadContentComponent {
     const file = event.target.files[0];
     if (file) {
       this.inputPortraitImage = file;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.portraitFileURL = String(reader.result);
+      };
+
+      reader.readAsDataURL(file);
     }
   }
 
@@ -193,6 +340,13 @@ export class UploadContentComponent {
     const file = event.target.files[0];
     if (file) {
       this.inputPreviewVideo = file;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewFileURL = String(reader.result);
+      };
+
+      reader.readAsDataURL(file);
     }
   }
 
@@ -200,6 +354,13 @@ export class UploadContentComponent {
     const file = event.target.files[0];
     if (file) {
       this.inputFullVideo = file;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.fullFileURL = String(reader.result);
+      };
+
+      reader.readAsDataURL(file);
 
       const video = document.createElement('video');
       video.preload = 'metadata';

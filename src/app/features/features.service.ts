@@ -8,7 +8,6 @@ import { SuccessMessageDialogComponent } from '../shared/dialogs/success-message
 import { environment } from '../../environments/environment.development';
 import { Schema } from '../../../amplify/data/resource';
 import { getUrl } from 'aws-amplify/storage';
-import { accessKeys } from '../beta-test/access-keys';
 import { SharedService } from '../shared/shared.service';
 
 @Injectable({

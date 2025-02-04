@@ -1,9 +1,9 @@
 import { NgClass } from '@angular/common';
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { curatorNavItems } from './sidenavItems';
+import { curatorNavItems, itAdminNavItems, superAdminNavItems } from './sidenavItems';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,11 +23,14 @@ import { UploadContentComponent } from '../../features/content-curator/upload-co
   styleUrl: './sidenav2.component.css',
 })
 export class Sidenav2Component implements OnInit {
-  currentRoute!: string;
   @ViewChild('drawer') drawer!: MatDrawer;
-  readonly curatorNavItems: any[] = curatorNavItems;
   readonly router = inject(Router);
   readonly dialog = inject(MatDialog);
+  private userRole!: string;
+  currentRoute!: string;
+  navItems: any[] = [];
+
+  constructor() {}
 
   ngOnInit(): void {
     // Get the initial route and listen for route changes
@@ -36,6 +39,15 @@ export class Sidenav2Component implements OnInit {
       .subscribe((event: NavigationEnd) => {
         this.currentRoute = event.urlAfterRedirects;
       });
+
+    this.userRole = String(sessionStorage.getItem('role'));
+    if (this.userRole === 'CONTENT_CREATOR') {
+      this.navItems = curatorNavItems;
+    } else if (this.userRole === 'IT_ADMIN') {
+      this.navItems = itAdminNavItems;
+    } else if (this.userRole === 'SUPER_ADMIN') {
+      this.navItems = superAdminNavItems;
+    }
   }
 
   toggleDrawer() {
@@ -51,13 +63,14 @@ export class Sidenav2Component implements OnInit {
   }
 
   uploadNewContent() {
-    this.dialog
-      .open(UploadContentComponent)
-      .afterClosed()
-      .subscribe((data) => {
-        if (data) {
-          console.log(data);
-        }
-      });
+    this.router.navigate(['content-curator/upload-content']);
+    // this.dialog
+    //   .open(UploadContentComponent)
+    //   .afterClosed()
+    //   .subscribe((data) => {
+    //     if (data) {
+    //       console.log(data);
+    //     }
+    //   });
   }
 }

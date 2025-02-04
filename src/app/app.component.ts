@@ -1,11 +1,11 @@
 import {
   Component,
   ElementRef,
+  HostListener,
   inject,
   OnInit,
   Renderer2,
 } from '@angular/core';
-import { MainLayoutComponent } from './core/main-layout/main-layout.component';
 import { Amplify } from 'aws-amplify';
 import outputs from '../../amplify_outputs.json';
 import {
@@ -13,15 +13,7 @@ import {
   AuthenticatorService,
 } from '@aws-amplify/ui-angular';
 import { ContentCuratorComponent } from './features/content-curator/content-curator.component';
-import {
-  NavigationCancel,
-  NavigationEnd,
-  NavigationError,
-  NavigationStart,
-  Router,
-  RouterOutlet,
-} from '@angular/router';
-import { SubscriberComponent } from './features/subscriber/subscriber/subscriber.component';
+import { Router, RouterOutlet } from '@angular/router';
 import { PublicViewComponent } from './features/public-view/public-view/public-view.component';
 import { AuthServiceService } from './auth/auth-service.service';
 import { ItAdminComponent } from './features/IT-admin/it-admin/it-admin.component';
@@ -51,6 +43,13 @@ export class AppComponent implements OnInit {
   readonly router = inject(Router);
   readonly authService = inject(AuthServiceService);
   readonly sharedService = inject(SharedService);
+
+  // Disable right-click for the entire app
+  @HostListener('contextmenu', ['$event'])
+  onRightClick(event: MouseEvent) {
+    event.preventDefault();
+    return false;
+  }
 
   ngOnInit(): void {
     this.handleRoleBasedRedirection();

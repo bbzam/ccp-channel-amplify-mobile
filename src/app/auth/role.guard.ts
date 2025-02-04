@@ -4,12 +4,45 @@ import { AuthServiceService } from './auth-service.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ErrorMessageDialogComponent } from '../shared/dialogs/error-message-dialog/error-message-dialog.component';
 
+// Store the initial role and interval reference outside the guard function
+let initialRole: string | null = null;
+let roleCheckInterval: any = null;
+
 export const roleGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthServiceService);
   const router = inject(Router);
   const dialog = inject(MatDialog);
   const requiredRoles = route.data['roles'] as Array<string>;
   const userRole = sessionStorage.getItem('role');
+
+  // Set initial role if it hasn't been set yet and start monitoring
+  if (initialRole === null) {
+    initialRole = userRole;
+
+    // Start monitoring role changes
+    if (!roleCheckInterval) {
+      roleCheckInterval = setInterval(() => {
+        const currentRole = sessionStorage.getItem('role');
+        if (currentRole !== initialRole) {
+          // Clear the interval
+          clearInterval(roleCheckInterval);
+          roleCheckInterval = null;
+
+          // Logout and show error message
+          authService.logout();
+          dialog
+            .open(ErrorMessageDialogComponent, {
+              data: {
+                message:
+                  'Unauthorized Access. You don’t have permission to access this page.',
+              },
+              disableClose: true,
+            })
+            .afterClosed();
+        }
+      }, 1000); // Check every second
+    }
+  }
 
   // Check if user has valid role and is authenticated
   if (!userRole || !requiredRoles.includes(userRole)) {

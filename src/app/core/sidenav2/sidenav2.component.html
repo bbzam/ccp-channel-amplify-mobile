@@ -10,7 +10,7 @@
       </button>
     </mat-card-content>
     <mat-card-content>
-      @for (item of curatorNavItems; track item) {
+      @for (item of navItems; track item) {
       <button
         [ngClass]="{ 'focus-menu': item.routeLink === currentRoute }"
         mat-raised-button
