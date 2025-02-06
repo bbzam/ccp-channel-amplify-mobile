@@ -19,6 +19,7 @@ import { ConfirmationDialogComponent } from '../../shared/dialogs/confirmation-d
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthServiceService } from '../../auth/auth-service.service';
+import { FeaturesService } from '../../features/features.service';
 
 @Component({
   selector: 'app-header',
@@ -45,6 +46,7 @@ export class HeaderComponent implements OnInit {
   readonly cdr = inject(ChangeDetectorRef);
   readonly activatedRoute = inject(ActivatedRoute);
   readonly authService = inject(AuthServiceService);
+  readonly featuresService = inject(FeaturesService);
 
   ngOnInit(): void {
     this.router.events

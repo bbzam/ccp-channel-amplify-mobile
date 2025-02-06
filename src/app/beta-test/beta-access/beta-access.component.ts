@@ -34,6 +34,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { AuthServiceService } from '../../auth/auth-service.service';
 import { BetaAccessService } from '../beta-access.service';
+import { FeaturesService } from '../../features/features.service';
 
 @Component({
   selector: 'app-beta-access',
@@ -58,6 +59,7 @@ export class BetaAccessComponent implements OnInit {
   private readonly authService = inject(AuthServiceService);
   private readonly betaAccessService = inject(BetaAccessService);
   private readonly fb = inject(FormBuilder);
+  private readonly featuresService = inject(FeaturesService);
 
   // Form and state management
   betaAccessForm!: FormGroup;
@@ -109,14 +111,15 @@ export class BetaAccessComponent implements OnInit {
     this.isLoading.set(true);
     try {
       const code = this.betaAccessForm.get('code')?.value;
-      const result = await this.betaAccessService.validateCode(code);
+      // const result = await this.betaAccessService.validateCode(code);
+      const result = await this.featuresService.updateKeys(code);
 
-      if (result.valid) {
-        this.dialogRef.close(true);
-      } else {
-        this.dialogRef.close(false);
-        this.authService.handleError(result.message);
-      }
+      // if (result) {
+      //   this.dialogRef.close(true);
+      // } else {
+      //   this.dialogRef.close(false);
+      //   this.authService.handleError(result.message);
+      // }
     } catch (error) {
       console.error('Confirmation failed:', error);
     } finally {
