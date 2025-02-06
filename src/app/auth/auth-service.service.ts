@@ -112,6 +112,7 @@ export class AuthServiceService {
       }
 
       if (nextStep.signInStep === 'CONFIRM_SIGN_UP') {
+        this.sharedService.hideLoader();
         // Resend sign up code to the registered user
         const { destination, deliveryMedium } = await resendSignUpCode({
           username,

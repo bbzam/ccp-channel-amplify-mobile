@@ -9,6 +9,8 @@
         [alt]="item.title"
       />
       <video
+        playsinline
+        webkit-playsinline
         preload="metadata"
         class="video"
         #video
@@ -34,8 +36,7 @@
           @if (item.resolution) {
           <p>•</p>
           <p>{{ item.resolution }}</p>
-          } 
-          @if (item.runtime) {
+          } @if (item.runtime) {
           <p>•</p>
           <p>{{ transform(item.runtime) }}</p>
           }
