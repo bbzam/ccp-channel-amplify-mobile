@@ -10,6 +10,8 @@
         />
         } @if (!showPhoto && banners[currentMediaIndex].previewVideoUrl) {
         <video
+          playsinline
+          webkit-playsinline
           preload="metadata"
           #video
           [src]="banners[currentMediaIndex].previewVideoUrl"
@@ -38,7 +40,7 @@
             <p>{{ banners[currentMediaIndex].resolution }}</p>
             } @if (banners[currentMediaIndex].runtime) {
             <p>•</p>
-            <p>{{transform(banners[currentMediaIndex].runtime)}}</p>
+            <p>{{ transform(banners[currentMediaIndex].runtime) }}</p>
             }
           </div>
           @if (banners[currentMediaIndex].fullVideoUrl) {

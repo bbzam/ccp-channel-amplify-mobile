@@ -9,6 +9,8 @@ import { environment } from '../../environments/environment.development';
 import { Schema } from '../../../amplify/data/resource';
 import { getUrl } from 'aws-amplify/storage';
 import { SharedService } from '../shared/shared.service';
+import { accessKeys } from '../beta-test/access-keys';
+import { fetchAuthSession } from 'aws-amplify/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -23,20 +25,33 @@ export class FeaturesService {
 
   constructor() {}
 
-  // uploadKeys() {
-  //   const keys = accessKeys;
-  //   keys.forEach((key) => {
-  //     console.log(key)
-  //     console.log({
-  //       code: key.code,
-  //       isUsed: key.isUsed
-  //     })
-  //     this.client.models.AccessKey.create({
-  //       code: key.code,
-  //       isUsed: key.isUsed
-  //     });
-  //   });
-  // }
+  uploadKeys() {
+    const keys = accessKeys;
+    keys.forEach((key) => {
+      console.log(key);
+      this.client.models.Keys.create({
+        code: key.code,
+        isUsed: key.isUsed,
+      });
+    });
+  }
+
+  async updateKeys(code: string) {
+    try {
+      // Get credentials for unauthenticated access
+      await fetchAuthSession();
+      
+      const result = await this.client.models.Keys.update({
+        id: code,
+        isUsed: true
+      });
+      
+      return result;
+    } catch (error) {
+      console.error('Error updating keys:', error);
+      throw error;
+    }
+  }
 
   // async uploadKeys() {
   //   try {

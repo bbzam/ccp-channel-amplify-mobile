@@ -10,6 +10,8 @@
         />
         } @if (!showPhoto && banners[currentMediaIndex].previewVideoUrl) {
         <video
+          playsinline
+          webkit-playsinline
           preload="metadata"
           #video
           [src]="banners[currentMediaIndex].previewVideoUrl"
@@ -19,7 +21,12 @@
         ></video>
         }
       </div>
-      <div class="overlay" [ngClass]="{'about-class' : banners[currentMediaIndex].title === 'ABOUT'}">
+      <div
+        class="overlay"
+        [ngClass]="{
+          'about-class': banners[currentMediaIndex].title === 'ABOUT'
+        }"
+      >
         <div class="details">
           <h1 class="title">{{ banners[currentMediaIndex].title }}</h1>
           <p class="description">

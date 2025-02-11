@@ -4,16 +4,14 @@ import { AuthServiceService } from './auth-service.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ErrorMessageDialogComponent } from '../shared/dialogs/error-message-dialog/error-message-dialog.component';
 
-// Store the initial role and interval reference outside the guard function
-let initialRole: string | null = null;
-let roleCheckInterval: any = null;
-
 export const roleGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthServiceService);
   const router = inject(Router);
   const dialog = inject(MatDialog);
   const requiredRoles = route.data['roles'] as Array<string>;
   const userRole = sessionStorage.getItem('role');
+  let initialRole: string | null = null;
+  let roleCheckInterval: any = null;
 
   // Set initial role if it hasn't been set yet and start monitoring
   if (initialRole === null) {
@@ -23,7 +21,8 @@ export const roleGuard: CanActivateFn = (route, state) => {
     if (!roleCheckInterval) {
       roleCheckInterval = setInterval(() => {
         const currentRole = sessionStorage.getItem('role');
-        if (currentRole !== initialRole) {
+        const auth = sessionStorage.getItem('auth');
+        if (currentRole !== initialRole && auth) {
           // Clear the interval
           clearInterval(roleCheckInterval);
           roleCheckInterval = null;

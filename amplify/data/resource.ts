@@ -1,8 +1,6 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
-  UserRole: a.enum(['USER', 'CONTENT_CREATOR', 'SUPER_ADMIN']),
-
   Content: a
     .model({
       id: a.id().required(),
@@ -25,6 +23,17 @@ const schema = a.schema({
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['create', 'update', 'delete']),
+    ]),
+  Keys: a
+    .model({
+      id: a.id().required(),
+      code: a.string().required(),
+      isUsed: a.boolean().required(),
+    })
+    .authorization((allow) => [
+      allow.authenticated().to(['create']),
+      allow.guest().to(['update']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']).to(['create', 'update', 'delete']),
     ]),
 });
 

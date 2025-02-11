@@ -7,7 +7,7 @@ import {
   Renderer2,
 } from '@angular/core';
 import { Amplify } from 'aws-amplify';
-import outputs from '../../amplify_outputs.json';
+import outputs from '../../amplify_outputs.json'
 import {
   AmplifyAuthenticatorModule,
   AuthenticatorService,
@@ -51,8 +51,19 @@ export class AppComponent implements OnInit {
     return false;
   }
 
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    if (
+      event.key === 'F12' ||
+      (event.ctrlKey && event.shiftKey && event.key === 'I')
+    ) {
+      event.preventDefault();
+    }
+  }
+
   ngOnInit(): void {
     this.handleRoleBasedRedirection();
+    this.detectScreenRecording();
     // this.handleLoader();
   }
 
@@ -62,6 +73,21 @@ export class AppComponent implements OnInit {
 
   get userRole(): string {
     return String(sessionStorage.getItem('role'));
+  }
+
+  private detectScreenRecording() {
+    // setInterval(() => {
+      // Check if user is recording screen
+      navigator.mediaDevices
+        .getDisplayMedia({ video: false })
+        .then(() => {
+          alert('Screen recording detected! This is not allowed.');
+          location.reload();
+        })
+        .catch(() => {
+          /* No recording detected */
+        });
+    // }, 5000);
   }
 
   private handleRoleBasedRedirection() {
