@@ -212,6 +212,7 @@
       class="buttonPrimary"
       mat-raised-button
       type="submit"
+      (click)="publishContent()"
       [disabled]="uploadForm.invalid || isLoading()"
     >
       {{ isLoading() ? "Publishing..." : "Publish" }}

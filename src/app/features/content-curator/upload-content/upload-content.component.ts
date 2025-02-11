@@ -98,7 +98,7 @@ export class UploadContentComponent {
       category: ['', [Validators.required]],
       subcategory: ['', [Validators.required]],
       director: ['', [Validators.required]],
-      writer: ['', [Validators.required]],
+      writer: [],
       usertype: ['', [Validators.required]],
       landscapeimage: ['', [Validators.required]],
       portraitimage: ['', [Validators.required]],
@@ -189,6 +189,8 @@ export class UploadContentComponent {
   }
 
   async publishContent() {
+    console.log('publishhh');
+    
     try {
       this.isLoading.set(true);
 
@@ -264,15 +266,16 @@ export class UploadContentComponent {
         }
       }
 
+      const formData = this.uploadForm.value;
       // Create content metadata object
       const contentMetadata = {
-        title: this.inputTitle,
-        description: this.inputDescription,
-        category: this.inputCategory,
-        subCategory: this.inputSubCategory,
-        director: this.inputDirector,
-        writer: this.inputWriter,
-        userType: this.inputUserType,
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        subCategory: formData.subcategory,
+        director: formData.director,
+        writer: formData.writer,
+        userType: formData.usertype,
         landscapeImageUrl: landscapeImageKey,
         portraitImageUrl: portraitImageKey,
         previewVideoUrl: previewVideoKey,
