@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { featuredImages, topFeatured } from '../mock-data';
+import { aboutDetails, featuredImages, topFeatured } from '../mock-data';
 import { MatButtonModule } from '@angular/material/button';
 import { BannerComponent } from '../public-banner/banner.component';
 import { allFeatured } from '../../../shared/mock-data';
@@ -14,6 +14,7 @@ export class HomePageComponent implements OnInit {
   banners: any[] = topFeatured;
   images = featuredImages;
   allFeatured = allFeatured;
+  aboutDetails = aboutDetails;
 
   ngOnInit(): void {}
 

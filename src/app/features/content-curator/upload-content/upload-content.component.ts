@@ -96,7 +96,7 @@ export class UploadContentComponent {
       title: ['', [Validators.required]],
       description: ['', [Validators.required]],
       category: ['', [Validators.required]],
-      subcategory: ['', [Validators.required]],
+      subcategory: [],
       director: ['', [Validators.required]],
       writer: [],
       usertype: ['', [Validators.required]],
