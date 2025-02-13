@@ -39,7 +39,7 @@ export class FeaturesService {
   async updateKeys(code: string) {
     try {
       // Get credentials for unauthenticated access
-      await fetchAuthSession();
+      // await fetchAuthSession();
       
       const result = await this.client.models.Keys.update({
         id: code,
