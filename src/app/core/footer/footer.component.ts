@@ -4,7 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
-import { AnyPrincipal } from 'aws-cdk-lib/aws-iam';
+import { aboutDetails } from '../../features/public-view/mock-data';
+import { MatDividerModule } from '@angular/material/divider';
 
 interface NavigationItem {
   label: string;
@@ -18,7 +19,7 @@ interface ContentSection {
 
 @Component({
   selector: 'app-footer',
-  imports: [MatButtonModule, MatIconModule],
+  imports: [MatButtonModule, MatIconModule, MatDividerModule],
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.css',
 })
@@ -29,6 +30,7 @@ export class FooterComponent implements OnInit, OnDestroy {
 
   private routerSubscription!: Subscription;
   private parentRoute!: string;
+  aboutDetails = aboutDetails;
 
   constructor() {}
 
