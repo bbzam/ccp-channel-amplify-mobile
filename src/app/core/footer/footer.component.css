@@ -1,7 +1,32 @@
 .footer-main {
   background-color: #161214;
-  padding: 1em;
+  padding: 3em 1em 0;
   display: grid;
+
+  .about {
+    h1 {
+      font-size: 1.5em;
+      color: var(--tertiary);
+      text-align: center;
+      margin: 0;
+      min-height: 3em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    p {
+      color: var(--gray);
+      margin: 0;
+      text-align: justify;
+      padding: 0 1em;
+    }
+  }
+
+  mat-divider {
+    color: var(--gray);
+    opacity: 0.5;
+  }
 
   .level1 {
     justify-items: center;
@@ -14,7 +39,7 @@
   }
 
   .level2 {
-    padding: 5em 0;
+    padding: 0 2em 0;
 
     .navigations {
       display: flex;
