@@ -38,14 +38,16 @@ export class FeaturesService {
 
   async updateKeys(code: string) {
     try {
-      // Get credentials for unauthenticated access
-      // await fetchAuthSession();
-      
-      const result = await this.client.models.Keys.update({
-        id: code,
-        isUsed: true
-      });
-      
+      const result = await this.client.models.Keys.update(
+        {
+          id: code,
+          isUsed: true,
+        },
+        {
+          authMode: 'iam',
+        }
+      );
+
       return result;
     } catch (error) {
       console.error('Error updating keys:', error);

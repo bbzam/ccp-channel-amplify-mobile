@@ -11,8 +11,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { allFeatured } from '../../../shared/mock-data';
 import { MoreInfoComponent } from '../../../shared/dialogs/more-info/more-info.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NgClass } from '@angular/common';
+import { BetaAccessComponent } from '../../../beta-test/beta-access/beta-access.component';
+import { SignupComponent } from '../../../auth/components/signup/signup.component';
 
 @Component({
   selector: 'app-banner',
@@ -68,5 +70,17 @@ export class BannerComponent implements OnInit, AfterViewInit {
     }
 
     return this.teaserDuration;
+  }
+
+  register(): void {
+    // this.dialog.open(SignupComponent).afterClosed().subscribe();
+    this.dialog
+      .open(BetaAccessComponent)
+      .afterClosed()
+      .subscribe((data) => {
+        if (data) {
+          this.dialog.open(SignupComponent).afterClosed();
+        }
+      });
   }
 }

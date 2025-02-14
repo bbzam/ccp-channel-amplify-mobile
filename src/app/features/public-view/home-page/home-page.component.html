@@ -6,7 +6,7 @@
     <h1>Gain premier access to the best local productions</h1>
     <div class="featured-container">
       @for (item of images; track item) {
-      <div class="card">
+      <div class="card" (click)="register()">
         <img [src]="item.portraitImageUrl" [alt]="item.name">
       </div>
       }
