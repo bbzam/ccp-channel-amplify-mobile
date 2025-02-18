@@ -1,0 +1,38 @@
+<div class="main-container" cdkDropListGroup>
+  <div class="container">
+    <h2>List of Contents</h2>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="contents"
+      class="list"
+      cdkDropListSortingDisabled
+      (cdkDropListDropped)="drop($event)"
+    >
+      @for (item of contents; track item) {
+      <div class="box" cdkDrag [cdkDragData]="item">
+        <mat-icon>drag_indicator</mat-icon>
+        <span>{{ item.title }}</span>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Featured Contents</h2>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="featured"
+      class="list"
+      (cdkDropListDropped)="drop($event)"
+    >
+      @for (item of featured; track item) {
+      <div class="box" cdkDrag [cdkDragData]="item">
+        <mat-icon>drag_indicator</mat-icon>
+        <span>{{ item.title }}</span>
+      </div>
+      }
+    </div>
+  </div>
+</div>

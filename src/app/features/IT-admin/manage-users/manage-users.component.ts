@@ -9,38 +9,33 @@ export interface Tab {
 }
 
 @Component({
-  selector: 'app-published',
+  selector: 'app-manage-users',
   imports: [MatTabsModule, AsyncPipe, MatTableModule],
-  templateUrl: './published.component.html',
-  styleUrl: './published.component.css',
+  templateUrl: './manage-users.component.html',
+  styleUrl: './manage-users.component.css',
 })
-export class PublishedComponent {
+export class ManageUsersComponent {
   asyncTabs: Observable<Tab[]>;
   columns = [
-    { def: 'title', header: 'Title' },
-    { def: 'category', header: 'Category' },
-    { def: 'subcategory', header: 'Sub Category' },
-    { def: 'description', header: 'Description' },
-    { def: 'director', header: 'Director' },
-    { def: 'writer', header: 'Writer' },
+    { def: 'name', header: 'Name' },
+    { def: 'email', header: 'Email' },
+    { def: 'role', header: 'Role' },
     { def: 'createdAt', header: 'Date Created' },
     { def: 'modifiedAt', header: 'Last Modified' },
     { def: 'writer', header: 'Status' },
   ];
 
   displayedColumns = this.columns.map((c) => c.def);
-  dataSource = []; 
+  dataSource = [];
 
   constructor() {
     this.asyncTabs = new Observable((observer: Observer<Tab[]>) => {
       observer.next([
-        { label: 'THEATER' },
-        { label: 'FILM' },
-        { label: 'MUSIC' },
-        { label: 'DANCE' },
-        { label: 'EDUCATION' },
-        { label: 'CCP SPECIALS' },
-        { label: 'CCP CLASSICS' },
+        { label: 'USERS' },
+        { label: 'SUBSCRIBERS' },
+        { label: 'CONTENT CURATORs' },
+        { label: 'IT ADMINs' },
+        { label: 'SUPER ADMINs' },
       ]);
     });
   }

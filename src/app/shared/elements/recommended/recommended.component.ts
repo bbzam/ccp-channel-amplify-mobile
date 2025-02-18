@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, Input, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { allFeatured } from '../../mock-data';
 import { MatCardModule } from '@angular/material/card';
 import { MoreInfoComponent } from '../../dialogs/more-info/more-info.component';
@@ -12,9 +12,9 @@ import { Router } from '@angular/router';
   templateUrl: './recommended.component.html',
   styleUrl: './recommended.component.css',
 })
-export class RecommendedComponent implements AfterViewInit, OnInit{
-
-  @Input() recommended!:any[];
+export class RecommendedComponent implements AfterViewInit, OnInit {
+  @ViewChildren('video') videos!: QueryList<ElementRef>;
+  @Input() recommended!: any[];
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
 
@@ -27,11 +27,29 @@ export class RecommendedComponent implements AfterViewInit, OnInit{
   }
 
   ngAfterViewInit(): void {
-      
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target as HTMLVideoElement;
+          if (!entry.isIntersecting) {
+            video.pause();
+          } else {
+            // Reset video to start and play when visible
+            video.currentTime = 0;
+            video.play().catch(() => {});
+          }
+        });
+      },
+      { threshold: 0 }
+    );
+
+    // Start observing each video
+    this.videos.forEach((videoRef) => {
+      observer.observe(videoRef.nativeElement);
+    });
   }
 
-  constructor() {
-  }
+  constructor() {}
 
   transform(value: number): string {
     if (isNaN(value) || value < 0) return '00:00:00';
@@ -61,14 +79,18 @@ export class RecommendedComponent implements AfterViewInit, OnInit{
     });
   }
 
-  moreInfo(item:any) {
-    this.dialog.open(MoreInfoComponent, {data: { data: item}}).afterClosed().subscribe(data => {
-
-    })
+  moreInfo(item: any) {
+    this.dialog
+      .open(MoreInfoComponent, { data: { data: item } })
+      .afterClosed()
+      .subscribe((data) => {});
   }
 
   updateVisibleItems(): void {
-    this.visibleItems = this.recommended?.slice(this.startIndex, this.startIndex + this.itemsToShow);
+    this.visibleItems = this.recommended?.slice(
+      this.startIndex,
+      this.startIndex + this.itemsToShow
+    );
   }
 
   nextPage(): void {

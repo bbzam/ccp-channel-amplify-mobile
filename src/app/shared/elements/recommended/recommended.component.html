@@ -12,6 +12,7 @@
         playsinline
         webkit-playsinline
         preload="metadata"
+        loading="lazy"
         class="video"
         #video
         [src]="item.previewVideoUrl"
@@ -19,6 +20,8 @@
         loop
         [muted]="true"
         (click)="moreInfo(item)"
+        controls
+        controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
       ></video>
       <div class="actions">
         <label>{{ item.title }}</label>
