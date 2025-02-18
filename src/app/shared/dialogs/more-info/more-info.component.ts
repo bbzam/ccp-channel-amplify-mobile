@@ -1,4 +1,14 @@
-import { Component, HostListener, Inject, inject, Input } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  Inject,
+  inject,
+  Input,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,7 +20,8 @@ import { Router } from '@angular/router';
   templateUrl: './more-info.component.html',
   styleUrl: './more-info.component.css',
 })
-export class MoreInfoComponent {
+export class MoreInfoComponent implements AfterViewInit {
+  @ViewChildren('video') videos!: QueryList<ElementRef>;
   @Input() item: any;
   readonly dialogRef = inject(MatDialogRef<MoreInfoComponent>);
   readonly router = inject(Router);
@@ -20,6 +31,29 @@ export class MoreInfoComponent {
   onRightClick(event: MouseEvent) {
     event.preventDefault();
     return false;
+  }
+
+  ngAfterViewInit(): void {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target as HTMLVideoElement;
+          if (!entry.isIntersecting) {
+            video.pause();
+          } else {
+            // Reset video to start and play when visible
+            video.currentTime = 0;
+            video.play().catch(() => {});
+          }
+        });
+      },
+      { threshold: 0 }
+    );
+
+    // Start observing each video
+    this.videos.forEach((videoRef) => {
+      observer.observe(videoRef.nativeElement);
+    });
   }
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {

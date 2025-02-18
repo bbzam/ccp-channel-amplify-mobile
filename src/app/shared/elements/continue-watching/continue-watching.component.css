@@ -69,7 +69,7 @@
         font-weight: lighter;
         font-size: 0.9em;
       }
-      
+
       div {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -133,4 +133,110 @@
 
 .scroll-btn:hover {
   background: rgba(0, 0, 0, 0.8);
+}
+
+/* Hide timeline, volume slider */
+video::-webkit-media-controls-timeline,
+video::-webkit-media-controls-volume-slider,
+video::-webkit-media-controls-current-time-display,
+video::-webkit-media-controls-time-remaining-display {
+  display: none !important;
+}
+
+/* For Firefox */
+video::-moz-range-track,
+video::-moz-range-thumb {
+  display: none;
+}
+
+/* For Microsoft browsers */
+video::-ms-track {
+  display: none;
+}
+
+/* Hide download button */
+video::-webkit-media-controls-download-button {
+  display: none !important;
+}
+
+/* Hide fullscreen button */
+video::-webkit-media-controls-fullscreen-button {
+  display: none !important;
+}
+
+/* Hide playback speed button */
+video::-webkit-media-controls-playback-button {
+  display: none !important;
+}
+
+/* Hide remote playback button (e.g., Chromecast) */
+video::-webkit-media-controls-remote-playback-button {
+  display: none !important;
+}
+
+/* For Firefox */
+video::-webkit-media-controls {
+  overflow: hidden !important;
+}
+
+video::-webkit-media-controls-enclosure {
+  width: calc(100% + 32px);
+  margin-left: auto;
+}
+
+/* Additional control to prevent right-click menu */
+video {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide default controls first */
+video::-webkit-media-controls-panel {
+  background: none;
+  display: flex !important;
+  width: auto !important;
+  max-width: 50px !important; /* Adjust this value to only show play button */
+  overflow: hidden !important;
+}
+
+/* Ensure the play button is visible and aligned left */
+video::-webkit-media-controls-play-button {
+  display: block !important;
+  position: relative !important;
+  left: 0 !important;
+}
+
+/* Force hide everything else */
+video::-webkit-media-controls-current-time-display,
+video::-webkit-media-controls-time-remaining-display,
+video::-webkit-media-controls-timeline,
+video::-webkit-media-controls-mute-button,
+video::-webkit-media-controls-volume-slider,
+video::-webkit-media-controls-fullscreen-button,
+video::-webkit-media-controls-download-button,
+video::-webkit-media-controls-overflow-button,
+video::-webkit-media-controls-panel-menu-button,
+video::-webkit-media-controls-toggle-closed-captions-button {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure no overflow */
+video::-webkit-media-controls-enclosure {
+  overflow: hidden !important;
+  max-width: 50px !important; /* Match panel width */
+}
+
+/* Additional protection */
+video::-webkit-media-controls {
+  overflow: hidden !important;
+  max-width: 50px !important; /* Match panel width */
 }

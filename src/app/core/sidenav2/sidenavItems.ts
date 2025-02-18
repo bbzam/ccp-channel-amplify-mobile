@@ -14,6 +14,16 @@ export const curatorNavItems = [
     routeLink: '/content-curator/scheduled',
     icon: 'schedule'
   },
+  {
+    label: 'Set Featured',
+    routeLink: '/content-curator/featured',
+    icon: 'drag_indicator'
+  },
+  {
+    label: 'Manage Users',
+    routeLink: '/content-curator/manage-users',
+    icon: 'person'
+  },
 ];
 
 export const itAdminNavItems = [

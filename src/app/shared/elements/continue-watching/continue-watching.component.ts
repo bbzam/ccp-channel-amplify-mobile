@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, Input, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { allFeatured } from '../../mock-data';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
   styleUrl: './continue-watching.component.css',
 })
 export class ContinueWatchingComponent implements AfterViewInit, OnInit {
+  @ViewChildren('video') videos!: QueryList<ElementRef>;
   @Input() continueWatching!: any[];
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
@@ -26,7 +27,28 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
     this.updateVisibleItems();
   }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target as HTMLVideoElement;
+          if (!entry.isIntersecting) {
+            video.pause();
+          } else {
+            // Reset video to start and play when visible
+            video.currentTime = 0;
+            video.play().catch(() => {});
+          }
+        });
+      },
+      { threshold: 0 }
+    );
+
+    // Start observing each video
+    this.videos.forEach((videoRef) => {
+      observer.observe(videoRef.nativeElement);
+    });
+  }
 
   constructor() {}
 

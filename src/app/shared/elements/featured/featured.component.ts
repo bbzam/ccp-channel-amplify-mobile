@@ -1,10 +1,13 @@
 import {
   AfterViewInit,
   Component,
+  ElementRef,
   HostListener,
   inject,
   Input,
   OnInit,
+  QueryList,
+  ViewChildren,
 } from '@angular/core';
 import { allFeatured } from '../../mock-data';
 import { MatCardModule } from '@angular/material/card';
@@ -20,6 +23,7 @@ import { Router } from '@angular/router';
   styleUrl: './featured.component.css',
 })
 export class FeaturedComponent implements AfterViewInit, OnInit {
+  @ViewChildren('video') videos!: QueryList<ElementRef>;
   @Input() featured!: any[];
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
@@ -34,7 +38,28 @@ export class FeaturedComponent implements AfterViewInit, OnInit {
     this.updateItemsToShow();
   }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target as HTMLVideoElement;
+          if (!entry.isIntersecting) {
+            video.pause();
+          } else {
+            // Reset video to start and play when visible
+            video.currentTime = 0;
+            video.play().catch(() => {});
+          }
+        });
+      },
+      { threshold: 0 }
+    );
+
+    // Start observing each video
+    this.videos.forEach((videoRef) => {
+      observer.observe(videoRef.nativeElement);
+    });
+  }
 
   constructor() {}
 

@@ -16,12 +16,14 @@
           playsinline
           webkit-playsinline
           preload="metadata"
+          loading="lazy"
           class="media"
           #video
           [src]="item.previewVideoUrl"
           autoplay
           loop
           [muted]="true"
+          controls
         ></video>
       </div>
       }

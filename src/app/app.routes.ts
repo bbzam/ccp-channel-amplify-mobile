@@ -120,6 +120,8 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
           import(
             './features/content-curator/dashboard/dashboard.component'
@@ -127,6 +129,8 @@ export const routes: Routes = [
       },
       {
         path: 'published',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
           import(
             './features/content-curator/published/published.component'
@@ -134,6 +138,8 @@ export const routes: Routes = [
       },
       {
         path: 'scheduled',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
           import(
             './features/content-curator/scheduled/scheduled.component'
@@ -147,6 +153,33 @@ export const routes: Routes = [
           import(
             './features/content-curator/upload-content/upload-content.component'
           ).then((m) => m.UploadContentComponent),
+      },
+      {
+        path: 'featured',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import(
+            './features/content-curator/setfeatured/setfeatured.component'
+          ).then((m) => m.SetfeaturedComponent),
+      },
+      {
+        path: 'manage-users',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import(
+            './features/IT-admin/manage-users/manage-users.component'
+          ).then((m) => m.ManageUsersComponent),
+      },
+      {
+        path: 'add-user',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import(
+            './features/IT-admin/add-user/add-user.component'
+          ).then((m) => m.AddUserComponent),
       },
     ],
   },

@@ -35,7 +35,7 @@
           @if (banners[currentMediaIndex].title !== 'ABOUT') {
           <div class="action-container">
             <div class="watch">
-              <button disabled class="buttonMS" mat-icon-button>
+              <button class="buttonMS" mat-icon-button (click)="register()">
                 <div>Subscribe Now!</div>
               </button>
             </div>

@@ -162,7 +162,6 @@
             .metadata {
               line-height: unset;
               font-size: 0.8em;
-              flex-direction: column;
               align-items: flex-start;
               align-content: flex-start;
             }
@@ -176,4 +175,67 @@
       }
     }
   }
+}
+
+/* Hide timeline, volume slider */
+video::-webkit-media-controls-timeline,
+video::-webkit-media-controls-volume-slider,
+video::-webkit-media-controls-current-time-display,
+video::-webkit-media-controls-time-remaining-display {
+  display: none !important;
+}
+
+/* For Firefox */
+video::-moz-range-track,
+video::-moz-range-thumb {
+  display: none;
+}
+
+/* For Microsoft browsers */
+video::-ms-track {
+  display: none;
+}
+
+/* Hide download button */
+video::-webkit-media-controls-download-button {
+  display: none !important;
+}
+
+/* Hide fullscreen button */
+video::-webkit-media-controls-fullscreen-button {
+  display: none !important;
+}
+
+/* Hide playback speed button */
+video::-webkit-media-controls-playback-button {
+  display: none !important;
+}
+
+/* Hide remote playback button (e.g., Chromecast) */
+video::-webkit-media-controls-remote-playback-button {
+  display: none !important;
+}
+
+/* For Firefox */
+video::-webkit-media-controls {
+  overflow: hidden !important;
+}
+
+video::-webkit-media-controls-enclosure {
+  width: calc(100% + 32px);
+  margin-left: auto;
+}
+
+/* Additional control to prevent right-click menu */
+video {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Align controls to the left */
+video::-webkit-media-controls-panel {
+  display: flex;
+  justify-content: flex-start !important;
 }
