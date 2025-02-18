@@ -27,7 +27,6 @@ const schema = a.schema({
   Keys: a
     .model({
       id: a.id().required(),
-      code: a.string().required(),
       isUsed: a.boolean().required(),
     })
     .authorization((allow) => [

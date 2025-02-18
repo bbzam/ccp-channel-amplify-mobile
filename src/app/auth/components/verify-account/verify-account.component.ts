@@ -135,6 +135,7 @@ export class VerifyAccountComponent implements OnInit {
         this.username,
         code
       );
+      console.log(isSuccess);
 
       if (isSuccess) {
         this.dialogRef.close(true);

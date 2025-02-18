@@ -112,6 +112,12 @@
 
 @media (max-width: 767px) {
   .footer-main {
+    .about {
+      p {
+        padding: 0;
+      }
+    }
+
     .level1 {
       .copyright {
         font-size: 0.7em;

@@ -102,6 +102,7 @@ export class SigninComponent implements OnInit {
       if (isSuccess) {
         this.dialogRef.close(true);
       } else {
+        this.dialogRef.close(false);
         console.log('Sign-in requires further confirmation.');
       }
     } catch (error) {

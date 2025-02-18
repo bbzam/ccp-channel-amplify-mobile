@@ -14,6 +14,7 @@ import {
 } from 'aws-amplify/auth';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
 import { SharedService } from '../shared/shared.service';
+import { SigninComponent } from './components/signin/signin.component';
 
 interface CognitoIdTokenPayload {
   'cognito:groups'?: string[];
@@ -98,7 +99,7 @@ export class AuthServiceService {
         // Clear all items in localStorage
         localStorage.clear();
       }
-      
+
       this.sharedService.showLoader('Signing In...');
       const { nextStep } = await signIn({
         username: username,
@@ -184,7 +185,9 @@ export class AuthServiceService {
             data: { message: 'SignUp Completed!' },
           })
           .afterClosed()
-          .subscribe();
+          .subscribe(() => {
+            this.dialog.open(SigninComponent).afterClosed();
+          });
         return true;
       }
     } catch (error) {

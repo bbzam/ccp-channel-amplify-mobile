@@ -30,7 +30,7 @@ export class FeaturesService {
     keys.forEach((key) => {
       console.log(key);
       this.client.models.Keys.create({
-        code: key.code,
+        id: key.code,
         isUsed: key.isUsed,
       });
     });
@@ -45,62 +45,21 @@ export class FeaturesService {
         },
         {
           authMode: 'iam',
-        }
+          filter: (keys: any) => keys.isUsed.eq(false),
+        } as any
       );
 
       return result;
     } catch (error) {
+      if (error === 'DynamoDB:ConditionalCheckFailedException') {
+        throw new Error(
+          'This key has already been used and cannot be used again.'
+        );
+      }
       console.error('Error updating keys:', error);
       throw error;
     }
   }
-
-  // async uploadKeys() {
-  //   try {
-  //     const keys = accessKeys;
-
-  //     // Add logging to debug
-  //     console.log('Client:', this.client);
-  //     console.log('Models:', this.client.models);
-  //     console.log('Models:', this.client.models.AccessKey);
-
-  //     // Check if keys exist
-  //     if (!Array.isArray(keys) || keys.length === 0) {
-  //       console.error('No keys to upload');
-  //       return;
-  //     }
-
-  //     const results = await Promise.all(
-  //       keys.map(async (entry) => {
-  //         try {
-  //           // Ensure entry has the correct shape
-  //           const keyData = {
-  //             code: entry.code,
-  //             isUsed: entry.isUsed ?? false,
-  //             // Add any other required fields
-  //           };
-
-  //           const result = await this.client.models.AccessKey.create(keyData);
-  //           console.log('Created key:', result);
-  //           return result;
-  //         } catch (err) {
-  //           console.error('Error creating individual key:', err);
-  //           return null;
-  //         }
-  //       })
-  //     );
-
-  //     const successfulUploads = results.filter(Boolean);
-  //     console.log(
-  //       `Successfully uploaded ${successfulUploads.length} of ${keys.length} keys`
-  //     );
-
-  //     return successfulUploads;
-  //   } catch (error) {
-  //     console.error('Unexpected error during bulk upload:', error);
-  //     throw error;
-  //   }
-  // }
 
   async createContent(contentMetadata: ContentMetadata): Promise<any> {
     try {
