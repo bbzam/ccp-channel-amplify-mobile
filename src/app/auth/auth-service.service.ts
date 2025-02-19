@@ -152,7 +152,6 @@ export class AuthServiceService {
       });
 
       if (signUpNextStep.signUpStep === 'DONE') {
-        this.signIn(data.email, data.password);
         return true;
       }
 
@@ -202,7 +201,9 @@ export class AuthServiceService {
       await signOut({ global: true });
       sessionStorage.clear();
       localStorage.clear();
-      this.router.navigate(['landing-page']);
+      
+      await this.router.navigate(['landing-page']);
+      window.location.reload();
     } catch (error) {
       this.handleError(error);
     }

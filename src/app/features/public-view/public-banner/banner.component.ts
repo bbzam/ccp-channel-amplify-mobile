@@ -79,7 +79,7 @@ export class BannerComponent implements OnInit, AfterViewInit {
       .afterClosed()
       .subscribe((data) => {
         if (data) {
-          this.dialog.open(SignupComponent).afterClosed();
+          this.dialog.open(SignupComponent, {disableClose: true}).afterClosed();
         }
       });
   }

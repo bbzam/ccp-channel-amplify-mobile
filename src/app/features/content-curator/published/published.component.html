@@ -1,11 +1,11 @@
-<mat-tab-group>
+<mat-tab-group (selectedTabChange)="onTabChange($event)">
   @for (tab of asyncTabs | async; track tab) {
   <mat-tab>
     <ng-template mat-tab-label>{{ tab.label }}</ng-template>
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       @for (column of columns; track column.def) {
       <ng-container [matColumnDef]="column.def">
-        <th mat-header-cell *matHeaderCellDef>{{ column.header }}</th>
+        <th class="table-header" mat-header-cell *matHeaderCellDef>{{ column.header }}</th>
         <td mat-cell *matCellDef="let element">{{ element[column.def] }}</td>
       </ng-container>
       }
