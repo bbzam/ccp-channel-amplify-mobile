@@ -170,6 +170,11 @@ body {
   }
 }
 
+/* styles for table */
+.table-header {
+  background-color: var(--gray) !important;
+}
+
 /* Custom Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px; /* width of the scrollbar */

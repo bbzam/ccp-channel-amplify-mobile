@@ -10,7 +10,6 @@ import { Schema } from '../../../amplify/data/resource';
 import { getUrl } from 'aws-amplify/storage';
 import { SharedService } from '../shared/shared.service';
 import { accessKeys } from '../beta-test/access-keys';
-import { fetchAuthSession } from 'aws-amplify/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -45,17 +44,12 @@ export class FeaturesService {
         },
         {
           authMode: 'iam',
-          filter: (keys: any) => keys.isUsed.eq(false),
-        } as any
+          selectionSet: ['isUsed'],
+        }
       );
 
       return result;
     } catch (error) {
-      if (error === 'DynamoDB:ConditionalCheckFailedException') {
-        throw new Error(
-          'This key has already been used and cannot be used again.'
-        );
-      }
       console.error('Error updating keys:', error);
       throw error;
     }
@@ -137,11 +131,13 @@ export class FeaturesService {
     try {
       this.sharedService.showLoader('Fetching content...');
       const { data, errors } = await this.client.models.Content.list({
-        filter: {
-          category: {
-            eq: category,
+        ...(category ? {
+          filter: {
+            category: {
+              eq: category,
           },
         },
+        } : {}),
       });
       if (data) {
         console.log('Original data:', data);
