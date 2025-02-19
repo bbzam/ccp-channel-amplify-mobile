@@ -33,9 +33,9 @@ export class ManageUsersComponent {
       observer.next([
         { label: 'USERS' },
         { label: 'SUBSCRIBERS' },
-        { label: 'CONTENT CURATORs' },
-        { label: 'IT ADMINs' },
-        { label: 'SUPER ADMINs' },
+        { label: 'CONTENT CURATORS' },
+        { label: 'IT ADMINS' },
+        { label: 'SUPER ADMINS' },
       ]);
     });
   }

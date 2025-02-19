@@ -113,13 +113,13 @@ export class BetaAccessComponent implements OnInit {
       const code = this.betaAccessForm.get('code')?.value;
       // const result = await this.betaAccessService.validateCode(code);
       const result = await this.featuresService.updateKeys(code);
+      console.log(result?.errors?.[0]?.errorType);
 
-      // if (result) {
-      //   this.dialogRef.close(true);
-      // } else {
-      //   this.dialogRef.close(false);
-      //   this.authService.handleError(result.message);
-      // }
+      if (!result?.errors?.[0]?.errorType) {
+        this.dialogRef.close(true);
+      } else {
+        this.authService.handleError('Something went wrong. Please try again.');
+      }
     } catch (error) {
       console.error('Confirmation failed:', error);
     } finally {
