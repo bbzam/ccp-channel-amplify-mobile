@@ -1,18 +1,10 @@
-<mat-tab-group>
-  @for (tab of asyncTabs | async; track tab) {
-  <mat-tab>
-    <ng-template mat-tab-label>{{ tab.label }}</ng-template>
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-      @for (column of columns; track column.def) {
-      <ng-container [matColumnDef]="column.def">
-        <th class="table-header" mat-header-cell *matHeaderCellDef>{{ column.header }}</th>
-        <td mat-cell *matCellDef="let element">{{ element[column.def] }}</td>
-      </ng-container>
-      }
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-  </mat-tab>
-  }
-</mat-tab-group>
+<app-tab [tabs]="tabs" (tabChanged)="onTabChanged($event)"> </app-tab>
+<div class="table-container">
+  <app-table
+    [data]="tableData"
+    [columns]="columns"
+    [displayedColumns]="displayedColumns"
+    (rowClick)="handleRowClick($event)"
+  >
+  </app-table>
+</div>

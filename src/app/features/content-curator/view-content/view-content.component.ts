@@ -1,4 +1,6 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { computed, inject, signal } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -29,7 +31,7 @@ interface VideoMetadata {
 }
 
 @Component({
-  selector: 'app-upload-content',
+  selector: 'app-view-content',
   imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -38,10 +40,11 @@ interface VideoMetadata {
     MatDividerModule,
     MatButtonModule,
   ],
-  templateUrl: './upload-content.component.html',
-  styleUrl: './upload-content.component.css',
+  templateUrl: './view-content.component.html',
+  styleUrl: './view-content.component.css',
 })
-export class UploadContentComponent {
+export class ViewContentComponent {
+  @Input() content: any;
   inputTitle!: string;
   inputDescription!: string;
   inputCategory!: string;
@@ -64,10 +67,10 @@ export class UploadContentComponent {
 
   readonly isLoading = signal(false);
   readonly isScheduling = signal(false);
-  // readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
+  readonly dialogRef = inject(MatDialogRef<ViewContentComponent>);
   readonly featureService = inject(FeaturesService);
   readonly location = inject(Location);
-  private readonly fb = inject(FormBuilder);
+  readonly fb = inject(FormBuilder);
   readonly dialog = inject(MatDialog);
 
   // Error message signals
@@ -90,20 +93,37 @@ export class UploadContentComponent {
     isPristine: this.uploadForm.pristine,
   }));
 
-  constructor() {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
+    this.content = data;
+    this.setDefaultValue(data);
+    console.log(this.content);
     this.createForm();
     this.setupValidationSubscriptions();
   }
 
+  private setDefaultValue(data: any) {
+    this.inputTitle = data.title;
+    this.inputDescription = data.description;
+    this.inputCategory = data.category;
+    this.inputSubCategory = data.subcategory;
+    this.inputDirector = data.director;
+    this.inputWriter = data.writer;
+    this.inputUserType = data.userType;
+    this.landscapeFileURL = data.landscapeImageUrl;
+    this.portraitFileURL = data.portraitImageUrl;
+    this.previewFileURL = data.previewVideoUrl;
+    this.fullFileURL = data.fullVideoUrl;
+  }
+
   private createForm(): void {
     this.uploadForm = this.fb.group({
-      title: ['', [Validators.required]],
-      description: ['', [Validators.required]],
-      category: ['', [Validators.required]],
-      subcategory: [],
-      director: ['', [Validators.required]],
-      writer: [],
-      usertype: ['', [Validators.required]],
+      title: [this.inputTitle, [Validators.required]],
+      description: [this.inputDescription, [Validators.required]],
+      category: [this.inputCategory, [Validators.required]],
+      subcategory: [this.inputSubCategory, []],
+      director: [this.inputDirector, [Validators.required]],
+      writer: [this.inputWriter, []],
+      usertype: [this.inputUserType, [Validators.required]],
       landscapeimage: ['', [Validators.required]],
       portraitimage: ['', [Validators.required]],
       previewvideo: ['', [Validators.required]],
@@ -314,7 +334,9 @@ export class UploadContentComponent {
           // this.dialogRef.close();
         },
         (error) => {
-          isForPublish ? this.isLoading.set(false) : this.isScheduling.set(false);
+          isForPublish
+            ? this.isLoading.set(false)
+            : this.isScheduling.set(false);
           this.featureService.handleError(error);
         }
       );

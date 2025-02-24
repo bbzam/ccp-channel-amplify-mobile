@@ -1,0 +1,29 @@
+tr:hover {
+  background: #efefef;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+input {
+  font-size: 0.875em;
+  min-width: 18em;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  border-color: var(--gray);
+  margin: 1.5em 0 1em;
+}
+
+.table {
+  width: 100%;
+  overflow: auto;
+}
+
+.no-rec-found-row:hover {
+  background: none;
+  cursor: unset;
+}
+
+::ng-deep .mat-mdc-paginator-container {
+  background-color: #efefef !important;
+  font-size: 0.8em;
+}

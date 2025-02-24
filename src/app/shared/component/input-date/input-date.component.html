@@ -1,20 +1,20 @@
 <div class="signin-main">
   <form [formGroup]="betaAccessForm" (ngSubmit)="confirm()">
     <div class="form-field-container">
-      <h2>Beta Access Key</h2>
-      <p>Enter the access code to signup</p>
+      <h2>Schedule Date</h2>
     </div>
     <div class="form-field-container">
-      <label for="key">Access Key</label>
+      <label for="date">Date</label>
       <input
-        id="key"
+        id="date"
         matInput
-        placeholder="Enter your key"
-        formControlName="code"
+        type="date"
+        placeholder="Select date"
+        formControlName="date"
         autocomplete="off"
         required
       />
-      <mat-error>{{ codeErrorMessage() }}</mat-error>
+      <mat-error>{{ dateErrorMessage() }}</mat-error>
     </div>
 
     <div class="form-field-container">
@@ -24,7 +24,7 @@
         type="submit"
         [disabled]="betaAccessForm.invalid || isLoading()"
       >
-        {{ isLoading() ? "Verifying..." : "Verify" }}
+        {{ isLoading() ? "Scheduling..." : "Schedule" }}
       </button>
     </div>
   </form>

@@ -17,6 +17,8 @@ const schema = a.schema({
       fullVideoUrl: a.string().required(),
       runtime: a.float(),
       resolution: a.string(),
+      status: a.boolean(),//published or scheduled
+      publishDate: a.date(),
     })
     .authorization((allow) => [
       allow.authenticated().to(['read']),
@@ -30,9 +32,8 @@ const schema = a.schema({
       isUsed: a.boolean().required(),
     })
     .authorization((allow) => [
-      allow.authenticated().to(['create']),
-      allow.guest().to(['update']),
-      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']).to(['create', 'update', 'delete']),
+      allow.guest().to(['update', 'read']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']).to(['create', 'update', 'delete']),
     ]),
 });
 

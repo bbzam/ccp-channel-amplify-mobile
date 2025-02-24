@@ -12,4 +12,6 @@ export interface ContentMetadata {
   fullVideoUrl: string;
   runtime: number | undefined;
   resolution: string | undefined;
+  status: boolean;
+  publishDate: string;
 }

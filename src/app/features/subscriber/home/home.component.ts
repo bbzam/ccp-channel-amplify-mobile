@@ -32,7 +32,7 @@ export class HomeComponent implements OnInit {
   }
 
   getAllContents() {
-    this.featuresService.getAllContents().then((data: any) => {
+    this.featuresService.getAllContents('', true).then((data: any) => {
       this.banners = data;
       this.featured = data;
     });

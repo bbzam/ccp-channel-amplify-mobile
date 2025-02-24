@@ -33,7 +33,7 @@ export class TheaterComponent implements OnInit {
   }
 
   getAllContents() {
-    this.featuresService.filterContent(this.category).then((data: any) => {
+    this.featuresService.getAllContents(this.category, true).then((data: any) => {
       this.banners = data;
       this.featured = data;
     });

@@ -31,6 +31,14 @@ export const routes: Routes = [
             (m) => m.AboutComponent
           ),
       },
+      {
+        path: 'notfound',
+        loadComponent: () =>
+          import('./shared/page-not-found/page-not-found.component').then(
+            (m) => m.PageNotFoundComponent
+          ),
+      },
+      { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
     ],
   },
   {
@@ -110,6 +118,14 @@ export const routes: Routes = [
             (m) => m.AboutComponent
           ),
       },
+      {
+        path: 'notfound',
+        loadComponent: () =>
+          import('./shared/page-not-found/page-not-found.component').then(
+            (m) => m.PageNotFoundComponent
+          ),
+      },
+      { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
     ],
   },
   {
@@ -181,6 +197,14 @@ export const routes: Routes = [
             './features/IT-admin/add-user/add-user.component'
           ).then((m) => m.AddUserComponent),
       },
+      {
+        path: 'notfound',
+        loadComponent: () =>
+          import('./shared/page-not-found/page-not-found.component').then(
+            (m) => m.PageNotFoundComponent
+          ),
+      },
+      { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
     ],
   },
   {
@@ -206,6 +230,14 @@ export const routes: Routes = [
         resolve: { loading: loaderResolver },
         data: { loadingMessage: 'Loading Page...' },
       },
+      {
+        path: 'notfound',
+        loadComponent: () =>
+          import('./shared/page-not-found/page-not-found.component').then(
+            (m) => m.PageNotFoundComponent
+          ),
+      },
+      { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
     ],
   },
   {
@@ -254,16 +286,16 @@ export const routes: Routes = [
             './features/content-curator/upload-content/upload-content.component'
           ).then((m) => m.UploadContentComponent),
       },
+      {
+        path: 'notfound',
+        loadComponent: () =>
+          import('./shared/page-not-found/page-not-found.component').then(
+            (m) => m.PageNotFoundComponent
+          ),
+      },
+      { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
     ],
   },
-  {
-    path: 'notfound',
-    loadComponent: () =>
-      import('./shared/page-not-found/page-not-found.component').then(
-        (m) => m.PageNotFoundComponent
-      ),
-  },
-  { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
 ];
 
 // import { Routes } from '@angular/router';

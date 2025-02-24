@@ -37,6 +37,21 @@ export class FeaturesService {
 
   async updateKeys(code: string) {
     try {
+      // First check if the key is already used
+      const existingKey = await this.client.models.Keys.get(
+        { id: code },
+        {
+          authMode: 'iam',
+          selectionSet: ['isUsed'],
+        }
+      );
+
+      if (existingKey.data?.isUsed) {
+        this.handleError('This key has already been used');
+        throw new Error('This key has already been used');
+      }
+
+      // If not used, proceed with the update
       const result = await this.client.models.Keys.update(
         {
           id: code,
@@ -51,7 +66,12 @@ export class FeaturesService {
       return result;
     } catch (error) {
       console.error('Error updating keys:', error);
-      throw error;
+      // You can customize the error message based on the error type
+      const errorMessage =
+        error === 'This key has already been used'
+          ? error
+          : 'An error occurred while updating the key';
+      throw new Error(errorMessage);
     }
   }
 
@@ -72,6 +92,8 @@ export class FeaturesService {
         fullVideoUrl: contentMetadata.fullVideoUrl,
         runtime: contentMetadata.runtime,
         resolution: contentMetadata.resolution,
+        status: contentMetadata.status,
+        publishDate: contentMetadata.publishDate,
       });
       console.log(data);
 
@@ -87,61 +109,68 @@ export class FeaturesService {
     }
   }
 
-  async getAllContents(): Promise<any> {
+  // async getAllContents(): Promise<any> {
+  //   try {
+  //     this.sharedService.showLoader('Fetching content...');
+  //     const { data, errors } = await this.client.models.Content.list();
+  //     if (data) {
+  //       // Process each content item and update their URLs
+  //       const updatedData = await Promise.all(
+  //         data.map(async (content: any) => {
+  //           const urlLandscape = await this.getFileUrl(
+  //             content.landscapeImageUrl
+  //           );
+  //           const urlPortrait = await this.getFileUrl(content.portraitImageUrl);
+  //           const urlPreviewVideo = await this.getFileUrl(
+  //             content.previewVideoUrl
+  //           );
+  //           const urlFullVideo = await this.getFileUrl(content.fullVideoUrl);
+
+  //           // Return updated content object with new URLs
+  //           return {
+  //             ...content,
+  //             landscapeImageUrl: urlLandscape,
+  //             portraitImageUrl: urlPortrait,
+  //             previewVideoUrl: urlPreviewVideo,
+  //             fullVideoUrl: urlFullVideo,
+  //           };
+  //         })
+  //       );
+
+  //       this.sharedService.hideLoader();
+
+  //       return updatedData;
+  //     }
+  //     return [];
+  //   } catch (error) {
+  //     this.sharedService.hideLoader();
+  //     console.error('Error fetching content metadata:', error);
+  //     throw error; // Re-throw to handle in the component
+  //   }
+  // }
+
+  async getAllContents(category: string, status: boolean): Promise<any> {
     try {
       this.sharedService.showLoader('Fetching content...');
-      const { data, errors } = await this.client.models.Content.list();
-      if (data) {
-        // Process each content item and update their URLs
-        const updatedData = await Promise.all(
-          data.map(async (content: any) => {
-            const urlLandscape = await this.getFileUrl(
-              content.landscapeImageUrl
-            );
-            const urlPortrait = await this.getFileUrl(content.portraitImageUrl);
-            const urlPreviewVideo = await this.getFileUrl(
-              content.previewVideoUrl
-            );
-            const urlFullVideo = await this.getFileUrl(content.fullVideoUrl);
-
-            // Return updated content object with new URLs
-            return {
-              ...content,
-              landscapeImageUrl: urlLandscape,
-              portraitImageUrl: urlPortrait,
-              previewVideoUrl: urlPreviewVideo,
-              fullVideoUrl: urlFullVideo,
-            };
-          })
-        );
-
-        this.sharedService.hideLoader();
-
-        return updatedData;
-      }
-      return [];
-    } catch (error) {
-      this.sharedService.hideLoader();
-      console.error('Error fetching content metadata:', error);
-      throw error; // Re-throw to handle in the component
-    }
-  }
-
-  async filterContent(category: string): Promise<any> {
-    try {
-      this.sharedService.showLoader('Fetching content...');
-      const { data, errors } = await this.client.models.Content.list({
-        ...(category ? {
-          filter: {
-            category: {
-              eq: category,
-          },
-        },
-        } : {}),
+      const { data } = await this.client.models.Content.list({
+        ...(category || status
+          ? {
+              filter: {
+                ...(category && {
+                  category: {
+                    eq: category,
+                  },
+                }),
+                ...(status && {
+                  status: {
+                    eq: status,
+                  },
+                }),
+              },
+            }
+          : {}),
       });
       if (data) {
-        console.log('Original data:', data);
-
         // Process each content item and update their URLs
         const updatedData = await Promise.all(
           data.map(async (content: any) => {

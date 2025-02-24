@@ -1,0 +1,10 @@
+<mat-tab-group (selectedTabChange)="onTabChange($event)">
+  @for (tab of tabs; track tab.label) {
+  <mat-tab [label]="tab.label">
+    <ng-container
+      *ngTemplateOutlet="contentTemplate; context: { $implicit: tab }"
+    >
+    </ng-container>
+  </mat-tab>
+  }
+</mat-tab-group>

@@ -1,47 +1,82 @@
-import { Component } from '@angular/core';
-import { Observable, Observer } from 'rxjs';
+import { Component, inject } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
-import { AsyncPipe } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
+import { FeaturesService } from '../../features.service';
+import { MatInputModule } from '@angular/material/input';
+import { TableComponent } from '../../../shared/component/table/table.component';
+import { TabComponent } from '../../../shared/component/tab/tab.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ViewContentComponent } from '../view-content/view-content.component';
 
 export interface Tab {
   label: string;
+  category: string;
 }
 
 @Component({
   selector: 'app-scheduled',
-  imports: [MatTabsModule, AsyncPipe, MatTableModule],
+  imports: [
+    MatTabsModule,
+    MatTableModule,
+    MatInputModule,
+    TableComponent,
+    TabComponent,
+  ],
   templateUrl: './scheduled.component.html',
   styleUrl: './scheduled.component.css',
 })
 export class ScheduledComponent {
-  asyncTabs: Observable<Tab[]>;
+  readonly featuresService = inject(FeaturesService);
+  readonly dialog = inject(MatDialog);
+
+  tabs: Tab[] = [
+    { label: 'THEATER', category: 'theater' },
+    { label: 'FILM', category: 'film' },
+    { label: 'MUSIC', category: 'music' },
+    { label: 'DANCE', category: 'dance' },
+    { label: 'EDUCATION', category: 'education' },
+    { label: 'CCP SPECIALS', category: 'ccpspecials' },
+    { label: 'CCP CLASSICS', category: 'ccpclassics' },
+  ];
+
   columns = [
-    { def: 'title', header: 'Title' },
-    { def: 'category', header: 'Category' },
-    { def: 'subcategory', header: 'Sub Category' },
-    { def: 'description', header: 'Description' },
-    { def: 'director', header: 'Director' },
-    { def: 'writer', header: 'Writer' },
-    { def: 'createdAt', header: 'Date Created' },
-    { def: 'modifiedAt', header: 'Last Modified' },
-    { def: 'writer', header: 'Status' },
+    { def: 'title', header: 'Title', sortable: true },
+    { def: 'category', header: 'Category', sortable: true },
+    { def: 'subCategory', header: 'Sub Category', sortable: true },
+    // { def: 'description', header: 'Description', sortable: true },
+    { def: 'director', header: 'Director', sortable: true },
+    { def: 'writer', header: 'Writer', sortable: true },
+    { def: 'createdAt', header: 'Date Created', sortable: true },
+    { def: 'updatedAt', header: 'Last Modified', sortable: true },
+    { def: 'status', header: 'Status', sortable: true },
   ];
 
   displayedColumns = this.columns.map((c) => c.def);
-  dataSource = []; 
+  tableData: any[] = [];
 
-  constructor() {
-    this.asyncTabs = new Observable((observer: Observer<Tab[]>) => {
-      observer.next([
-        { label: 'THEATER' },
-        { label: 'FILM' },
-        { label: 'MUSIC' },
-        { label: 'DANCE' },
-        { label: 'EDUCATION' },
-        { label: 'CCP SPECIALS' },
-        { label: 'CCP CLASSICS' },
-      ]);
+  ngOnInit(): void {
+    this.getAllContents('theater');
+  }
+
+  onTabChanged(category: string): void {
+    this.getAllContents(category);
+  }
+
+  getAllContents(category: string) {
+    this.featuresService.getAllContents(category, false).then((data: any) => {
+      if (data) {
+        this.tableData = data;
+      }
     });
+  }
+
+  handleRowClick(row: any): void {
+    this.dialog
+      .open(ViewContentComponent, {
+        data: row,
+        panelClass: 'dialog',
+      })
+      .afterClosed()
+      .subscribe((data) => {});
   }
 }

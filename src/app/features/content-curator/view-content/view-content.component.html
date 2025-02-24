@@ -1,11 +1,12 @@
 <div class="signin-main">
-  <h1>UPLOAD NEW CONTENT</h1>
+  <h1>CONTENT DETAILS</h1>
   <mat-divider></mat-divider>
   <form [formGroup]="uploadForm">
     <!-- Title -->
     <div class="form-field-container">
       <label for="title">Title</label>
       <input
+        required
         matInput
         type="text"
         id="title"
@@ -13,6 +14,7 @@
         formControlName="title"
         required
         placeholder="Enter title"
+        [disabled]="true"
       />
       @if (titleErrorMessage()) {
       <mat-error>{{ titleErrorMessage() }}</mat-error>
@@ -23,6 +25,7 @@
     <div class="form-field-container">
       <label for="description">Description</label>
       <textarea
+        required
         matInput
         id="description"
         name="description"
@@ -30,6 +33,7 @@
         required
         rows="4"
         placeholder="Enter description"
+        [disabled]="true"
       ></textarea>
       @if(descriptionErrorMessage()) {
       <mat-error>{{ descriptionErrorMessage() }}</mat-error>
@@ -40,11 +44,13 @@
     <div class="form-field-container">
       <label for="category">Category</label>
       <select
+        required
         id="category"
         name="category"
         formControlName="category"
         required
         placeholder="Select category"
+        [disabled]="true"
       >
         <option value="theater">Theater</option>
         <option value="film">Film</option>
@@ -69,6 +75,7 @@
         name="subCategory"
         formControlName="subcategory"
         placeholder="Enter Sub Category"
+        [disabled]="true"
       />
       @if(subCategoryErrorMessage()) {
       <mat-error>{{ subCategoryErrorMessage() }}</mat-error>
@@ -79,12 +86,14 @@
     <div class="form-field-container">
       <label for="director">Director</label>
       <input
+        required
         matInput
         type="text"
         id="director"
         name="director"
         formControlName="director"
         placeholder="Enter director name"
+        [disabled]="true"
       />
       @if(directorErrorMessage()) {
       <mat-error>{{ directorErrorMessage() }}</mat-error>
@@ -101,6 +110,7 @@
         name="writer"
         formControlName="writer"
         placeholder="Enter writer name"
+        [disabled]="true"
       />
       @if(writerErrorMessage()) {
       <mat-error>{{ writerErrorMessage() }}</mat-error
@@ -110,7 +120,13 @@
     <!-- User Type -->
     <div class="form-field-container">
       <label for="userType">For which User Type?</label>
-      <select id="userType" name="userType" formControlName="usertype" required>
+      <select
+        id="userType"
+        name="userType"
+        formControlName="usertype"
+        required
+        [disabled]="true"
+      >
         <option value="free">Free</option>
         <option value="subscriber">Subscriber</option>
       </select>
@@ -131,6 +147,7 @@
         accept="image/*"
         class="form-control-file"
         required
+        [disabled]="true"
       />
       @if (landscapeErrorMessage()) {
       <mat-error>{{ landscapeErrorMessage() }}</mat-error>
@@ -152,6 +169,7 @@
         accept="image/*"
         class="form-control-file"
         required
+        [disabled]="true"
       />
       @if (portraitErrorMessage()) {
       <mat-error>{{ portraitErrorMessage() }}</mat-error
@@ -173,6 +191,7 @@
         accept="video/*"
         class="form-control-file"
         required
+        [disabled]="true"
       />
       @if(previewErrorMessage()) {
       <mat-error>{{ previewErrorMessage() }}</mat-error
@@ -198,6 +217,7 @@
         accept="video/*"
         class="form-control-file"
         required
+        [disabled]="true"
       />
       @if(fullErrorMessage()) {
       <mat-error>{{ fullErrorMessage() }}</mat-error
