@@ -6,6 +6,7 @@
     <div class="form-field-container">
       <label for="title">Title</label>
       <input
+        [disabled]="isInputDisabled"
         required
         matInput
         type="text"
@@ -14,7 +15,6 @@
         formControlName="title"
         required
         placeholder="Enter title"
-        [disabled]="true"
       />
       @if (titleErrorMessage()) {
       <mat-error>{{ titleErrorMessage() }}</mat-error>
@@ -33,7 +33,7 @@
         required
         rows="4"
         placeholder="Enter description"
-        [disabled]="true"
+        [disabled]="isInputDisabled"
       ></textarea>
       @if(descriptionErrorMessage()) {
       <mat-error>{{ descriptionErrorMessage() }}</mat-error>
@@ -50,7 +50,7 @@
         formControlName="category"
         required
         placeholder="Select category"
-        [disabled]="true"
+        [disabled]="isInputDisabled"
       >
         <option value="theater">Theater</option>
         <option value="film">Film</option>
@@ -75,7 +75,7 @@
         name="subCategory"
         formControlName="subcategory"
         placeholder="Enter Sub Category"
-        [disabled]="true"
+        [disabled]="isInputDisabled"
       />
       @if(subCategoryErrorMessage()) {
       <mat-error>{{ subCategoryErrorMessage() }}</mat-error>
@@ -93,7 +93,7 @@
         name="director"
         formControlName="director"
         placeholder="Enter director name"
-        [disabled]="true"
+        [disabled]="isInputDisabled"
       />
       @if(directorErrorMessage()) {
       <mat-error>{{ directorErrorMessage() }}</mat-error>
@@ -110,7 +110,7 @@
         name="writer"
         formControlName="writer"
         placeholder="Enter writer name"
-        [disabled]="true"
+        [disabled]="isInputDisabled"
       />
       @if(writerErrorMessage()) {
       <mat-error>{{ writerErrorMessage() }}</mat-error
@@ -125,7 +125,7 @@
         name="userType"
         formControlName="usertype"
         required
-        [disabled]="true"
+        [disabled]="isInputDisabled"
       >
         <option value="free">Free</option>
         <option value="subscriber">Subscriber</option>
@@ -147,7 +147,7 @@
         accept="image/*"
         class="form-control-file"
         required
-        [disabled]="true"
+        [disabled]="isInputDisabled"
       />
       @if (landscapeErrorMessage()) {
       <mat-error>{{ landscapeErrorMessage() }}</mat-error>
@@ -169,7 +169,7 @@
         accept="image/*"
         class="form-control-file"
         required
-        [disabled]="true"
+        [disabled]="isInputDisabled"
       />
       @if (portraitErrorMessage()) {
       <mat-error>{{ portraitErrorMessage() }}</mat-error
@@ -191,7 +191,7 @@
         accept="video/*"
         class="form-control-file"
         required
-        [disabled]="true"
+        [disabled]="isInputDisabled"
       />
       @if(previewErrorMessage()) {
       <mat-error>{{ previewErrorMessage() }}</mat-error
@@ -217,7 +217,7 @@
         accept="video/*"
         class="form-control-file"
         required
-        [disabled]="true"
+        [disabled]="isInputDisabled"
       />
       @if(fullErrorMessage()) {
       <mat-error>{{ fullErrorMessage() }}</mat-error
@@ -235,17 +235,9 @@
       type="button"
       (click)="backButton()"
     >
-      Back
+      Cancel
     </button>
-    <button
-      class="buttonSecondary"
-      mat-raised-button
-      type="button"
-      (click)="publishContent(false)"
-      [disabled]="uploadForm.invalid || isLoading()"
-    >
-      {{ isScheduling() ? "Scheduling..." : "Schedule" }}
-    </button>
+    @if (!isPublished) {
     <button
       class="buttonPrimary"
       mat-raised-button
@@ -255,5 +247,16 @@
     >
       {{ isLoading() ? "Publishing..." : "Publish" }}
     </button>
+    } @else {
+    <button
+      class="buttonSecondary"
+      mat-raised-button
+      type="button"
+      (click)="publishContent(false)"
+      [disabled]="uploadForm.invalid || isLoading()"
+    >
+      {{ isScheduling() ? "Scheduling..." : "Schedule" }}
+    </button>
+    }
   </div>
 </div>

@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { addUser } from './add-user/resource';
 
 const schema = a.schema({
   Content: a
@@ -17,7 +18,7 @@ const schema = a.schema({
       fullVideoUrl: a.string().required(),
       runtime: a.float(),
       resolution: a.string(),
-      status: a.boolean(),//published or scheduled
+      status: a.boolean(), //published or scheduled
       publishDate: a.date(),
     })
     .authorization((allow) => [
@@ -33,8 +34,22 @@ const schema = a.schema({
     })
     .authorization((allow) => [
       allow.guest().to(['update', 'read']),
-      allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']).to(['create', 'update', 'delete']),
+      allow
+        .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
+        .to(['create', 'update', 'delete']),
     ]),
+  addUser: a
+    .mutation()
+    .arguments({
+      firstname: a.string().required(),
+      lastname: a.string().required(),
+      email: a.string().required(),
+      birthdate: a.string().required(),
+      role: a.string().required(),
+    })
+    .authorization((allow) => [allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN'])])
+    .handler(a.handler.function(addUser))
+    .returns(a.json()),
 });
 
 export type Schema = ClientSchema<typeof schema>;

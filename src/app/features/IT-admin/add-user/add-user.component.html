@@ -1,2 +1,101 @@
-<p>add-user works!</p>
-<button (click)="closeDialog()">close</button>
+<form [formGroup]="createUserForm" (ngSubmit)="createUserOnClick()">
+  <div class="form-field-container">
+    <h2>Create User</h2>
+  </div>
+
+  <div class="form-field-container">
+    <!-- First Name Field -->
+    <label for="firstname">First Name</label>
+    <input
+      id="firstname"
+      matInput
+      placeholder="Enter your Firstname"
+      formControlName="firstname"
+      required
+    />
+    @if (firstnameErrorMessage()) {
+    <mat-error>{{ firstnameErrorMessage() }}</mat-error>
+    }
+  </div>
+
+  <div class="form-field-container">
+    <!-- Last Name Field -->
+    <label for="lastname">Last name</label>
+    <input
+      id="lastname"
+      matInput
+      placeholder="Enter your Lastname"
+      formControlName="lastname"
+      required
+    />
+    @if (lastnameErrorMessage()) {
+    <mat-error>{{ lastnameErrorMessage() }}</mat-error>
+    }
+  </div>
+
+  <div class="form-field-container">
+    <!-- Email Field -->
+    <label for="email">Email</label>
+    <input
+      id="email"
+      autocomplete="off"
+      matInput
+      placeholder="Enter your email"
+      formControlName="email"
+      required
+    />
+    @if (emailErrorMessage()) {
+    <mat-error>{{ emailErrorMessage() }}</mat-error>
+    }
+  </div>
+
+  <div class="form-field-container">
+    <!-- Bithdate Field -->
+    <label for="birthdate">Birthdate</label>
+    <input
+      id="birthdate"
+      matInput
+      type="date"
+      placeholder="Enter your Birthdate"
+      formControlName="birthdate"
+      required
+    />
+    @if (birthdateErrorMessage()) {
+    <mat-error>{{ birthdateErrorMessage() }}</mat-error>
+    }
+  </div>
+
+  <!-- Role -->
+  <div class="form-field-container">
+    <label for="role">Role</label>
+    <select id="role" formControlName="role" required placeholder="Select role">
+      <option value="USER">User</option>
+      <option value="SUBSCRIBER">Subscriber</option>
+      <option value="CONTENT_CREATOR">Content Curator</option>
+      <option value="IT_ADMIN">IT Admin</option>
+      <option value="SUPER_ADMIN">Super Admin</option>
+    </select>
+    @if(roleErrorMessage()) {
+    <mat-error>{{ roleErrorMessage() }}</mat-error>
+    }
+  </div>
+
+  <div class="action-buttons">
+    <button
+      class="buttonTertiary"
+      mat-raised-button
+      type="button"
+      (click)="cancelButton()"
+    >
+      Cancel
+    </button>
+    <button
+      class="buttonSignIn"
+      mat-raised-button
+      type="submit"
+      [disabled]="createUserForm.invalid || isLoading()"
+    >
+      {{ isLoading() ? "Creating User..." : "Create User" }}
+    </button>
+  </div>
+</form>

@@ -55,10 +55,6 @@ export class ManageUsersComponent {
   }
 
   getAllUsers(role: string) {
-    // this.featuresService.filterContent(role).then((data: any) => {
-    //   if (data) {
-    //     this.tableData = data;
-    //   }
-    // });
+    this.featuresService
   }
 }

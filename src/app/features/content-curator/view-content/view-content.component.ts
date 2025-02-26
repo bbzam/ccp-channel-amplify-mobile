@@ -56,6 +56,7 @@ export class ViewContentComponent {
   inputPortraitImage!: any;
   inputPreviewVideo!: any;
   inputFullVideo!: any;
+  isInputDisabled: boolean = false;
   date!: string;
   videoMetadata: VideoMetadata | null = null;
   uploadFullVideo!: any;
@@ -64,6 +65,7 @@ export class ViewContentComponent {
   previewFileURL!: string;
   fullFileURL!: string;
   uploadForm!: FormGroup;
+  isPublished!: boolean;
 
   readonly isLoading = signal(false);
   readonly isScheduling = signal(false);
@@ -113,6 +115,7 @@ export class ViewContentComponent {
     this.portraitFileURL = data.portraitImageUrl;
     this.previewFileURL = data.previewVideoUrl;
     this.fullFileURL = data.fullVideoUrl;
+    this.isPublished = data.status;
   }
 
   private createForm(): void {
@@ -208,8 +211,8 @@ export class ViewContentComponent {
   schedulePublish() {}
 
   backButton() {
-    this.location.back();
-    // this.dialogRef.close();
+    // this.location.back();
+    this.dialogRef.close();
   }
 
   async publishContent(isForPublish: boolean) {

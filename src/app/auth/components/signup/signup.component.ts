@@ -27,6 +27,7 @@ import {
 import { MatDividerModule } from '@angular/material/divider';
 import { SigninComponent } from '../signin/signin.component';
 import { AuthServiceService } from '../../auth-service.service';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-signup',
@@ -37,6 +38,7 @@ import { AuthServiceService } from '../../auth-service.service';
     ReactiveFormsModule,
     MatIconModule,
     MatDividerModule,
+    MatButtonModule
   ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css',

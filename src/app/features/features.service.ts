@@ -75,6 +75,18 @@ export class FeaturesService {
     }
   }
 
+  async createUser(data: any): Promise<any> {
+    try {
+      console.log('data', data);
+      const result = await this.client.mutations.addUser(data);
+      console.log('result', result);
+      return result;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+  }
+
   async createContent(contentMetadata: ContentMetadata): Promise<any> {
     try {
       this.sharedService.showLoader('Uploading content...');
