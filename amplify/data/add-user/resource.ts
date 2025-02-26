@@ -1,9 +1,9 @@
 import { defineFunction } from '@aws-amplify/backend';
-import { auth } from '../../../amplify_outputs.json';
+import { environment } from '../../../src/environments/environment';
 
 export const addUser = defineFunction({
   name: 'add-user',
   environment: {
-    UserPoolId: auth.user_pool_id,
+    UserPoolId: environment.USER_POOL_ID,
   },
 });
