@@ -1,5 +1,6 @@
 import type { Schema } from '../resource';
 import {
+  AdminAddUserToGroupCommand,
   AdminCreateUserCommand,
   CognitoIdentityProviderClient,
 } from '@aws-sdk/client-cognito-identity-provider';
@@ -8,9 +9,34 @@ import * as crypto from 'crypto';
 type Handler = Schema['addUser']['functionHandler'];
 const client = new CognitoIdentityProviderClient();
 
+const ALLOWED_ROLES = ['USER', 'CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN'];
+
 export const handler: Handler = async (event) => {
   const userPoolId = process.env.UserPoolId;
+  console.log(userPoolId);
+
   const body = event.arguments;
+
+  // Validate role
+  if (!body.role || !ALLOWED_ROLES.includes(body.role)) {
+    throw new Error(
+      `Invalid role. Allowed roles are: ${ALLOWED_ROLES.join(', ')}`
+    );
+  }
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(body.email)) {
+    throw new Error('Invalid email format');
+  }
+
+  // Validate required fields
+  if (!body.firstname || !body.lastname || !body.birthdate) {
+    throw new Error(
+      'Missing required fields: firstname, lastname, and birthdate are required'
+    );
+  }
+  const tempPassword = generateTemporaryPassword();
   const command = new AdminCreateUserCommand({
     Username: event.arguments.email,
     UserPoolId: userPoolId,
@@ -32,15 +58,29 @@ export const handler: Handler = async (event) => {
         Value: body.birthdate,
       },
     ],
-    TemporaryPassword: generateTemporaryPassword(),
+    TemporaryPassword: tempPassword,
     ForceAliasCreation: false,
     DesiredDeliveryMediums: ['EMAIL'],
-    ClientMetadata: {
-      '<keys>': 'STRING_VALUE',
-    },
   });
-  const response = await client.send(command);
-  return response;
+  try {
+    const response = await client.send(command);
+
+    // You'll need to use AWS SDK to add the user to the group
+    const groupCommand = new AdminAddUserToGroupCommand({
+      GroupName: body.role,
+      Username: body.email,
+      UserPoolId: userPoolId,
+    });
+
+    console.log(groupCommand);
+    
+    await client.send(groupCommand);
+
+    return response;
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
 };
 
 function generateTemporaryPassword(length: number = 12): string {

@@ -35,12 +35,13 @@ export class ManageUsersComponent {
   ];
 
   columns = [
-    { def: 'name', header: 'Name', sortable: true },
-    { def: 'email', header: 'Email', sortable: true },
+    { def: 'given_name', header: 'Firstname', sortable: true },
+    { def: 'family_name', header: 'Lastname', sortable: true },
     { def: 'role', header: 'Role', sortable: true },
-    { def: 'createdAt', header: 'Date Created', sortable: true },
-    { def: 'modifiedAt', header: 'Last Modified', sortable: true },
-    { def: 'writer', header: 'Status', sortable: true },
+    { def: 'birthdate', header: 'Birthdate', sortable: true },
+    { def: 'email', header: 'Email', sortable: true },
+    { def: 'email_verified', header: 'Email Verified', sortable: true },
+    { def: 'status', header: 'Status', sortable: true },
   ];
 
   displayedColumns = this.columns.map((c) => c.def);
@@ -55,6 +56,12 @@ export class ManageUsersComponent {
   }
 
   getAllUsers(role: string) {
-    this.featuresService
+    this.featuresService.getAllUsers().then((data: any) => {
+      if (data) {
+        console.log(data);
+        
+        this.tableData = data;
+      }
+    });
   }
 }

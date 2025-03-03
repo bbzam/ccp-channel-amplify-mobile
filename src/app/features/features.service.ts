@@ -10,6 +10,7 @@ import { Schema } from '../../../amplify/data/resource';
 import { getUrl } from 'aws-amplify/storage';
 import { SharedService } from '../shared/shared.service';
 import { accessKeys } from '../beta-test/access-keys';
+import { fetchUserAttributes } from 'aws-amplify/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -17,10 +18,10 @@ import { accessKeys } from '../beta-test/access-keys';
 export class FeaturesService {
   UPLOADCONTENT_URL = environment.APIURL + '/';
 
-  readonly dialog = inject(MatDialog);
-  readonly router = inject(Router);
-  readonly client = generateClient<Schema>();
-  readonly sharedService = inject(SharedService);
+  private readonly dialog = inject(MatDialog);
+  private readonly router = inject(Router);
+  private readonly client = generateClient<Schema>();
+  private readonly sharedService = inject(SharedService);
 
   constructor() {}
 
@@ -80,11 +81,24 @@ export class FeaturesService {
       console.log('data', data);
       const result = await this.client.mutations.addUser(data);
       console.log('result', result);
+      if (!result.errors) {
+        this.handleSuccess('User created successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while creating user. Please try again'
+        );
+      }
       return result;
     } catch (error) {
       console.error('Error creating user:', error);
       throw error;
     }
+  }
+
+  async getAllUsers(): Promise<any> {
+    const data = await fetchUserAttributes();
+    console.log('list of users', data);
+    return data;
   }
 
   async createContent(contentMetadata: ContentMetadata): Promise<any> {

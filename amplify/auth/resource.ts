@@ -1,6 +1,7 @@
 import { defineAuth } from '@aws-amplify/backend';
 import { postConfirmation } from './post-confirmation/resource';
 import { addUser } from '../data/add-user/resource';
+import { customMessage } from '../auth/custom-message/resource';
 
 /**
  * Define and configure your auth resource
@@ -125,10 +126,12 @@ export const auth = defineAuth({
   }, //
   groups: ['USER', 'SUBSCRIBER', 'CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN'],
   triggers: {
+    customMessage,
     postConfirmation,
   },
   access: (allow) => [
     allow.resource(postConfirmation).to(['addUserToGroup']),
     allow.resource(addUser).to(['createUser']),
+    allow.resource(addUser).to(['addUserToGroup']),
   ],
 });

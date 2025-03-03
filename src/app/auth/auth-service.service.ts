@@ -11,10 +11,12 @@ import {
   signIn,
   resendSignUpCode,
   ResendSignUpCodeOutput,
+  confirmSignIn,
 } from 'aws-amplify/auth';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
 import { SharedService } from '../shared/shared.service';
 import { SigninComponent } from './components/signin/signin.component';
+import { ForcedChangePasswordComponent } from './components/forced-change-password/forced-change-password.component';
 
 interface CognitoIdTokenPayload {
   'cognito:groups'?: string[];
@@ -121,18 +123,51 @@ export class AuthServiceService {
         this.verifyEmail(username, destination as string);
         return false;
       }
+
+      if (
+        nextStep.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED'
+      ) {
+        this.sharedService.hideLoader();
+        this.dialog
+          .open(ForcedChangePasswordComponent, { panelClass: 'dialog' })
+          .afterClosed()
+          .subscribe((data) => {
+            if (data) {
+              this.confirmNewPassword(data);
+            }
+          });
+      }
     } catch (error) {
       this.sharedService.hideLoader();
-      if (
-        error ===
-        'UserAlreadyAuthenticatedException: There is already a signed in user.'
-      ) {
-      } else {
-        this.handleError(error);
-      }
+      this.handleError('An error occurred while signing in. Please try again');
       return false;
     }
     return false; // Default to false if no condition matches
+  }
+
+  async confirmNewPassword(newPassword: string): Promise<boolean> {
+    try {
+      const result = await confirmSignIn({ challengeResponse: newPassword });
+      if (result.nextStep.signInStep === 'DONE') {
+        this.dialog
+          .open(SuccessMessageDialogComponent, {
+            data: { message: 'Change Password Successful!' },
+          })
+          .afterClosed()
+          .subscribe(() => {
+            this.dialog.open(SigninComponent).afterClosed();
+          });
+        return true;
+      }
+      this.handleError('Something went wrong. Please try again.');
+      return false;
+    } catch (error) {
+      console.error('Error changing password:', error);
+      this.handleError(
+        'An error occurred while changing your password. Please try again'
+      );
+      throw error;
+    }
   }
 
   async signUp(data: any): Promise<boolean> {
@@ -201,7 +236,7 @@ export class AuthServiceService {
       await signOut({ global: true });
       sessionStorage.clear();
       localStorage.clear();
-      
+
       await this.router.navigate(['landing-page']);
       window.location.reload();
     } catch (error) {
@@ -226,10 +261,6 @@ export class AuthServiceService {
 
   async isAuthenticated(): Promise<boolean> {
     try {
-      const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-      const auth = sessionStorage.getItem('auth');
-      if (!isLoggedIn || !auth) return false;
-
       const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
       return !!accessToken && !!idToken;
     } catch (err) {
@@ -240,6 +271,7 @@ export class AuthServiceService {
 
   public handleError(error: any) {
     console.error(error);
+    this.sharedService.hideLoader();
     return this.dialog
       .open(ErrorMessageDialogComponent, {
         data: { message: String(error) },
@@ -249,6 +281,7 @@ export class AuthServiceService {
 
   public handleSuccess(success: any) {
     console.log(success);
+    this.sharedService.hideLoader();
     return this.dialog
       .open(SuccessMessageDialogComponent, {
         data: { message: String(success) },
