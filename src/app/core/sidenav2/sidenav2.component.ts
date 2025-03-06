@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
@@ -13,7 +13,7 @@ import { filter } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { UploadContentComponent } from '../../features/content-curator/upload-content/upload-content.component';
-import { AddUserComponent } from '../../features/IT-admin/add-user/add-user.component';
+import { AddUserComponent } from '../../features/IT-admin/manage-user/add-user/add-user.component';
 
 @Component({
   selector: 'app-sidenav2',
@@ -35,6 +35,13 @@ export class Sidenav2Component implements OnInit {
   currentRoute!: string;
   lastSegment!: string;
   navItems: any[] = [];
+
+  @HostListener('window:resize') updatetoggleDrawer(): void {
+    const width = window.innerWidth;
+    if (width <= 800) {
+      this.closeToggleDrawer();
+    }
+  }
 
   constructor() {}
 
@@ -70,12 +77,16 @@ export class Sidenav2Component implements OnInit {
   }
 
   uploadNewContent() {
-    this.router.navigate(['content-curator/upload-content']);
+    // this.router.navigate(['content-curator/upload-content']);
+    this.dialog
+    .open(UploadContentComponent, { disableClose: true, panelClass: 'dialog' })
+    .afterClosed()
+    .subscribe((data) => {});
   }
 
   addNewUser() {
     this.dialog
-      .open(AddUserComponent, { disableClose: true, panelClass: 'dialog' })
+      .open(AddUserComponent, { disableClose: true, panelClass: 'dialog2' })
       .afterClosed()
       .subscribe((data) => {});
   }

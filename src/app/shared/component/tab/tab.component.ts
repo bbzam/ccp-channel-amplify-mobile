@@ -1,4 +1,10 @@
-import { Component, Input, Output, EventEmitter, TemplateRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  TemplateRef,
+} from '@angular/core';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 
 export interface TabConfig {
@@ -19,6 +25,8 @@ export class TabComponent {
 
   onTabChange(event: MatTabChangeEvent): void {
     const selectedTab = this.tabs[event.index];
-    this.tabChanged.emit(selectedTab.category);
+    this.tabChanged.emit(
+      selectedTab.category ? selectedTab.category : selectedTab.role
+    );
   }
 }

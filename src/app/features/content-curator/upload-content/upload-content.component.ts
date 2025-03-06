@@ -64,7 +64,7 @@ export class UploadContentComponent {
 
   readonly isLoading = signal(false);
   readonly isScheduling = signal(false);
-  // readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
+  readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
   readonly featureService = inject(FeaturesService);
   readonly location = inject(Location);
   private readonly fb = inject(FormBuilder);
@@ -188,8 +188,8 @@ export class UploadContentComponent {
   schedulePublish() {}
 
   backButton() {
-    this.location.back();
-    // this.dialogRef.close();
+    // this.location.back();
+    this.dialogRef.close();
   }
 
   async publishContent(isForPublish: boolean) {
@@ -311,10 +311,12 @@ export class UploadContentComponent {
             : this.featureService.handleError(
                 'Uploading Error, Please try again.'
               );
-          // this.dialogRef.close();
+              this.dialogRef.close();
         },
         (error) => {
-          isForPublish ? this.isLoading.set(false) : this.isScheduling.set(false);
+          isForPublish
+            ? this.isLoading.set(false)
+            : this.isScheduling.set(false);
           this.featureService.handleError(error);
         }
       );

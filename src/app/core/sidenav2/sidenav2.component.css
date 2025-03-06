@@ -81,7 +81,3 @@ mat-card-content {
   flex-direction: column;
   align-items: flex-start;
 }
-
-::ng-deep .dialog {
-  min-width: 50% !important;
-}

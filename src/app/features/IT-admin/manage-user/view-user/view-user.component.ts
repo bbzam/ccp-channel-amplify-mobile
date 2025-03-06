@@ -1,4 +1,12 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  Inject,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
@@ -12,24 +20,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { distinctUntilChanged, merge } from 'rxjs';
-import { errorMessages } from '../../../shared/utils/errorMessages';
+import { errorMessages } from '../../../../shared/utils/errorMessages';
 import {
   allowMax100,
   disallowCharacters,
   emailValidator,
-  hasLowercase,
-  hasMinimumLength,
-  hasNumber,
-  hasSpecialCharacter,
-  hasUppercase,
-  isMatch,
-} from '../../../shared/utils/validators';
+} from '../../../../shared/utils/validators';
 import { MatDividerModule } from '@angular/material/divider';
-import { FeaturesService } from '../../features.service';
+import { FeaturesService } from '../../../features.service';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
-  selector: 'app-add-user',
+  selector: 'app-view-user',
   imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -37,19 +40,33 @@ import { MatButtonModule } from '@angular/material/button';
     ReactiveFormsModule,
     MatIconModule,
     MatDividerModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTooltipModule,
   ],
-  templateUrl: './add-user.component.html',
-  styleUrl: './add-user.component.css',
+  templateUrl: './view-user.component.html',
+  styleUrl: './view-user.component.css',
 })
-export class AddUserComponent implements OnInit {
+export class ViewUserComponent implements OnInit {
+  readonly isLoading = signal(false);
+  readonly isEditing = signal(false);
+  editUserForm!: FormGroup;
+
   private readonly dialog = inject(MatDialog);
-  private readonly dialogRef = inject(MatDialogRef<AddUserComponent>);
+  private readonly dialogRef = inject(MatDialogRef<ViewUserComponent>);
   private readonly featuresService = inject(FeaturesService);
   private readonly fb = inject(FormBuilder);
 
-  createUserForm!: FormGroup;
-  readonly isLoading = signal(false);
+  // Fields
+  firstname!: string;
+  lastname!: string;
+  email!: string;
+  email_verified!: string;
+  birthdate!: string;
+  role!: string;
+  Enabled!: boolean;
+  UserStatus!: string;
+  createdAt!: string;
+  lastModified!: string;
 
   // Error message signals
   firstnameErrorMessage = signal('');
@@ -60,12 +77,18 @@ export class AddUserComponent implements OnInit {
 
   // Form status computed value
   readonly formStatus = computed(() => ({
-    isValid: this.createUserForm.valid,
-    isDirty: this.createUserForm.dirty,
-    isPristine: this.createUserForm.pristine,
+    isValid: this.editUserForm.valid,
+    isDirty: this.editUserForm.dirty,
+    isPristine: this.editUserForm.pristine,
   }));
 
-  constructor() {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
+    this.firstname = data.given_name;
+    this.lastname = data.family_name;
+    this.email = data.email;
+    this.birthdate = data.birthdate;
+    this.role = data.role;
+    this.Enabled = data.Enabled;
     this.createForm();
     this.setupValidationSubscriptions();
   }
@@ -73,29 +96,46 @@ export class AddUserComponent implements OnInit {
   ngOnInit(): void {}
 
   private createForm(): void {
-    this.createUserForm = this.fb.group({
+    this.editUserForm = this.fb.group({
       firstname: [
-        '',
+        { value: this.firstname, disabled: !this.isEditing() },
         [Validators.required, allowMax100(), disallowCharacters()],
       ],
       lastname: [
-        '',
+        { value: this.lastname, disabled: !this.isEditing() },
         [Validators.required, allowMax100(), disallowCharacters()],
       ],
       email: [
-        '',
+        { value: this.email, disabled: true },
         [Validators.required, emailValidator(), disallowCharacters()],
       ],
-      birthdate: ['', [Validators.required, disallowCharacters()]],
-      role: ['', [Validators.required, disallowCharacters()]],
+      birthdate: [
+        { value: this.birthdate, disabled: !this.isEditing() },
+        [Validators.required, disallowCharacters()],
+      ],
+      role: [
+        { value: this.role, disabled: !this.isEditing() },
+        [Validators.required, disallowCharacters()],
+      ],
     });
+  }
+
+  toggleEditMode() {
+    this.isEditing.set(!this.isEditing());
+
+    if (this.isEditing()) {
+      this.editUserForm.enable();
+      this.editUserForm.get('email')?.disable();
+    } else {
+      this.editUserForm.disable();
+    }
   }
 
   private setupValidationSubscriptions(): void {
     const controls = ['firstname', 'lastname', 'email', 'birthdate', 'role'];
 
     controls.forEach((controlName) => {
-      const control = this.createUserForm.get(controlName);
+      const control = this.editUserForm.get(controlName);
       if (control) {
         merge(control.statusChanges, control.valueChanges)
           .pipe(takeUntilDestroyed(), distinctUntilChanged())
@@ -105,7 +145,7 @@ export class AddUserComponent implements OnInit {
   }
 
   private updateErrorMessage(controlName: string): void {
-    const control = this.createUserForm.get(controlName);
+    const control = this.editUserForm.get(controlName);
     if (!control) return;
 
     const errorSignalMap: { [key: string]: any } = {
@@ -147,28 +187,51 @@ export class AddUserComponent implements OnInit {
     }
   }
 
-  async createUserOnClick(): Promise<void> {
-    console.log(this.createUserForm);
+  async updateUserOnClick(): Promise<void> {
+    console.log(this.editUserForm);
 
-    if (this.createUserForm.invalid) return;
+    if (this.editUserForm.invalid) return;
 
     this.isLoading.set(true);
     try {
-      const formData = this.createUserForm.value;
+      const formData = this.editUserForm.value;
       const data = {
+        email: formData.email,
         firstname: formData.firstname,
         lastname: formData.lastname,
-        email: formData.email,
         birthdate: formData.birthdate,
         role: formData.role,
       };
+      const isSuccess = await this.featuresService.updateUser(data);
+      this.dialogRef.close(true);
+    } catch (error) {
+      console.error('create user failed:', error);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
 
-      const isSuccess = await this.featuresService.createUser(data);
-      this.dialogRef.close();
+  async disableOnClick(): Promise<void> {
+    try {
+      const data = {
+        email: this.email,
+      };
+      const isSuccess = await this.featuresService.disableUser(data);
+      this.dialogRef.close(true);
+    } catch (error) {
+      console.error('create user failed:', error);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
 
-      if (!isSuccess) {
-        console.log('');
-      }
+  async enableOnClick(): Promise<void> {
+    try {
+      const data = {
+        email: this.email,
+      };
+      const isSuccess = await this.featuresService.enableUser(data);
+      this.dialogRef.close(true);
     } catch (error) {
       console.error('create user failed:', error);
     } finally {
@@ -177,6 +240,6 @@ export class AddUserComponent implements OnInit {
   }
 
   cancelButton() {
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 }

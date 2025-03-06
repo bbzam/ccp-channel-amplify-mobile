@@ -178,6 +178,13 @@ body {
   overflow: auto;
 }
 
+.dialog2 {
+  min-width: 50% !important;
+  max-width: 100% !important;
+  max-height: 90% !important;
+  overflow: auto;
+}
+
 /* styles for table */
 .table-header {
   background-color: var(--gray) !important;

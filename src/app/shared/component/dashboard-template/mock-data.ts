@@ -1,7 +1,7 @@
 export const dashboardDetails = [
     {
         title: 'Total Users',
-        icon: '',
+        icon: 'person_pin',
     },
     {
         title: 'Total Views',

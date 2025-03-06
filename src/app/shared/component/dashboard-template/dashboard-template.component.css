@@ -1,4 +1,69 @@
-mat-card {
-  width: 100%;
-  height: 100%;
+mat-grid-list {
+  mat-grid-tile {
+    mat-card {
+      width: 100%;
+      height: 100%;
+
+      mat-card-header {
+        padding: 1em;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        align-items: center;
+        gap: 0.5em;
+
+        .title {
+          color: #8491a5;
+        }
+
+        .user {
+          color: blue;
+        }
+
+        .eye {
+          color: yellowgreen;
+        }
+
+        .play {
+          color: red;
+        }
+      }
+
+      mat-card-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        align-content: flex-start;
+        flex-wrap: wrap;
+        height: 100%;
+        overflow: auto;
+
+        .data {
+          color: var(--secondary);
+          font-size: x-large;
+          font-weight: bolder;
+        }
+
+        .chart-container {
+          position: relative;
+          height: 100%;
+          width: 100%;
+        }
+
+        table {
+          td {
+            color: #8491a5;
+            font-size: 0.9em;
+          }
+        }
+      }
+    }
+
+    .card {
+      border: solid 2px var(--gray);
+      border-radius: 1em;
+      /* box-shadow: 0 4px 8px rgba(0, 0, 0, 1); */
+      margin: 0 0.5em;
+    }
+  }
 }

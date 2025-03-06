@@ -210,19 +210,20 @@
 
   <div class="action-buttons">
     <button
-      class="buttonSecondary"
+      class="buttonTertiary"
       mat-raised-button
       type="button"
       (click)="backButton()"
+      [disabled]="isLoading() || isScheduling()"
     >
-      Back
+      Cancel
     </button>
     <button
       class="buttonSecondary"
       mat-raised-button
       type="button"
       (click)="publishContent(false)"
-      [disabled]="uploadForm.invalid || isLoading()"
+      [disabled]="uploadForm.invalid || isLoading() || isScheduling()"
     >
       {{ isScheduling() ? "Scheduling..." : "Schedule" }}
     </button>
@@ -231,7 +232,7 @@
       mat-raised-button
       type="submit"
       (click)="publishContent(true)"
-      [disabled]="uploadForm.invalid || isLoading()"
+      [disabled]="uploadForm.invalid || isLoading() || isScheduling()"
     >
       {{ isLoading() ? "Publishing..." : "Publish" }}
     </button>

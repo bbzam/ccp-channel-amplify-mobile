@@ -1,8 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTableModule } from '@angular/material/table';
 import { FeaturesService } from '../../features.service';
-import { MatInputModule } from '@angular/material/input';
 import { TableComponent } from '../../../shared/component/table/table.component';
 import { TabComponent } from '../../../shared/component/tab/tab.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -16,9 +13,6 @@ export interface Tab {
 @Component({
   selector: 'app-scheduled',
   imports: [
-    MatTabsModule,
-    MatTableModule,
-    MatInputModule,
     TableComponent,
     TabComponent,
   ],
@@ -43,7 +37,7 @@ export class ScheduledComponent {
     { def: 'title', header: 'Title', sortable: true },
     { def: 'category', header: 'Category', sortable: true },
     { def: 'subCategory', header: 'Sub Category', sortable: true },
-    // { def: 'description', header: 'Description', sortable: true },
+    { def: 'description', header: 'Description', sortable: true },
     { def: 'director', header: 'Director', sortable: true },
     { def: 'writer', header: 'Writer', sortable: true },
     { def: 'createdAt', header: 'Date Created', sortable: true },

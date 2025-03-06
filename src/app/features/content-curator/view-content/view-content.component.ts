@@ -45,6 +45,7 @@ interface VideoMetadata {
 })
 export class ViewContentComponent {
   @Input() content: any;
+  readonly isEditing = signal(true);
   inputTitle!: string;
   inputDescription!: string;
   inputCategory!: string;
@@ -120,17 +121,47 @@ export class ViewContentComponent {
 
   private createForm(): void {
     this.uploadForm = this.fb.group({
-      title: [this.inputTitle, [Validators.required]],
-      description: [this.inputDescription, [Validators.required]],
-      category: [this.inputCategory, [Validators.required]],
-      subcategory: [this.inputSubCategory, []],
-      director: [this.inputDirector, [Validators.required]],
-      writer: [this.inputWriter, []],
-      usertype: [this.inputUserType, [Validators.required]],
-      landscapeimage: ['', [Validators.required]],
-      portraitimage: ['', [Validators.required]],
-      previewvideo: ['', [Validators.required]],
-      fullvideo: ['', [Validators.required]],
+      title: [
+        { value: this.inputTitle, disabled: this.isEditing() },
+        [Validators.required],
+      ],
+      description: [
+        { value: this.inputDescription, disabled: this.isEditing() },
+        [Validators.required],
+      ],
+      category: [
+        { value: this.inputCategory, disabled: this.isEditing() },
+        [Validators.required],
+      ],
+      subcategory: [
+        { value: this.inputSubCategory, disabled: this.isEditing() },
+        [],
+      ],
+      director: [
+        { value: this.inputDirector, disabled: this.isEditing() },
+        [Validators.required],
+      ],
+      writer: [{ value: this.inputWriter, disabled: this.isEditing() }, []],
+      usertype: [
+        { value: this.inputUserType, disabled: this.isEditing() },
+        [Validators.required],
+      ],
+      landscapeimage: [
+        { value: '', disabled: this.isEditing() },
+        [Validators.required],
+      ],
+      portraitimage: [
+        { value: '', disabled: this.isEditing() },
+        [Validators.required],
+      ],
+      previewvideo: [
+        { value: '', disabled: this.isEditing() },
+        [Validators.required],
+      ],
+      fullvideo: [
+        { value: '', disabled: this.isEditing() },
+        [Validators.required],
+      ],
     });
   }
 

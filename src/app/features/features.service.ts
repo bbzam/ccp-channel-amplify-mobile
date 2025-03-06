@@ -10,7 +10,11 @@ import { Schema } from '../../../amplify/data/resource';
 import { getUrl } from 'aws-amplify/storage';
 import { SharedService } from '../shared/shared.service';
 import { accessKeys } from '../beta-test/access-keys';
-import { fetchUserAttributes } from 'aws-amplify/auth';
+import {
+  CognitoIdentityProviderClient,
+  ListUsersCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
+import { config } from '../../../amplify/data/config';
 
 @Injectable({
   providedIn: 'root',
@@ -95,10 +99,102 @@ export class FeaturesService {
     }
   }
 
-  async getAllUsers(): Promise<any> {
-    const data = await fetchUserAttributes();
-    console.log('list of users', data);
-    return data;
+  async updateUser(data: any): Promise<any> {
+    try {
+      console.log('data', data);
+      const result = await this.client.mutations.editUser(data);
+      console.log('result', result);
+      if (!result.errors) {
+        this.handleSuccess('User updated successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while updating user. Please try again'
+        );
+      }
+      return result;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  }
+
+  async disableUser(data: any): Promise<any> {
+    try {
+      const result = await this.client.mutations.disableUser(data);
+      if (!result.errors) {
+        this.handleSuccess('User disabled successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while disabling user. Please try again'
+        );
+      }
+      return result;
+    } catch (error) {
+      console.error('Error disabling user:', error);
+      throw error;
+    }
+  }
+
+  async enableUser(email: any): Promise<any> {
+    try {
+      const result = await this.client.mutations.enableUser(email);
+      if (!result.errors) {
+        this.handleSuccess('User enabled successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while enabling user. Please try again'
+        );
+      }
+      return result;
+    } catch (error) {
+      console.error('Error enabling user:', error);
+      throw error;
+    }
+  }
+
+  async getAllUsers(role: string): Promise<any> {
+    try {
+      this.sharedService.showLoader('Fetching content...');
+      const result = await this.client.queries.listUsers({
+        role: role,
+      });
+      if (result.data && typeof result.data === 'string') {
+        const parsedData = JSON.parse(result.data);
+
+        // Transform the data into a JSON format
+        const formattedUsers = parsedData.Users.map((user: any) => {
+          // Create an object to store user attributes
+          const userAttributes = user.Attributes.reduce(
+            (acc: any, attr: any) => {
+              acc[attr.Name] = attr.Value;
+              return acc;
+            },
+            {}
+          );
+
+          return {
+            id: user.Username,
+            email: userAttributes.email,
+            given_name: userAttributes.given_name,
+            family_name: userAttributes.family_name,
+            birthdate: userAttributes.birthdate,
+            email_verified: userAttributes.email_verified,
+            UserStatus: user.UserStatus,
+            Enabled: user.Enabled,
+            createdAt: user.UserCreateDate,
+            lastModified: user.UserLastModifiedDate,
+          };
+        });
+
+        this.sharedService.hideLoader();
+        return formattedUsers;
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      throw error;
+    }
   }
 
   async createContent(contentMetadata: ContentMetadata): Promise<any> {
@@ -177,6 +273,8 @@ export class FeaturesService {
 
   async getAllContents(category: string, status: boolean): Promise<any> {
     try {
+      console.log(category, status);
+      
       this.sharedService.showLoader('Fetching content...');
       const { data } = await this.client.models.Content.list({
         ...(category || status
@@ -221,6 +319,7 @@ export class FeaturesService {
         );
 
         this.sharedService.hideLoader();
+        console.log(updatedData)
 
         return updatedData;
       }

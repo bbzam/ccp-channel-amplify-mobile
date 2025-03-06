@@ -20,6 +20,12 @@
             ? element[column.def] === false
               ? "Scheduled"
               : "Published"
+            : column.def === "Enabled"
+            ? element[column.def] === false
+              ? "Inactive"
+              : "Active"
+            : column.def === "birthdate"
+            ? (element[column.def] | date : "MMMM d yyyy")
             : element[column.def]
         }}
       </td>
@@ -27,7 +33,11 @@
     }
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="onRowClick(row)"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      (click)="onRowClick(row)"
+    ></tr>
 
     <tr class="no-rec-found-row" *matNoDataRow>
       <td colspan="9">
