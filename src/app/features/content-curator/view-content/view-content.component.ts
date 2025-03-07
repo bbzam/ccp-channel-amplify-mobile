@@ -46,6 +46,7 @@ interface VideoMetadata {
 export class ViewContentComponent {
   @Input() content: any;
   readonly isEditing = signal(true);
+  id!: string;
   inputTitle!: string;
   inputDescription!: string;
   inputCategory!: string;
@@ -105,6 +106,7 @@ export class ViewContentComponent {
   }
 
   private setDefaultValue(data: any) {
+    this.id = data.id;
     this.inputTitle = data.title;
     this.inputDescription = data.description;
     this.inputCategory = data.category;
@@ -262,118 +264,30 @@ export class ViewContentComponent {
 
       isForPublish ? this.isLoading.set(true) : this.isScheduling.set(true);
 
-      // Upload landscape image
-      const landscapeImageKey = `landscape-images/${Date.now()}-${
-        this.inputLandscapeImage.name
-      }`;
+      await this.featureService
+        .publishAndScheduleContent(this.id, isForPublish)
+        .then(
+          async (result) => {
+            console.log(result.data);
 
-      try {
-        console.log('inputLandscapeImage data:', this.inputLandscapeImage);
-
-        await uploadData({
-          data: this.inputLandscapeImage,
-          path: landscapeImageKey,
-        });
-      } catch (e) {
-        console.log('error', e);
-      }
-
-      // Upload portrait image
-      const portraitImageKey = `portrait-images/${Date.now()}-${
-        this.inputPortraitImage.name
-      }`;
-
-      try {
-        await uploadData({
-          data: this.inputPortraitImage,
-          path: portraitImageKey,
-        });
-      } catch (e) {
-        console.log('error', e);
-      }
-
-      // Upload preview video
-      const previewVideoKey = `preview-videos/${Date.now()}-${
-        this.inputPreviewVideo.name
-      }`;
-
-      try {
-        await uploadData({
-          data: this.inputPreviewVideo,
-          path: previewVideoKey,
-        });
-      } catch (e) {
-        console.log('error', e);
-      }
-
-      // Upload full video
-      const fullVideoKey = `full-videos/${Date.now()}-${
-        this.inputFullVideo.name
-      }`;
-
-      const uploadFullVideo = uploadData({
-        data: this.inputFullVideo,
-        path: fullVideoKey,
-      });
-      // uploadFullVideo.pause();
-      // uploadFullVideo.resume();
-      // uploadFullVideo.cancel();
-
-      try {
-        const result = await uploadFullVideo.result;
-        // return {
-        //   key: fullVideoKey,
-        //   result,
-        // };
-        console.log(result);
-      } catch (e) {
-        if (isCancelError(e)) {
-          console.log('isCancelError', e);
-        } else {
-          console.log('error', e);
-        }
-      }
-
-      const formData = this.uploadForm.value;
-      // Create content metadata object
-      const contentMetadata = {
-        title: formData.title,
-        description: formData.description,
-        category: formData.category,
-        subCategory: formData.subcategory,
-        director: formData.director,
-        writer: formData.writer,
-        userType: formData.usertype,
-        landscapeImageUrl: landscapeImageKey,
-        portraitImageUrl: portraitImageKey,
-        previewVideoUrl: previewVideoKey,
-        fullVideoUrl: fullVideoKey,
-        runtime: this.videoMetadata?.duration,
-        resolution: this.videoMetadata?.quality,
-        status: isForPublish,
-        publishDate: this.date,
-      };
-
-      console.log(contentMetadata);
-
-      await this.featureService.createContent(contentMetadata).then(
-        async (result) => {
-          console.log(result.data);
-
-          result.data
-            ? this.featureService.handleSuccess('Successfully Uploaded!')
-            : this.featureService.handleError(
-                'Uploading Error, Please try again.'
-              );
-          // this.dialogRef.close();
-        },
-        (error) => {
-          isForPublish
-            ? this.isLoading.set(false)
-            : this.isScheduling.set(false);
-          this.featureService.handleError(error);
-        }
-      );
+            result.data
+              ? (this.featureService.handleSuccess(
+                  isForPublish
+                    ? 'Content Published Successfully!'
+                    : 'Content Scheduled Successfully!'
+                ),
+                this.dialogRef.close(true))
+              : this.featureService.handleError(
+                  'Updating Error, Please try again.'
+                );
+          },
+          (error) => {
+            isForPublish
+              ? this.isLoading.set(false)
+              : this.isScheduling.set(false);
+            this.featureService.handleError(error);
+          }
+        );
     } catch (error) {
       console.error('Error publishing content:', error);
     } finally {

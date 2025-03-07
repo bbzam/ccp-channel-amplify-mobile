@@ -8,6 +8,10 @@
       <button class="new" mat-fab extended (click)="addNewUser()">
         <mat-icon>add</mat-icon><span>New User</span>
       </button>
+      } @else if (lastSegment === 'manage-keys') {
+      <button class="new" mat-fab extended (click)="addNewKey()">
+        <mat-icon>add</mat-icon><span>New Key</span>
+      </button>
       } @else {
       <button class="new" mat-fab extended (click)="uploadNewContent()">
         <mat-icon>add</mat-icon><span>New Content</span>

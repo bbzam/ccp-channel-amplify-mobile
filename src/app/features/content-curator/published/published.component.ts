@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { FeaturesService } from '../../features.service';
 import { TableComponent } from '../../../shared/component/table/table.component';
 import { TabComponent } from '../../../shared/component/tab/tab.component';
+import { ViewContentComponent } from '../view-content/view-content.component';
+import { MatDialog } from '@angular/material/dialog';
 
 export interface Tab {
   label: string;
@@ -10,15 +12,14 @@ export interface Tab {
 
 @Component({
   selector: 'app-published',
-  imports: [
-    TableComponent,
-    TabComponent,
-  ],
+  imports: [TableComponent, TabComponent],
   templateUrl: './published.component.html',
   styleUrl: './published.component.css',
 })
 export class PublishedComponent {
   readonly featuresService = inject(FeaturesService);
+  readonly dialog = inject(MatDialog);
+  currentTab!: string;
 
   tabs: Tab[] = [
     { label: 'THEATER', category: 'theater' },
@@ -47,10 +48,12 @@ export class PublishedComponent {
 
   ngOnInit(): void {
     this.getAllContents('theater');
+    this.currentTab = 'theater';
   }
 
   onTabChanged(category: string): void {
     this.getAllContents(category);
+    this.currentTab = category;
   }
 
   getAllContents(category: string) {
@@ -59,5 +62,23 @@ export class PublishedComponent {
         this.tableData = data;
       }
     });
+  }
+
+  handleRowClick(row: any): void {
+    this.dialog
+      .open(ViewContentComponent, {
+        data: row,
+        panelClass: 'dialog',
+      })
+      .afterClosed()
+      .subscribe((data) => {
+        if (data) {
+          this.getAllContents(row.category);
+        }
+      });
+  }
+
+  handleRefreshClick() {
+    this.getAllContents(this.currentTab);
   }
 }

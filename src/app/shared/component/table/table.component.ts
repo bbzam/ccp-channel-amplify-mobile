@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
@@ -6,6 +12,9 @@ import { DatePipe } from '@angular/common';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export interface ColumnConfig {
   def: string;
@@ -29,6 +38,9 @@ export interface TableConfig {
     MatPaginator,
     MatSortModule,
     MatFormFieldModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.css',
@@ -38,6 +50,7 @@ export class TableComponent {
   @Input() columns: ColumnConfig[] = [];
   @Input() displayedColumns: string[] = [];
   @Output() rowClick = new EventEmitter<any>();
+  @Output() refreshClick = new EventEmitter<void>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -76,5 +89,9 @@ export class TableComponent {
 
   onRowClick(row: any): void {
     this.rowClick.emit(row);
+  }
+
+  onRefreshClick() {
+    this.refreshClick.emit();
   }
 }

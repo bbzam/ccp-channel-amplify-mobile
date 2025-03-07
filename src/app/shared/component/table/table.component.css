@@ -1,3 +1,21 @@
+.search-button {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  button {
+    background-color: var(--primary);
+
+    mat-icon {
+      color: var(--tertiary);
+    }
+  }
+  button:hover {
+    background-color: var(--primary-hovered);
+  }
+}
+
 tr:hover {
   background: #efefef;
   cursor: pointer;

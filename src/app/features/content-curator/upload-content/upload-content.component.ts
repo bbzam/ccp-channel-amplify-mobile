@@ -307,11 +307,15 @@ export class UploadContentComponent {
           console.log(result.data);
 
           result.data
-            ? this.featureService.handleSuccess('Successfully Uploaded!')
+            ? this.featureService.handleSuccess(
+                isForPublish
+                  ? 'Content Published Successfully!'
+                  : 'Content Scheduled Successfully!'
+              )
             : this.featureService.handleError(
                 'Uploading Error, Please try again.'
               );
-              this.dialogRef.close();
+          this.dialogRef.close();
         },
         (error) => {
           isForPublish

@@ -161,15 +161,6 @@ export const routes: Routes = [
             './features/content-curator/scheduled/scheduled.component'
           ).then((m) => m.ScheduledComponent),
       },
-      // {
-      //   path: 'upload-content',
-      //   resolve: { loading: loaderResolver },
-      //   data: { loadingMessage: 'Loading Page...' },
-      //   loadComponent: () =>
-      //     import(
-      //       './features/content-curator/upload-content/upload-content.component'
-      //     ).then((m) => m.UploadContentComponent),
-      // },
       {
         path: 'featured',
         resolve: { loading: loaderResolver },
@@ -196,6 +187,15 @@ export const routes: Routes = [
           import(
             './features/IT-admin/manage-user/add-user/add-user.component'
           ).then((m) => m.AddUserComponent),
+      },
+      {
+        path: 'manage-keys',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import(
+            './beta-test/manage-keys/manage-keys.component'
+          ).then((m) => m.ManageKeysComponent),
       },
       {
         path: 'notfound',

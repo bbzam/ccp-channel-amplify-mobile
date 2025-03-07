@@ -29,15 +29,39 @@ export class FeaturesService {
 
   constructor() {}
 
-  uploadKeys() {
-    const keys = accessKeys;
-    keys.forEach((key) => {
-      console.log(key);
-      this.client.models.Keys.create({
-        id: key.code,
-        isUsed: key.isUsed,
-      });
-    });
+  async uploadKeys(keys: any): Promise<boolean> {
+    try {
+      await Promise.all(
+        keys.map((key: any) =>
+          this.client.models.Keys.create({
+            id: key.code,
+            isUsed: false,
+          })
+        )
+      );
+      this.handleSuccess('Keys uploaded successfully!');
+      return true;
+    } catch (error) {
+      this.handleError(
+        'An error occurred while uploading keys. Please try again'
+      );
+      console.error('Failed to upload keys: ' + error);
+      return false;
+    }
+  }
+
+  async getAllKeys(): Promise<any> {
+    try {
+      this.sharedService.showLoader('Fetching content...');
+      const { data } = await this.client.models.Keys.list();
+      if (data) {
+        this.sharedService.hideLoader();
+        return data;
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      throw error;
+    }
   }
 
   async updateKeys(code: string) {
@@ -231,50 +255,34 @@ export class FeaturesService {
     }
   }
 
-  // async getAllContents(): Promise<any> {
-  //   try {
-  //     this.sharedService.showLoader('Fetching content...');
-  //     const { data, errors } = await this.client.models.Content.list();
-  //     if (data) {
-  //       // Process each content item and update their URLs
-  //       const updatedData = await Promise.all(
-  //         data.map(async (content: any) => {
-  //           const urlLandscape = await this.getFileUrl(
-  //             content.landscapeImageUrl
-  //           );
-  //           const urlPortrait = await this.getFileUrl(content.portraitImageUrl);
-  //           const urlPreviewVideo = await this.getFileUrl(
-  //             content.previewVideoUrl
-  //           );
-  //           const urlFullVideo = await this.getFileUrl(content.fullVideoUrl);
+  async publishAndScheduleContent(id: string, status: boolean) {
+    try {
+      const result = await this.client.models.Content.update(
+        {
+          id: id,
+          status: status,
+        },
+        {
+          selectionSet: ['status'],
+        }
+      );
 
-  //           // Return updated content object with new URLs
-  //           return {
-  //             ...content,
-  //             landscapeImageUrl: urlLandscape,
-  //             portraitImageUrl: urlPortrait,
-  //             previewVideoUrl: urlPreviewVideo,
-  //             fullVideoUrl: urlFullVideo,
-  //           };
-  //         })
-  //       );
-
-  //       this.sharedService.hideLoader();
-
-  //       return updatedData;
-  //     }
-  //     return [];
-  //   } catch (error) {
-  //     this.sharedService.hideLoader();
-  //     console.error('Error fetching content metadata:', error);
-  //     throw error; // Re-throw to handle in the component
-  //   }
-  // }
+      return result;
+    } catch (error) {
+      console.error('Error updating keys:', error);
+      // You can customize the error message based on the error type
+      const errorMessage =
+        error === 'This key has already been used'
+          ? error
+          : 'An error occurred while updating the key';
+      throw new Error(errorMessage);
+    }
+  }
 
   async getAllContents(category: string, status: boolean): Promise<any> {
     try {
       console.log(category, status);
-      
+
       this.sharedService.showLoader('Fetching content...');
       const { data } = await this.client.models.Content.list({
         ...(category || status
@@ -285,11 +293,12 @@ export class FeaturesService {
                     eq: category,
                   },
                 }),
-                ...(status && {
-                  status: {
-                    eq: status,
-                  },
-                }),
+                ...(status !== undefined &&
+                  status !== null && {
+                    status: {
+                      eq: status,
+                    },
+                  }),
               },
             }
           : {}),
@@ -319,7 +328,7 @@ export class FeaturesService {
         );
 
         this.sharedService.hideLoader();
-        console.log(updatedData)
+        console.log(updatedData);
 
         return updatedData;
       }

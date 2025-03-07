@@ -41,7 +41,7 @@ const schema = a.schema({
       allow.guest().to(['update', 'read']),
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
-        .to(['create', 'update', 'delete']),
+        .to(['create', 'read', 'update', 'delete']),
     ]),
 
   addUser: a
