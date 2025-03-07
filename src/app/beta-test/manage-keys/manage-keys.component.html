@@ -1,10 +1,8 @@
-<app-tab [tabs]="tabs" (tabChanged)="onTabChanged($event)"> </app-tab>
 <div class="table-container">
   <app-table
     [data]="tableData"
     [columns]="columns"
     [displayedColumns]="displayedColumns"
-    (rowClick)="handleRowClick($event)"
     (refreshClick)="handleRefreshClick()"
   >
   </app-table>

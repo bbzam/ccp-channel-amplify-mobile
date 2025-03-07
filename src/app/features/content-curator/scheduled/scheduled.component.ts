@@ -12,16 +12,14 @@ export interface Tab {
 
 @Component({
   selector: 'app-scheduled',
-  imports: [
-    TableComponent,
-    TabComponent,
-  ],
+  imports: [TableComponent, TabComponent],
   templateUrl: './scheduled.component.html',
   styleUrl: './scheduled.component.css',
 })
 export class ScheduledComponent {
   readonly featuresService = inject(FeaturesService);
   readonly dialog = inject(MatDialog);
+  currentTab!: string;
 
   tabs: Tab[] = [
     { label: 'THEATER', category: 'theater' },
@@ -50,10 +48,12 @@ export class ScheduledComponent {
 
   ngOnInit(): void {
     this.getAllContents('theater');
+    this.currentTab = 'theater';
   }
 
   onTabChanged(category: string): void {
     this.getAllContents(category);
+    this.currentTab = category;
   }
 
   getAllContents(category: string) {
@@ -71,6 +71,14 @@ export class ScheduledComponent {
         panelClass: 'dialog',
       })
       .afterClosed()
-      .subscribe((data) => {});
+      .subscribe((data) => {
+        if (data) {
+          this.getAllContents(row.category);
+        }
+      });
+  }
+
+  handleRefreshClick() {
+    this.getAllContents(this.currentTab);
   }
 }

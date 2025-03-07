@@ -12,10 +12,7 @@ export interface Tab {
 
 @Component({
   selector: 'app-manage-users',
-  imports: [
-    TableComponent,
-    TabComponent,
-  ],
+  imports: [TableComponent, TabComponent],
   templateUrl: './manage-users.component.html',
   styleUrl: './manage-users.component.css',
 })
@@ -77,5 +74,9 @@ export class ManageUsersComponent {
           this.getAllUsers(this.role);
         }
       });
+  }
+
+  handleRefreshClick() {
+    this.getAllUsers(this.role);
   }
 }

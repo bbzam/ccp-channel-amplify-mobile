@@ -196,7 +196,7 @@ export class ViewUserComponent implements OnInit {
     try {
       const formData = this.editUserForm.value;
       const data = {
-        email: formData.email,
+        email: this.email,
         firstname: formData.firstname,
         lastname: formData.lastname,
         birthdate: formData.birthdate,

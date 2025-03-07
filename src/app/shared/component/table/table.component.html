@@ -1,4 +1,9 @@
-<input matInput (keyup)="applyFilter($event)" placeholder="Search" #input />
+<div class="search-button">
+  <input matInput (keyup)="applyFilter($event)" placeholder="Search" #input />
+  <button mat-icon-button (click)="onRefreshClick()" matTooltip="refresh">
+    <mat-icon>refresh</mat-icon>
+  </button>
+</div>
 
 <div class="table">
   <table mat-table [dataSource]="dataSource" matSort>

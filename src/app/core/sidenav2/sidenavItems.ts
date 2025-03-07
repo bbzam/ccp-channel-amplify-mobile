@@ -24,6 +24,11 @@ export const curatorNavItems = [
     routeLink: '/content-curator/manage-users',
     icon: 'person'
   },
+  {
+    label: 'Manage Keys',
+    routeLink: '/content-curator/manage-keys',
+    icon: 'vpn_key'
+  },
 ];
 
 export const itAdminNavItems = [
