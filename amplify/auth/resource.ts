@@ -1,5 +1,11 @@
 import { defineAuth } from '@aws-amplify/backend';
 import { postConfirmation } from './post-confirmation/resource';
+import { addUser } from '../data/add-user/resource';
+import { customMessage } from '../auth/custom-message/resource';
+import { listUsers } from '../data/list-users/resource';
+import { editUser } from '../data/edit-user/resource';
+import { disableUser } from '../data/disable-user/resource';
+import { enableUser } from '../data/enable-user/resource';
 
 /**
  * Define and configure your auth resource
@@ -121,10 +127,26 @@ export const auth = defineAuth({
       mutable: true,
       required: true,
     },
-  }, //
+  },
   groups: ['USER', 'SUBSCRIBER', 'CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN'],
   triggers: {
+    customMessage,
     postConfirmation,
   },
-  access: (allow) => [allow.resource(postConfirmation).to(['addUserToGroup'])],
+  access: (allow) => [
+    allow.resource(postConfirmation).to(['addUserToGroup']),
+    allow.resource(addUser).to(['createUser', 'addUserToGroup']),
+    // allow.resource(addUser).to(['addUserToGroup']),
+    allow.resource(listUsers).to(['listUsersInGroup']),
+    allow
+      .resource(editUser)
+      .to([
+        'updateUserAttributes',
+        'addUserToGroup',
+        'listGroupsForUser',
+        'removeUserFromGroup',
+      ]),
+    allow.resource(disableUser).to(['disableUser']),
+    allow.resource(enableUser).to(['enableUser']),
+  ],
 });

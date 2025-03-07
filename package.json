@@ -21,6 +21,8 @@
     "@angular/router": "^19.0.6",
     "@aws-amplify/ui-angular": "^5.0.34",
     "aws-amplify": "^6.6.6",
+    "aws-sdk": "^2.1692.0",
+    "chart.js": "^4.4.8",
     "rxjs": "~7.8.0",
     "shaka-player": "^4.13.1",
     "tslib": "^2.3.0",

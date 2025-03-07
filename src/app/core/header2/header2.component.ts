@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { ConfirmationDialogComponent } from '../../shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { AuthServiceService } from '../../auth/auth-service.service';
+import { FeaturesService } from '../../features/features.service';
 
 @Component({
   selector: 'app-header2',
@@ -24,19 +25,18 @@ export class Header2Component {
   @Output() menuClicked = new EventEmitter<void>();
   readonly dialog = inject(MatDialog);
   readonly authService = inject(AuthServiceService);
+  readonly featuresService = inject(FeaturesService);
 
   menu() {
     this.menuClicked.emit();
   }
 
   get username(): string {
-    // return String(sessionStorage.getItem('username'));
-    return 'Jhomark Alber';
+    return String(sessionStorage.getItem('username'));
   }
 
   get email(): string {
-    // return String(sessionStorage.getItem('email'));
-    return 'jhomark@sitesphil.com';
+    return String(sessionStorage.getItem('email'));
   }
 
   logout() {

@@ -114,12 +114,11 @@ export class SigninComponent implements OnInit {
 
   signUpOnClick(): void {
     this.dialogRef.close();
-    // this.dialog.open(SignupComponent, {disableClose: true}).afterClosed().subscribe();
-    this.dialog.open(BetaAccessComponent).afterClosed().subscribe(data => {
-      if (data) {
+    // this.dialog.open(BetaAccessComponent).afterClosed().subscribe(data => {
+    //   if (data) {
         this.dialog.open(SignupComponent, {disableClose: true}).afterClosed();
-      }
-    });
+    //   }
+    // });
   }
 
   togglePasswordVisibility(): void {

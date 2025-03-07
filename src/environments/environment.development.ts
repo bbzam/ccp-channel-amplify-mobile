@@ -3,5 +3,6 @@ import { Environment } from "./environment.model";
 
 export const environment:Environment = {
     production: false,
-    APIURL: config.API_URL
+    APIURL: config.API_URL,
+    USER_POOL_ID: config.USER_POOL_ID,
 }

@@ -1,0 +1,31 @@
+<div class="signin-main">
+  <form [formGroup]="betaAccessForm" (ngSubmit)="confirm()">
+    <div class="form-field-container">
+      <h2>Schedule Date</h2>
+    </div>
+    <div class="form-field-container">
+      <label for="date">Date</label>
+      <input
+        id="date"
+        matInput
+        type="date"
+        placeholder="Select date"
+        formControlName="date"
+        autocomplete="off"
+        required
+      />
+      <mat-error>{{ dateErrorMessage() }}</mat-error>
+    </div>
+
+    <div class="form-field-container">
+      <button
+        class="buttonSignIn"
+        mat-raised-button
+        type="submit"
+        [disabled]="betaAccessForm.invalid || isLoading()"
+      >
+        {{ isLoading() ? "Scheduling..." : "Schedule" }}
+      </button>
+    </div>
+  </form>
+</div>

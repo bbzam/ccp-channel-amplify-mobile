@@ -1,7 +1,7 @@
 <div class="signin-main">
   <h1>UPLOAD NEW CONTENT</h1>
   <mat-divider></mat-divider>
-  <form [formGroup]="uploadForm" (ngSubmit)="publishContent()">
+  <form [formGroup]="uploadForm">
     <!-- Title -->
     <div class="form-field-container">
       <label for="title">Title</label>
@@ -14,7 +14,9 @@
         required
         placeholder="Enter title"
       />
+      @if (titleErrorMessage()) {
       <mat-error>{{ titleErrorMessage() }}</mat-error>
+      }
     </div>
 
     <!-- Description -->
@@ -29,7 +31,9 @@
         rows="4"
         placeholder="Enter description"
       ></textarea>
+      @if(descriptionErrorMessage()) {
       <mat-error>{{ descriptionErrorMessage() }}</mat-error>
+      }
     </div>
 
     <!-- Category -->
@@ -50,7 +54,9 @@
         <option value="ccpspecials">CCP Specials</option>
         <option value="ccpclassics">CCP Classics</option>
       </select>
+      @if(categoryErrorMessage()) {
       <mat-error>{{ categoryErrorMessage() }}</mat-error>
+      }
     </div>
 
     <!-- Sub Category -->
@@ -64,7 +70,9 @@
         formControlName="subcategory"
         placeholder="Enter Sub Category"
       />
+      @if(subCategoryErrorMessage()) {
       <mat-error>{{ subCategoryErrorMessage() }}</mat-error>
+      }
     </div>
 
     <!-- Director -->
@@ -78,7 +86,9 @@
         formControlName="director"
         placeholder="Enter director name"
       />
+      @if(directorErrorMessage()) {
       <mat-error>{{ directorErrorMessage() }}</mat-error>
+      }
     </div>
 
     <!-- Writer -->
@@ -92,7 +102,9 @@
         formControlName="writer"
         placeholder="Enter writer name"
       />
-      <mat-error>{{ writerErrorMessage() }}</mat-error>
+      @if(writerErrorMessage()) {
+      <mat-error>{{ writerErrorMessage() }}</mat-error
+      >}
     </div>
 
     <!-- User Type -->
@@ -102,7 +114,9 @@
         <option value="free">Free</option>
         <option value="subscriber">Subscriber</option>
       </select>
+      @if(userTypeErrorMessage()) {
       <mat-error>{{ userTypeErrorMessage() }}</mat-error>
+      }
     </div>
 
     <!-- Landscape Image -->
@@ -118,8 +132,9 @@
         class="form-control-file"
         required
       />
+      @if (landscapeErrorMessage()) {
       <mat-error>{{ landscapeErrorMessage() }}</mat-error>
-      @if (landscapeFileURL) {
+      } @if (landscapeFileURL) {
       <img class="previewMedia" [src]="landscapeFileURL" alt="banner-img" />
       }
       <!-- <small class="form-text text-muted">Recommended size: 1920x1080px</small> -->
@@ -138,8 +153,9 @@
         class="form-control-file"
         required
       />
-      <mat-error>{{ portraitErrorMessage() }}</mat-error>
-      @if (portraitFileURL) {
+      @if (portraitErrorMessage()) {
+      <mat-error>{{ portraitErrorMessage() }}</mat-error
+      >} @if (portraitFileURL) {
       <img class="previewMedia" [src]="portraitFileURL" alt="poster-img" />
       }
       <!-- <small class="form-text text-muted">Recommended size: 1080x1920px</small> -->
@@ -158,8 +174,9 @@
         class="form-control-file"
         required
       />
-      <mat-error>{{ previewErrorMessage() }}</mat-error>
-      @if (previewFileURL) {
+      @if(previewErrorMessage()) {
+      <mat-error>{{ previewErrorMessage() }}</mat-error
+      >} @if (previewFileURL) {
       <video
         class="previewMedia"
         [src]="previewFileURL"
@@ -182,8 +199,9 @@
         class="form-control-file"
         required
       />
-      <mat-error>{{ fullErrorMessage() }}</mat-error>
-      @if (fullFileURL) {
+      @if(fullErrorMessage()) {
+      <mat-error>{{ fullErrorMessage() }}</mat-error
+      >} @if (fullFileURL) {
       <video class="previewMedia" [src]="fullFileURL" alt="full-video"></video>
       }
       <!-- <small class="form-text text-muted">Supported formats: MP4, MOV</small> -->
@@ -196,24 +214,25 @@
       mat-raised-button
       type="button"
       (click)="backButton()"
+      [disabled]="isLoading() || isScheduling()"
     >
-      Back
+      Cancel
     </button>
     <button
       class="buttonSecondary"
       mat-raised-button
       type="button"
-      (click)="schedulePublish()"
-      [disabled]="uploadForm.invalid || isLoading()"
+      (click)="publishContent(false)"
+      [disabled]="uploadForm.invalid || isLoading() || isScheduling()"
     >
-      Schedule
+      {{ isScheduling() ? "Scheduling..." : "Schedule" }}
     </button>
     <button
       class="buttonPrimary"
       mat-raised-button
       type="submit"
-      (click)="publishContent()"
-      [disabled]="uploadForm.invalid || isLoading()"
+      (click)="publishContent(true)"
+      [disabled]="uploadForm.invalid || isLoading() || isScheduling()"
     >
       {{ isLoading() ? "Publishing..." : "Publish" }}
     </button>

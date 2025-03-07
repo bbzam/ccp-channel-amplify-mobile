@@ -8,8 +8,10 @@
     </div>
     <div class="form-field-container">
       <!-- Email Field -->
-      <label>Email</label>
+      <label for="email">Email</label>
       <input
+        id="email"
+        autocomplete="off"
         matInput
         type="email"
         formControlName="email"
@@ -21,8 +23,10 @@
 
     <div class="form-field-container">
       <!-- Password Field -->
-      <label>Password</label>
+      <label for="password">Password</label>
       <input
+        id="password"
+        autocomplete="off"
         matInput
         [type]="isPasswordVisible ? 'text' : 'password'"
         placeholder="Enter your password"

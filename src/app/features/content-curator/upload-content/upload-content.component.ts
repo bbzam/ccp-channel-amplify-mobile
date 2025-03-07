@@ -7,16 +7,17 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { isCancelError, uploadData } from 'aws-amplify/storage';
 import { FeaturesService } from '../../features.service';
 import { Location } from '@angular/common';
-import { distinctUntilChanged, merge } from 'rxjs';
+import { distinctUntilChanged, firstValueFrom, merge } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { errorMessages } from '../../../shared/utils/errorMessages';
+import { InputDateComponent } from '../../../shared/component/input-date/input-date.component';
 
 interface VideoMetadata {
   duration: number;
@@ -52,6 +53,7 @@ export class UploadContentComponent {
   inputPortraitImage!: any;
   inputPreviewVideo!: any;
   inputFullVideo!: any;
+  date!: string;
   videoMetadata: VideoMetadata | null = null;
   uploadFullVideo!: any;
   landscapeFileURL!: string;
@@ -61,10 +63,12 @@ export class UploadContentComponent {
   uploadForm!: FormGroup;
 
   readonly isLoading = signal(false);
-  // readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
+  readonly isScheduling = signal(false);
+  readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
   readonly featureService = inject(FeaturesService);
   readonly location = inject(Location);
   private readonly fb = inject(FormBuilder);
+  readonly dialog = inject(MatDialog);
 
   // Error message signals
   titleErrorMessage = signal('');
@@ -184,15 +188,25 @@ export class UploadContentComponent {
   schedulePublish() {}
 
   backButton() {
-    this.location.back();
-    // this.dialogRef.close();
+    // this.location.back();
+    this.dialogRef.close();
   }
 
-  async publishContent() {
-    console.log('publishhh');
-    
+  async publishContent(isForPublish: boolean) {
     try {
-      this.isLoading.set(true);
+      if (!isForPublish) {
+        const dialogResult = await firstValueFrom(
+          this.dialog.open(InputDateComponent).afterClosed()
+        );
+
+        this.date = dialogResult;
+
+        if (!this.date) {
+          return;
+        }
+      }
+
+      isForPublish ? this.isLoading.set(true) : this.isScheduling.set(true);
 
       // Upload landscape image
       const landscapeImageKey = `landscape-images/${Date.now()}-${
@@ -282,6 +296,8 @@ export class UploadContentComponent {
         fullVideoUrl: fullVideoKey,
         runtime: this.videoMetadata?.duration,
         resolution: this.videoMetadata?.quality,
+        status: isForPublish,
+        publishDate: this.date,
       };
 
       console.log(contentMetadata);
@@ -295,17 +311,19 @@ export class UploadContentComponent {
             : this.featureService.handleError(
                 'Uploading Error, Please try again.'
               );
-          // this.dialogRef.close();
+              this.dialogRef.close();
         },
         (error) => {
-          this.isLoading.set(false);
+          isForPublish
+            ? this.isLoading.set(false)
+            : this.isScheduling.set(false);
           this.featureService.handleError(error);
         }
       );
     } catch (error) {
       console.error('Error publishing content:', error);
     } finally {
-      this.isLoading.set(false);
+      isForPublish ? this.isLoading.set(false) : this.isScheduling.set(false);
     }
     return;
   }

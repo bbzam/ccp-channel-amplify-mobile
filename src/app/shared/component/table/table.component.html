@@ -1,0 +1,54 @@
+<input matInput (keyup)="applyFilter($event)" placeholder="Search" #input />
+
+<div class="table">
+  <table mat-table [dataSource]="dataSource" matSort>
+    @for (column of columns; track column.def) {
+    <ng-container [matColumnDef]="column.def">
+      <th
+        class="table-header"
+        mat-header-cell
+        *matHeaderCellDef
+        [mat-sort-header]="column.sortable ? column.def : ''"
+      >
+        {{ column.header }}
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{
+          column.def === "updatedAt" || column.def === "createdAt"
+            ? (element[column.def] | date : "MMM d yyyy h:mm a")
+            : column.def === "status"
+            ? element[column.def] === false
+              ? "Scheduled"
+              : "Published"
+            : column.def === "Enabled"
+            ? element[column.def] === false
+              ? "Inactive"
+              : "Active"
+            : column.def === "birthdate"
+            ? (element[column.def] | date : "MMMM d yyyy")
+            : element[column.def]
+        }}
+      </td>
+    </ng-container>
+    }
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      (click)="onRowClick(row)"
+    ></tr>
+
+    <tr class="no-rec-found-row" *matNoDataRow>
+      <td colspan="9">
+        <!-- No data matching the filter "{{ input.value }}" -->
+        <p>No records found.</p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<mat-paginator
+  [pageSizeOptions]="[5, 10, 25, 100]"
+  aria-label="Select page"
+></mat-paginator>

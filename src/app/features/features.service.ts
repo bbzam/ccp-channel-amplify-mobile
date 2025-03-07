@@ -10,6 +10,11 @@ import { Schema } from '../../../amplify/data/resource';
 import { getUrl } from 'aws-amplify/storage';
 import { SharedService } from '../shared/shared.service';
 import { accessKeys } from '../beta-test/access-keys';
+import {
+  CognitoIdentityProviderClient,
+  ListUsersCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
+import { config } from '../../../amplify/data/config';
 
 @Injectable({
   providedIn: 'root',
@@ -17,10 +22,10 @@ import { accessKeys } from '../beta-test/access-keys';
 export class FeaturesService {
   UPLOADCONTENT_URL = environment.APIURL + '/';
 
-  readonly dialog = inject(MatDialog);
-  readonly router = inject(Router);
-  readonly client = generateClient<Schema>();
-  readonly sharedService = inject(SharedService);
+  private readonly dialog = inject(MatDialog);
+  private readonly router = inject(Router);
+  private readonly client = generateClient<Schema>();
+  private readonly sharedService = inject(SharedService);
 
   constructor() {}
 
@@ -37,6 +42,21 @@ export class FeaturesService {
 
   async updateKeys(code: string) {
     try {
+      // First check if the key is already used
+      const existingKey = await this.client.models.Keys.get(
+        { id: code },
+        {
+          authMode: 'iam',
+          selectionSet: ['isUsed'],
+        }
+      );
+
+      if (existingKey.data?.isUsed) {
+        this.handleError('This key has already been used');
+        throw new Error('This key has already been used');
+      }
+
+      // If not used, proceed with the update
       const result = await this.client.models.Keys.update(
         {
           id: code,
@@ -51,6 +71,128 @@ export class FeaturesService {
       return result;
     } catch (error) {
       console.error('Error updating keys:', error);
+      // You can customize the error message based on the error type
+      const errorMessage =
+        error === 'This key has already been used'
+          ? error
+          : 'An error occurred while updating the key';
+      throw new Error(errorMessage);
+    }
+  }
+
+  async createUser(data: any): Promise<any> {
+    try {
+      console.log('data', data);
+      const result = await this.client.mutations.addUser(data);
+      console.log('result', result);
+      if (!result.errors) {
+        this.handleSuccess('User created successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while creating user. Please try again'
+        );
+      }
+      return result;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+  }
+
+  async updateUser(data: any): Promise<any> {
+    try {
+      console.log('data', data);
+      const result = await this.client.mutations.editUser(data);
+      console.log('result', result);
+      if (!result.errors) {
+        this.handleSuccess('User updated successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while updating user. Please try again'
+        );
+      }
+      return result;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  }
+
+  async disableUser(data: any): Promise<any> {
+    try {
+      const result = await this.client.mutations.disableUser(data);
+      if (!result.errors) {
+        this.handleSuccess('User disabled successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while disabling user. Please try again'
+        );
+      }
+      return result;
+    } catch (error) {
+      console.error('Error disabling user:', error);
+      throw error;
+    }
+  }
+
+  async enableUser(email: any): Promise<any> {
+    try {
+      const result = await this.client.mutations.enableUser(email);
+      if (!result.errors) {
+        this.handleSuccess('User enabled successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while enabling user. Please try again'
+        );
+      }
+      return result;
+    } catch (error) {
+      console.error('Error enabling user:', error);
+      throw error;
+    }
+  }
+
+  async getAllUsers(role: string): Promise<any> {
+    try {
+      this.sharedService.showLoader('Fetching content...');
+      const result = await this.client.queries.listUsers({
+        role: role,
+      });
+      if (result.data && typeof result.data === 'string') {
+        const parsedData = JSON.parse(result.data);
+
+        // Transform the data into a JSON format
+        const formattedUsers = parsedData.Users.map((user: any) => {
+          // Create an object to store user attributes
+          const userAttributes = user.Attributes.reduce(
+            (acc: any, attr: any) => {
+              acc[attr.Name] = attr.Value;
+              return acc;
+            },
+            {}
+          );
+
+          return {
+            id: user.Username,
+            email: userAttributes.email,
+            given_name: userAttributes.given_name,
+            family_name: userAttributes.family_name,
+            birthdate: userAttributes.birthdate,
+            email_verified: userAttributes.email_verified,
+            UserStatus: user.UserStatus,
+            Enabled: user.Enabled,
+            createdAt: user.UserCreateDate,
+            lastModified: user.UserLastModifiedDate,
+          };
+        });
+
+        this.sharedService.hideLoader();
+        return formattedUsers;
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Error fetching users:', error);
       throw error;
     }
   }
@@ -72,6 +214,8 @@ export class FeaturesService {
         fullVideoUrl: contentMetadata.fullVideoUrl,
         runtime: contentMetadata.runtime,
         resolution: contentMetadata.resolution,
+        status: contentMetadata.status,
+        publishDate: contentMetadata.publishDate,
       });
       console.log(data);
 
@@ -87,61 +231,70 @@ export class FeaturesService {
     }
   }
 
-  async getAllContents(): Promise<any> {
+  // async getAllContents(): Promise<any> {
+  //   try {
+  //     this.sharedService.showLoader('Fetching content...');
+  //     const { data, errors } = await this.client.models.Content.list();
+  //     if (data) {
+  //       // Process each content item and update their URLs
+  //       const updatedData = await Promise.all(
+  //         data.map(async (content: any) => {
+  //           const urlLandscape = await this.getFileUrl(
+  //             content.landscapeImageUrl
+  //           );
+  //           const urlPortrait = await this.getFileUrl(content.portraitImageUrl);
+  //           const urlPreviewVideo = await this.getFileUrl(
+  //             content.previewVideoUrl
+  //           );
+  //           const urlFullVideo = await this.getFileUrl(content.fullVideoUrl);
+
+  //           // Return updated content object with new URLs
+  //           return {
+  //             ...content,
+  //             landscapeImageUrl: urlLandscape,
+  //             portraitImageUrl: urlPortrait,
+  //             previewVideoUrl: urlPreviewVideo,
+  //             fullVideoUrl: urlFullVideo,
+  //           };
+  //         })
+  //       );
+
+  //       this.sharedService.hideLoader();
+
+  //       return updatedData;
+  //     }
+  //     return [];
+  //   } catch (error) {
+  //     this.sharedService.hideLoader();
+  //     console.error('Error fetching content metadata:', error);
+  //     throw error; // Re-throw to handle in the component
+  //   }
+  // }
+
+  async getAllContents(category: string, status: boolean): Promise<any> {
     try {
+      console.log(category, status);
+      
       this.sharedService.showLoader('Fetching content...');
-      const { data, errors } = await this.client.models.Content.list();
-      if (data) {
-        // Process each content item and update their URLs
-        const updatedData = await Promise.all(
-          data.map(async (content: any) => {
-            const urlLandscape = await this.getFileUrl(
-              content.landscapeImageUrl
-            );
-            const urlPortrait = await this.getFileUrl(content.portraitImageUrl);
-            const urlPreviewVideo = await this.getFileUrl(
-              content.previewVideoUrl
-            );
-            const urlFullVideo = await this.getFileUrl(content.fullVideoUrl);
-
-            // Return updated content object with new URLs
-            return {
-              ...content,
-              landscapeImageUrl: urlLandscape,
-              portraitImageUrl: urlPortrait,
-              previewVideoUrl: urlPreviewVideo,
-              fullVideoUrl: urlFullVideo,
-            };
-          })
-        );
-
-        this.sharedService.hideLoader();
-
-        return updatedData;
-      }
-      return [];
-    } catch (error) {
-      this.sharedService.hideLoader();
-      console.error('Error fetching content metadata:', error);
-      throw error; // Re-throw to handle in the component
-    }
-  }
-
-  async filterContent(category: string): Promise<any> {
-    try {
-      this.sharedService.showLoader('Fetching content...');
-      const { data, errors } = await this.client.models.Content.list({
-        ...(category ? {
-          filter: {
-            category: {
-              eq: category,
-          },
-        },
-        } : {}),
+      const { data } = await this.client.models.Content.list({
+        ...(category || status
+          ? {
+              filter: {
+                ...(category && {
+                  category: {
+                    eq: category,
+                  },
+                }),
+                ...(status && {
+                  status: {
+                    eq: status,
+                  },
+                }),
+              },
+            }
+          : {}),
       });
       if (data) {
-        console.log('Original data:', data);
-
         // Process each content item and update their URLs
         const updatedData = await Promise.all(
           data.map(async (content: any) => {
@@ -166,6 +319,7 @@ export class FeaturesService {
         );
 
         this.sharedService.hideLoader();
+        console.log(updatedData)
 
         return updatedData;
       }

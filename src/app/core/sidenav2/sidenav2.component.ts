@@ -1,14 +1,19 @@
 import { NgClass } from '@angular/common';
-import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { curatorNavItems, itAdminNavItems, superAdminNavItems } from './sidenavItems';
+import {
+  curatorNavItems,
+  itAdminNavItems,
+  superAdminNavItems,
+} from './sidenavItems';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { UploadContentComponent } from '../../features/content-curator/upload-content/upload-content.component';
+import { AddUserComponent } from '../../features/IT-admin/manage-user/add-user/add-user.component';
 
 @Component({
   selector: 'app-sidenav2',
@@ -28,7 +33,15 @@ export class Sidenav2Component implements OnInit {
   readonly dialog = inject(MatDialog);
   private userRole!: string;
   currentRoute!: string;
+  lastSegment!: string;
   navItems: any[] = [];
+
+  @HostListener('window:resize') updatetoggleDrawer(): void {
+    const width = window.innerWidth;
+    if (width <= 800) {
+      this.closeToggleDrawer();
+    }
+  }
 
   constructor() {}
 
@@ -38,6 +51,7 @@ export class Sidenav2Component implements OnInit {
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.currentRoute = event.urlAfterRedirects;
+        this.lastSegment = this.currentRoute.split('/').pop() || '';
       });
 
     this.userRole = String(sessionStorage.getItem('role'));
@@ -63,14 +77,17 @@ export class Sidenav2Component implements OnInit {
   }
 
   uploadNewContent() {
-    this.router.navigate(['content-curator/upload-content']);
-    // this.dialog
-    //   .open(UploadContentComponent)
-    //   .afterClosed()
-    //   .subscribe((data) => {
-    //     if (data) {
-    //       console.log(data);
-    //     }
-    //   });
+    // this.router.navigate(['content-curator/upload-content']);
+    this.dialog
+    .open(UploadContentComponent, { disableClose: true, panelClass: 'dialog' })
+    .afterClosed()
+    .subscribe((data) => {});
+  }
+
+  addNewUser() {
+    this.dialog
+      .open(AddUserComponent, { disableClose: true, panelClass: 'dialog2' })
+      .afterClosed()
+      .subscribe((data) => {});
   }
 }

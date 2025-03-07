@@ -12,8 +12,6 @@ export const roleGuard: CanActivateFn = (route, state) => {
   const userRole = sessionStorage.getItem('role');
   let initialRole: string | null = null;
   let roleCheckInterval: any = null;
-  console.log(userRole);
-  
 
   // Set initial role if it hasn't been set yet and start monitoring
   if (initialRole === null) {

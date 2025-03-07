@@ -4,10 +4,15 @@
   </div>
   <mat-card>
     <mat-card-content>
-      <button class="new" mat-fab extended (click)="uploadNewContent()">
-        <mat-icon>add</mat-icon
-        ><span>New Content</span>
+      @if (lastSegment === 'manage-users') {
+      <button class="new" mat-fab extended (click)="addNewUser()">
+        <mat-icon>add</mat-icon><span>New User</span>
       </button>
+      } @else {
+      <button class="new" mat-fab extended (click)="uploadNewContent()">
+        <mat-icon>add</mat-icon><span>New Content</span>
+      </button>
+      }
     </mat-card-content>
     <mat-card-content>
       @for (item of navItems; track item) {

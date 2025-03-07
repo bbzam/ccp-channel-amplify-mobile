@@ -31,6 +31,14 @@ export const routes: Routes = [
             (m) => m.AboutComponent
           ),
       },
+      {
+        path: 'notfound',
+        loadComponent: () =>
+          import('./shared/page-not-found/page-not-found.component').then(
+            (m) => m.PageNotFoundComponent
+          ),
+      },
+      { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
     ],
   },
   {
@@ -110,6 +118,14 @@ export const routes: Routes = [
             (m) => m.AboutComponent
           ),
       },
+      {
+        path: 'notfound',
+        loadComponent: () =>
+          import('./shared/page-not-found/page-not-found.component').then(
+            (m) => m.PageNotFoundComponent
+          ),
+      },
+      { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
     ],
   },
   {
@@ -145,15 +161,15 @@ export const routes: Routes = [
             './features/content-curator/scheduled/scheduled.component'
           ).then((m) => m.ScheduledComponent),
       },
-      {
-        path: 'upload-content',
-        resolve: { loading: loaderResolver },
-        data: { loadingMessage: 'Loading Page...' },
-        loadComponent: () =>
-          import(
-            './features/content-curator/upload-content/upload-content.component'
-          ).then((m) => m.UploadContentComponent),
-      },
+      // {
+      //   path: 'upload-content',
+      //   resolve: { loading: loaderResolver },
+      //   data: { loadingMessage: 'Loading Page...' },
+      //   loadComponent: () =>
+      //     import(
+      //       './features/content-curator/upload-content/upload-content.component'
+      //     ).then((m) => m.UploadContentComponent),
+      // },
       {
         path: 'featured',
         resolve: { loading: loaderResolver },
@@ -169,7 +185,7 @@ export const routes: Routes = [
         data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
           import(
-            './features/IT-admin/manage-users/manage-users.component'
+            './features/IT-admin/manage-user/manage-users/manage-users.component'
           ).then((m) => m.ManageUsersComponent),
       },
       {
@@ -178,9 +194,17 @@ export const routes: Routes = [
         data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
           import(
-            './features/IT-admin/add-user/add-user.component'
+            './features/IT-admin/manage-user/add-user/add-user.component'
           ).then((m) => m.AddUserComponent),
       },
+      {
+        path: 'notfound',
+        loadComponent: () =>
+          import('./shared/page-not-found/page-not-found.component').then(
+            (m) => m.PageNotFoundComponent
+          ),
+      },
+      { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
     ],
   },
   {
@@ -206,6 +230,14 @@ export const routes: Routes = [
         resolve: { loading: loaderResolver },
         data: { loadingMessage: 'Loading Page...' },
       },
+      {
+        path: 'notfound',
+        loadComponent: () =>
+          import('./shared/page-not-found/page-not-found.component').then(
+            (m) => m.PageNotFoundComponent
+          ),
+      },
+      { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
     ],
   },
   {
@@ -245,25 +277,25 @@ export const routes: Routes = [
         resolve: { loading: loaderResolver },
         data: { loadingMessage: 'Loading Page...' },
       },
+      // {
+      //   path: 'upload-content',
+      //   resolve: { loading: loaderResolver },
+      //   data: { loadingMessage: 'Loading Page...' },
+      //   loadComponent: () =>
+      //     import(
+      //       './features/content-curator/upload-content/upload-content.component'
+      //     ).then((m) => m.UploadContentComponent),
+      // },
       {
-        path: 'upload-content',
-        resolve: { loading: loaderResolver },
-        data: { loadingMessage: 'Loading Page...' },
+        path: 'notfound',
         loadComponent: () =>
-          import(
-            './features/content-curator/upload-content/upload-content.component'
-          ).then((m) => m.UploadContentComponent),
+          import('./shared/page-not-found/page-not-found.component').then(
+            (m) => m.PageNotFoundComponent
+          ),
       },
+      { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
     ],
   },
-  {
-    path: 'notfound',
-    loadComponent: () =>
-      import('./shared/page-not-found/page-not-found.component').then(
-        (m) => m.PageNotFoundComponent
-      ),
-  },
-  { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
 ];
 
 // import { Routes } from '@angular/router';
