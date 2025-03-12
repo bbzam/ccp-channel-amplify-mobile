@@ -281,8 +281,6 @@ export class FeaturesService {
 
   async getAllContents(category: string, status: boolean): Promise<any> {
     try {
-      console.log(category, status);
-
       this.sharedService.showLoader('Fetching content...');
       const { data } = await this.client.models.Content.list({
         ...(category || status
@@ -328,7 +326,6 @@ export class FeaturesService {
         );
 
         this.sharedService.hideLoader();
-        console.log(updatedData);
 
         return updatedData;
       }

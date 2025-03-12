@@ -78,6 +78,7 @@ export class SidenavComponent implements OnInit {
 
   navigate(routeLink: string) {
     this.router.navigate([routeLink]);
+    this.drawer.close();
   }
 
   settings() {
