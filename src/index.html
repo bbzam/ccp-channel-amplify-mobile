@@ -88,10 +88,35 @@ frame-src 'self';"
     <!-- security script -->
     <script>
       // Prevent clickjacking
-      if (window.self !== window.top) {
-        window.top.location = window.self.location;
-      }
+      (function () {
+        function preventIframing() {
+          if (window.self !== window.top) {
+            window.top.location = window.self.location;
+          }
 
+          // Additional check using parent
+          if (parent.frames.length > 0) {
+            parent.location = self.location;
+          }
+
+          // Force same origin
+          if (window.location !== window.parent.location) {
+            window.parent.location = window.location;
+          }
+        }
+
+        // Run immediately
+        preventIframing();
+
+        // Also run when the document is loaded
+        document.addEventListener("DOMContentLoaded", preventIframing);
+
+        // And when the window loads
+        window.addEventListener("load", preventIframing);
+      })();
+    </script>
+
+    <script>
       // Disable dangerous functions
       window.eval = function () {
         throw new Error("eval() is disabled for security reasons");
