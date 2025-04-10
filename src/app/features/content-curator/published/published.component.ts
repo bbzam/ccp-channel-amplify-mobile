@@ -56,12 +56,14 @@ export class PublishedComponent {
     this.currentTab = category;
   }
 
-  getAllContents(category: string) {
-    this.featuresService.getAllContents(category, true).then((data: any) => {
-      if (data) {
-        this.tableData = data;
-      }
-    });
+  getAllContents(category: string, keyword?: string) {
+    this.featuresService
+      .getAllContents(category, true, [], keyword)
+      .then((data: any) => {
+        if (data) {
+          this.tableData = data;
+        }
+      });
   }
 
   handleRowClick(row: any): void {
@@ -69,6 +71,7 @@ export class PublishedComponent {
       .open(ViewContentComponent, {
         data: row,
         panelClass: 'dialog',
+        disableClose: true,
       })
       .afterClosed()
       .subscribe((data) => {

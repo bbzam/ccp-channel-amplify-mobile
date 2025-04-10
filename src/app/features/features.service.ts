@@ -5,23 +5,15 @@ import { Router } from '@angular/router';
 import { ContentMetadata } from './features.model';
 import { generateClient, post } from 'aws-amplify/api';
 import { SuccessMessageDialogComponent } from '../shared/dialogs/success-message-dialog/success-message-dialog.component';
-import { environment } from '../../environments/environment.development';
 import { Schema } from '../../../amplify/data/resource';
 import { getUrl } from 'aws-amplify/storage';
 import { SharedService } from '../shared/shared.service';
 import { accessKeys } from '../beta-test/access-keys';
-import {
-  CognitoIdentityProviderClient,
-  ListUsersCommand,
-} from '@aws-sdk/client-cognito-identity-provider';
-import { config } from '../../../amplify/data/config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FeaturesService {
-  UPLOADCONTENT_URL = environment.APIURL + '/';
-
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
   private readonly client = generateClient<Schema>();
@@ -50,7 +42,7 @@ export class FeaturesService {
     }
   }
 
-  async getAllKeys(): Promise<any> {
+  async getAllKeys(keyword?: string): Promise<any> {
     try {
       this.sharedService.showLoader('Fetching content...');
       const { data } = await this.client.models.Keys.list();
@@ -269,41 +261,91 @@ export class FeaturesService {
 
       return result;
     } catch (error) {
-      console.error('Error updating keys:', error);
-      // You can customize the error message based on the error type
-      const errorMessage =
-        error === 'This key has already been used'
-          ? error
-          : 'An error occurred while updating the key';
-      throw new Error(errorMessage);
+      console.error('Error updating contents:', error);
+      throw error;
     }
   }
 
-  async getAllContents(category: string, status: boolean): Promise<any> {
+  async updateContent(id: string, contentData: ContentMetadata) {
     try {
-      console.log(category, status);
+      const result = await this.client.models.Content.update({
+        id: id,
+        ...contentData,
+      });
 
+      return result;
+    } catch (error) {
+      console.error('Error updating contents:', error);
+      throw error;
+    }
+  }
+
+  async getAllContents(
+    category: string,
+    status: boolean,
+    fields?: any[],
+    keyword?: string,
+    nextToken?: string,
+  ): Promise<any> {
+    console.log(keyword);
+
+    try {
       this.sharedService.showLoader('Fetching content...');
-      const { data } = await this.client.models.Content.list({
-        ...(category || status
-          ? {
-              filter: {
-                ...(category && {
-                  category: {
-                    eq: category,
-                  },
-                }),
-                ...(status !== undefined &&
-                  status !== null && {
-                    status: {
-                      eq: status,
+
+      const defaultFields = [
+        'id',
+        'title',
+        'description',
+        'category',
+        'subCategory',
+        'director',
+        'writer',
+        'userType',
+        'landscapeImageUrl',
+        'portraitImageUrl',
+        'previewVideoUrl',
+        'fullVideoUrl',
+        'runtime',
+        'resolution',
+        'status',
+        'publishDate',
+        'createdAt',
+        'updatedAt',
+      ];
+
+      const { data, nextToken: newNextToken } =
+        await this.client.models.Content.list({
+          ...(category || status || keyword
+            ? {
+                selectionSet: fields?.length ? fields : defaultFields,
+                limit: 10,
+                nextToken,
+                filter: {
+                  ...(category && {
+                    category: {
+                      eq: category,
                     },
                   }),
-              },
-            }
-          : {}),
-      });
-      if (data) {
+                  ...(status !== undefined &&
+                    status !== null && {
+                      status: {
+                        eq: status,
+                      },
+                    }),
+                  // ...(keyword && {
+                  //   content: {
+                  //     beginsWith: keyword.toLowerCase(),
+                  //   },
+                  // }),
+                },
+              }
+            : {
+                selectionSet: fields?.length ? fields : defaultFields,
+                limit: 10,
+                nextToken,
+              }),
+        });
+      if (data && !fields?.length) {
         // Process each content item and update their URLs
         const updatedData = await Promise.all(
           data.map(async (content: any) => {
@@ -319,20 +361,20 @@ export class FeaturesService {
             // Return updated content object with new URLs
             return {
               ...content,
-              landscapeImageUrl: urlLandscape,
-              portraitImageUrl: urlPortrait,
-              previewVideoUrl: urlPreviewVideo,
-              fullVideoUrl: urlFullVideo,
+              landscapeImagePresignedUrl: urlLandscape,
+              portraitImagePresignedUrl: urlPortrait,
+              previewVideoPresignedUrl: urlPreviewVideo,
+              fullVideoPresignedUrl: urlFullVideo,
             };
           })
         );
 
         this.sharedService.hideLoader();
-        console.log(updatedData);
 
         return updatedData;
       }
-      return [];
+      this.sharedService.hideLoader();
+      return data;
     } catch (error) {
       this.sharedService.hideLoader();
       console.error('Error fetching content metadata:', error);

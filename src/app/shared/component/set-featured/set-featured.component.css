@@ -1,3 +1,39 @@
+.search-button {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  input {
+    font-size: 0.875em;
+    min-width: 18em;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    border-color: var(--gray);
+    margin: 1.5em 0 1em;
+  }
+
+  button {
+    background-color: var(--primary);
+
+    mat-icon {
+      color: var(--tertiary);
+    }
+  }
+  button:hover {
+    background-color: var(--primary-hovered);
+  }
+
+  button[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    .mat-icon {
+      color: #999;
+    }
+  }
+}
+
 .main-container {
   display: flex;
   flex-wrap: wrap;

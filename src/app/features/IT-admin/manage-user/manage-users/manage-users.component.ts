@@ -22,7 +22,7 @@ export class ManageUsersComponent {
   private role!: string;
 
   tabs: Tab[] = [
-    { label: 'USERS', role: 'USER' },
+    { label: 'FREE USERS', role: 'USER' },
     { label: 'SUBSCRIBERS', role: 'SUBSCRIBER' },
     { label: 'CONTENT CURATORS', role: 'CONTENT_CREATOR' },
     { label: 'IT ADMINS', role: 'IT_ADMIN' },

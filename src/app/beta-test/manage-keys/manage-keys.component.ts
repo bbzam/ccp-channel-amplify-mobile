@@ -27,8 +27,8 @@ export class ManageKeysComponent {
     this.getAllKeys();
   }
 
-  getAllKeys() {
-    this.featuresService.getAllKeys().then((data: any) => {
+  getAllKeys(keyword?: string) {
+    this.featuresService.getAllKeys(keyword).then((data: any) => {
       if (data) {
         this.tableData = data;
       }

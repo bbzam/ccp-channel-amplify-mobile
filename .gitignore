@@ -45,4 +45,4 @@ Thumbs.db
 .amplify
 amplify_outputs*
 amplifyconfiguration*
-amplify\data\config.ts
+amplify/data/config.ts

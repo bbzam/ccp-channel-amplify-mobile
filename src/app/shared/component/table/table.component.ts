@@ -40,7 +40,7 @@ export interface TableConfig {
     MatFormFieldModule,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   templateUrl: './table.component.html',
   styleUrl: './table.component.css',
@@ -51,6 +51,7 @@ export class TableComponent {
   @Input() displayedColumns: string[] = [];
   @Output() rowClick = new EventEmitter<any>();
   @Output() refreshClick = new EventEmitter<void>();
+  @Output() getContent = new EventEmitter<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -72,13 +73,20 @@ export class TableComponent {
     }
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  // applyFilter(event: Event) {
+  //   const filterValue = (event.target as HTMLInputElement).value;
+  //   this.dataSource.filter = filterValue.trim().toLowerCase();
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+  //   if (this.dataSource.paginator) {
+  //     this.dataSource.paginator.firstPage();
+  //   }
+  // }
+
+  applyFilter(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const value = target.value;
+    console.log(value);
+    // this.getContent.emit(value);
   }
 
   truncateText(text: string, limit: number = 20): string {

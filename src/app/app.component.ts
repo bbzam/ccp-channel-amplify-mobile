@@ -64,7 +64,6 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.handleRoleBasedRedirection();
     this.detectScreenRecording();
-    // this.handleLoader();
   }
 
   constructor() {
@@ -120,23 +119,4 @@ export class AppComponent implements OnInit {
         }
     }
   }
-
-  // private handleLoader() {
-  //   this.router.events.subscribe((event) => {
-  //     if (event instanceof NavigationStart) {
-  //       setTimeout(() => {
-  //         this.sharedService.showLoader();
-  //       }, 100);
-  //       this.sharedService.hideLoader()
-  //     } else if (
-  //       event instanceof NavigationEnd ||
-  //       event instanceof NavigationCancel ||
-  //       event instanceof NavigationError
-  //     ) {
-  //       setTimeout(() => {
-  //         this.sharedService.hideLoader();
-  //       }, 100);
-  //     }
-  //   });
-  // }
 }
