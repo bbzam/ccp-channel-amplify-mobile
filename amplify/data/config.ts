@@ -1,4 +1,4 @@
 export const config = {
-  USER_POOL_ID: 'ap-southeast-1_oq4Lq70Hh',
+  USER_POOL_ID: 'ap-southeast-1_sfC1YPuEq',
   REGION: 'ap-southeast-1',
 };
