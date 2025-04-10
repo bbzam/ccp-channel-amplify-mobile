@@ -61,7 +61,7 @@ export class PublishedComponent {
       .getAllContents(category, true, [], keyword)
       .then((data: any) => {
         if (data) {
-          this.tableData = data.updatedData;
+          this.tableData = data;
         }
       });
   }

@@ -371,7 +371,7 @@ export class FeaturesService {
 
         this.sharedService.hideLoader();
 
-        return { updatedData: updatedData, nextToken: newNextToken };
+        return updatedData;
       }
       this.sharedService.hideLoader();
       return data;
