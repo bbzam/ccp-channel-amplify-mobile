@@ -44,6 +44,19 @@ const schema = a.schema({
         .to(['create', 'read', 'update', 'delete']),
     ]),
 
+  FeaturedAll: a
+    .model({
+      selectedContent: a.string(),
+      category: a.string(),
+    })
+    .authorization((allow) => [
+      allow.guest().to(['read']),
+      allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
+      allow
+        .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
+        .to(['create', 'read', 'update', 'delete']),
+    ]),
+
   addUser: a
     .mutation()
     .arguments({

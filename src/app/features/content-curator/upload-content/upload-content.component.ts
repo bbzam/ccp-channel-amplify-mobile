@@ -11,13 +11,18 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { isCancelError, uploadData } from 'aws-amplify/storage';
+import { isCancelError, remove, uploadData } from 'aws-amplify/storage';
 import { FeaturesService } from '../../features.service';
 import { Location } from '@angular/common';
 import { distinctUntilChanged, firstValueFrom, merge } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { errorMessages } from '../../../shared/utils/errorMessages';
 import { InputDateComponent } from '../../../shared/component/input-date/input-date.component';
+import { FileValidator } from '../../../shared/utils/file-validation';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { ConfirmationDialogComponent } from '../../../shared/dialogs/confirmation-dialog/confirmation-dialog.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface VideoMetadata {
   duration: number;
@@ -37,6 +42,9 @@ interface VideoMetadata {
     ReactiveFormsModule,
     MatDividerModule,
     MatButtonModule,
+    MatProgressBarModule,
+    MatIconModule,
+    MatTooltipModule,
   ],
   templateUrl: './upload-content.component.html',
   styleUrl: './upload-content.component.css',
@@ -60,15 +68,31 @@ export class UploadContentComponent {
   portraitFileURL!: string;
   previewFileURL!: string;
   fullFileURL!: string;
+  landscapeImageKey!: string;
+  portraitImageKey!: string;
+  previewVideoKey!: string;
+  fullVideoKey!: string;
   uploadForm!: FormGroup;
+  landscapeUploadProgress: number = 0;
+  portraitUploadProgress: number = 0;
+  previewUploadProgress: number = 0;
+  fullUploadProgress: number = 0;
+  uploadProgress: { [key: string]: number } = {};
+  uploadTasks: { [key: string]: any } = {};
+  isPaused: { [key: string]: boolean } = {
+    landscape: false,
+    portrait: false,
+    preview: false,
+    full: false,
+  };
 
   readonly isLoading = signal(false);
   readonly isScheduling = signal(false);
-  readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
-  readonly featureService = inject(FeaturesService);
-  readonly location = inject(Location);
+  private readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
+  private readonly featureService = inject(FeaturesService);
+  private readonly location = inject(Location);
   private readonly fb = inject(FormBuilder);
-  readonly dialog = inject(MatDialog);
+  private readonly dialog = inject(MatDialog);
 
   // Error message signals
   titleErrorMessage = signal('');
@@ -93,6 +117,7 @@ export class UploadContentComponent {
   constructor() {
     this.createForm();
     this.setupValidationSubscriptions();
+    this.isPaused['preview'] = false;
   }
 
   private createForm(): void {
@@ -100,9 +125,9 @@ export class UploadContentComponent {
       title: ['', [Validators.required]],
       description: ['', [Validators.required]],
       category: ['', [Validators.required]],
-      subcategory: [],
-      director: ['', [Validators.required]],
-      writer: [],
+      subcategory: ['', []],
+      director: ['', []],
+      writer: ['', []],
       usertype: ['', [Validators.required]],
       landscapeimage: ['', [Validators.required]],
       portraitimage: ['', [Validators.required]],
@@ -187,13 +212,78 @@ export class UploadContentComponent {
 
   schedulePublish() {}
 
-  backButton() {
-    // this.location.back();
+  async backButton() {
+    // Check all possible uploads
+    // const uploadTypes = ['landscape', 'portrait', 'preview', 'full'];
+    // for (const type of uploadTypes) {
+    //   if (
+    //     this.uploadProgress[type] !== undefined &&
+    //     this.uploadProgress[type] < 100
+    //   ) {
+    //     this.featureService.handleError(
+    //       `Please wait for ${type} upload to complete`
+    //     );
+    //     return;
+    //   }
+    // }
+
+    // Check if there are any uploaded files
+    const hasUploads =
+      this.landscapeImageKey ||
+      this.portraitImageKey ||
+      this.previewVideoKey ||
+      this.fullVideoKey;
+
+    if (hasUploads) {
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          message:
+            'You have uploaded files. If you leave, these uploads will be deleted. Do you want to continue?',
+        },
+      });
+
+      const result = await firstValueFrom(dialogRef.afterClosed());
+
+      if (result) {
+        // Remove all uploaded files if they exist
+        if (this.landscapeImageKey) {
+          await this.removeMedia(this.landscapeImageKey);
+        }
+        if (this.portraitImageKey) {
+          await this.removeMedia(this.portraitImageKey);
+        }
+        if (this.previewVideoKey) {
+          await this.removeMedia(this.previewVideoKey);
+        }
+        if (this.fullVideoKey) {
+          await this.removeMedia(this.fullVideoKey);
+        }
+
+        this.dialogRef.close();
+      }
+      return;
+    }
+
+    // If no uploads, simply close the dialog
     this.dialogRef.close();
   }
 
   async publishContent(isForPublish: boolean) {
     try {
+      // Check all possible uploads
+      const uploadTypes = ['landscape', 'portrait', 'preview', 'full'];
+      for (const type of uploadTypes) {
+        if (
+          this.uploadProgress[type] !== undefined &&
+          this.uploadProgress[type] < 100
+        ) {
+          this.featureService.handleError(
+            `Please wait for ${type} upload to complete`
+          );
+          return;
+        }
+      }
+
       if (!isForPublish) {
         const dialogResult = await firstValueFrom(
           this.dialog.open(InputDateComponent).afterClosed()
@@ -207,81 +297,9 @@ export class UploadContentComponent {
       }
 
       isForPublish ? this.isLoading.set(true) : this.isScheduling.set(true);
-
-      // Upload landscape image
-      const landscapeImageKey = `landscape-images/${Date.now()}-${
-        this.inputLandscapeImage.name
-      }`;
-
-      try {
-        console.log('inputLandscapeImage data:', this.inputLandscapeImage);
-
-        await uploadData({
-          data: this.inputLandscapeImage,
-          path: landscapeImageKey,
-        });
-      } catch (e) {
-        console.log('error', e);
-      }
-
-      // Upload portrait image
-      const portraitImageKey = `portrait-images/${Date.now()}-${
-        this.inputPortraitImage.name
-      }`;
-
-      try {
-        await uploadData({
-          data: this.inputPortraitImage,
-          path: portraitImageKey,
-        });
-      } catch (e) {
-        console.log('error', e);
-      }
-
-      // Upload preview video
-      const previewVideoKey = `preview-videos/${Date.now()}-${
-        this.inputPreviewVideo.name
-      }`;
-
-      try {
-        await uploadData({
-          data: this.inputPreviewVideo,
-          path: previewVideoKey,
-        });
-      } catch (e) {
-        console.log('error', e);
-      }
-
-      // Upload full video
-      const fullVideoKey = `full-videos/${Date.now()}-${
-        this.inputFullVideo.name
-      }`;
-
-      const uploadFullVideo = uploadData({
-        data: this.inputFullVideo,
-        path: fullVideoKey,
-      });
-      // uploadFullVideo.pause();
-      // uploadFullVideo.resume();
-      // uploadFullVideo.cancel();
-
-      try {
-        const result = await uploadFullVideo.result;
-        // return {
-        //   key: fullVideoKey,
-        //   result,
-        // };
-        console.log(result);
-      } catch (e) {
-        if (isCancelError(e)) {
-          console.log('isCancelError', e);
-        } else {
-          console.log('error', e);
-        }
-      }
+      this.uploadForm.disable();
 
       const formData = this.uploadForm.value;
-      // Create content metadata object
       const contentMetadata = {
         title: formData.title,
         description: formData.description,
@@ -290,10 +308,10 @@ export class UploadContentComponent {
         director: formData.director,
         writer: formData.writer,
         userType: formData.usertype,
-        landscapeImageUrl: landscapeImageKey,
-        portraitImageUrl: portraitImageKey,
-        previewVideoUrl: previewVideoKey,
-        fullVideoUrl: fullVideoKey,
+        landscapeImageUrl: this.landscapeImageKey,
+        portraitImageUrl: this.portraitImageKey,
+        previewVideoUrl: this.previewVideoKey,
+        fullVideoUrl: this.fullVideoKey,
         runtime: this.videoMetadata?.duration,
         resolution: this.videoMetadata?.quality,
         status: isForPublish,
@@ -307,86 +325,402 @@ export class UploadContentComponent {
           console.log(result.data);
 
           result.data
-            ? this.featureService.handleSuccess(
+            ? (this.featureService.handleSuccess(
                 isForPublish
                   ? 'Content Published Successfully!'
                   : 'Content Scheduled Successfully!'
-              )
+              ),
+              this.dialogRef.close())
             : this.featureService.handleError(
                 'Uploading Error, Please try again.'
-              );
-          this.dialogRef.close();
+              ),
+            this.uploadForm.enable();
         },
         (error) => {
           isForPublish
             ? this.isLoading.set(false)
             : this.isScheduling.set(false);
           this.featureService.handleError(error);
+          this.uploadForm.enable();
         }
       );
     } catch (error) {
+      this.uploadForm.enable();
       console.error('Error publishing content:', error);
     } finally {
+      this.uploadForm.enable();
       isForPublish ? this.isLoading.set(false) : this.isScheduling.set(false);
     }
     return;
   }
 
+  async removeMedia(path: string) {
+    try {
+      console.log('Removing...', path);
+      const result = await remove({
+        path: path,
+      });
+      if (result) {
+        console.log('File Removed...', result);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async pauseUpload(mediaKey: string, dictionary: string) {
+    console.log(
+      `[Upload Pause] Dictionary: ${dictionary}, MediaKey: ${mediaKey}`
+    );
+    const task = this.uploadTasks[dictionary];
+    if (!task) {
+      console.log(
+        `[Upload Pause] No active upload task found for ${dictionary}`
+      );
+      return;
+    }
+
+    try {
+      await task.pause();
+      this.isPaused[dictionary] = true;
+      console.log(`[Upload Paused Successfully] Dictionary: ${dictionary}`);
+    } catch (error) {
+      console.error(`[Upload Pause Failed] Dictionary: ${dictionary}`, error);
+    }
+  }
+
+  async resumeUpload(mediaKey: string, dictionary: string) {
+    console.log(
+      `[Upload Resume] Dictionary: ${dictionary}, MediaKey: ${mediaKey}`
+    );
+    const task = this.uploadTasks[dictionary];
+    if (!task) {
+      console.log(
+        `[Upload Resume] No active upload task found for ${dictionary}`
+      );
+      return;
+    }
+
+    try {
+      await task.resume();
+      this.isPaused[dictionary] = false;
+      console.log(`[Upload Resumed Successfully] Dictionary: ${dictionary}`);
+    } catch (error) {
+      console.error(`[Upload Resume Failed] Dictionary: ${dictionary}`, error);
+    }
+  }
+
+  async cancelUpload(mediaKey: string, dictionary: string) {
+    console.log(
+      `[Upload Cancel] Dictionary: ${dictionary}, MediaKey: ${mediaKey}`
+    );
+    if (this.uploadTasks[dictionary]) {
+      try {
+        await this.uploadTasks[dictionary].cancel();
+        this.uploadProgress[dictionary] = 0;
+        delete this.uploadTasks[dictionary];
+
+        // Reset the form control and file URL based on dictionary
+        switch (dictionary) {
+          case 'landscape':
+            console.log('[Reset Landscape] Clearing landscape image data');
+            this.landscapeFileURL = '';
+            this.landscapeImageKey = '';
+            this.uploadForm.get('landscapeimage')?.reset();
+            break;
+          case 'portrait':
+            console.log('[Reset Portrait] Clearing portrait image data');
+            this.portraitFileURL = '';
+            this.portraitImageKey = '';
+            this.uploadForm.get('portraitimage')?.reset();
+            break;
+          case 'preview':
+            console.log('[Reset Preview] Clearing preview video data');
+            this.previewFileURL = '';
+            this.previewVideoKey = '';
+            this.uploadForm.get('previewvideo')?.reset();
+            break;
+          case 'full':
+            console.log('[Reset Full] Clearing full video data');
+            this.fullFileURL = '';
+            this.fullVideoKey = '';
+            this.uploadForm.get('fullvideo')?.reset();
+            break;
+        }
+        console.log(
+          `[Upload Cancelled Successfully] Dictionary: ${dictionary}`
+        );
+      } catch (error) {
+        console.error(
+          `[Upload Cancel Failed] Dictionary: ${dictionary}`,
+          error
+        );
+      }
+    } else {
+      console.log(`[Upload Cancel] No upload task found for ${dictionary}`);
+    }
+  }
+
+  async deleteMedia(path: string, variable: string, variableKey: string) {
+    try {
+      this.dialog
+        .open(ConfirmationDialogComponent, {
+          data: { message: 'Are you sure you want to delete this file?' },
+        })
+        .afterClosed()
+        .subscribe(async (data) => {
+          if (data) {
+            this.removeMedia(path);
+            const controlName =
+              variable.replace('FileURL', '').toLowerCase() +
+              (variable.toLowerCase().includes('full') ||
+              variable.toLowerCase().includes('preview')
+                ? 'video'
+                : 'image');
+
+            if (this.uploadForm.get(controlName)) {
+              this.uploadForm.get(controlName)?.reset();
+            }
+
+            (this as any)[variable] = null;
+            (this as any)[variableKey] = '';
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async uploadMedia(
+    file: File,
+    mediaKey: string,
+    dictionary: string
+  ): Promise<void> {
+    try {
+      console.log('trying to upload...', file);
+
+      // Clear any existing task for this dictionary
+      if (this.uploadTasks[dictionary]) {
+        delete this.uploadTasks[dictionary];
+      }
+
+      const result = await uploadData({
+        data: file,
+        path: mediaKey,
+        options: {
+          onProgress: ({ transferredBytes, totalBytes }) => {
+            if (totalBytes) {
+              this.uploadProgress[dictionary] = Math.round(
+                (transferredBytes / totalBytes) * 100
+              );
+            }
+          },
+        },
+      });
+
+      // Store the upload task immediately after creation
+      if (result) {
+        this.uploadTasks[dictionary] = result;
+        this.isPaused[dictionary] = false;
+
+        try {
+          await result.result; // Wait for upload to complete
+          console.log('File Uploaded...', result);
+          this.uploadProgress[dictionary] = 100;
+        } catch (error) {
+          if (isCancelError(error)) {
+            console.log('Upload was cancelled');
+            this.uploadProgress[dictionary] = 0;
+          } else {
+            console.error('Upload error:', error);
+            this.uploadProgress[dictionary] = 0;
+          }
+        } finally {
+          // Clean up the task reference
+          delete this.uploadTasks[dictionary];
+        }
+      }
+    } catch (e) {
+      console.log('error', e);
+      this.uploadProgress[mediaKey] = 0;
+    }
+  }
+
   // File selection handlers
-  onLandscapeImageSelected(event: any) {
+  async onLandscapeImageSelected(event: any) {
+    this.landscapeFileURL = '';
     const file = event.target.files[0];
-    if (file) {
-      this.inputLandscapeImage = file;
+    if (!file) {
+      return;
+    } else {
+      try {
+        const isValid = await FileValidator.validateImageFile(
+          file,
+          5 * 1024 * 1024, // 5MB max size
+          1920,
+          1080,
+          3840,
+          2160
+        );
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.landscapeFileURL = String(reader.result);
-      };
+        if (!isValid) {
+          this.uploadForm.patchValue({
+            landscapeimage: '',
+          });
+          this.landscapeErrorMessage.set(
+            'Landscape image validation failed. Image must be between 1920x1080 and 3840x2160, max 5MB.'
+          );
+          return;
+        }
 
-      reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.landscapeFileURL = String(reader.result);
+        };
+        reader.readAsDataURL(file);
+
+        this.inputLandscapeImage = file;
+
+        const landscapeImageKey = `landscape-images/${Date.now()}-${this.inputLandscapeImage.name
+          .replace(/\s+/g, '')
+          .replace(/[^A-Za-z0-9.\/-]/g, '')}`;
+
+        this.landscapeImageKey = landscapeImageKey;
+        //upload new media
+        await this.uploadMedia(file, landscapeImageKey, 'landscape');
+      } catch (error) {
+        this.landscapeErrorMessage.set('Error processing image');
+        console.error(error);
+      }
     }
   }
 
-  onPortraitImageSelected(event: any) {
+  async onPortraitImageSelected(event: any) {
+    this.portraitFileURL = '';
     const file = event.target.files[0];
-    if (file) {
-      this.inputPortraitImage = file;
+    if (!file) {
+      return;
+    } else {
+      try {
+        const isValid = await FileValidator.validateImageFile(
+          file,
+          5 * 1024 * 1024, // 5MB max size
+          1080, // min width
+          1920, // min height
+          2160, // max width
+          3840 // max height
+        );
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.portraitFileURL = String(reader.result);
-      };
+        if (!isValid) {
+          this.uploadForm.patchValue({
+            portraitimage: '',
+          });
+          this.portraitErrorMessage.set(
+            'Portrait image validation failed. Image must be between 1080x1920 and 2160x3840, max 5MB.'
+          );
+          return;
+        }
 
-      reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.portraitFileURL = String(reader.result);
+        };
+        reader.readAsDataURL(file);
+
+        this.inputPortraitImage = file;
+
+        const portraitImageKey = `portrait-images/${Date.now()}-${this.inputPortraitImage.name
+          .replace(/\s+/g, '')
+          .replace(/[^A-Za-z0-9.\/-]/g, '')}`;
+
+        this.portraitImageKey = portraitImageKey;
+        //upload new media
+        this.uploadMedia(file, portraitImageKey, 'portrait');
+      } catch (error) {
+        this.portraitErrorMessage.set('Error processing image');
+        console.error(error);
+      }
     }
   }
 
-  onPreviewVideoSelected(event: any) {
+  async onPreviewVideoSelected(event: any) {
+    this.previewFileURL = '';
     const file = event.target.files[0];
-    if (file) {
-      this.inputPreviewVideo = file;
+    if (!file) {
+      return;
+    } else {
+      try {
+        // Validate preview video (smaller size and duration limits)
+        const isValid = await FileValidator.validateVideoFile(
+          file,
+          100 * 1024 * 1024, // 100MB limit for preview
+          40 // 40 secs limit for preview
+        );
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.previewFileURL = String(reader.result);
-      };
+        if (!isValid) {
+          this.uploadForm.patchValue({
+            previewvideo: '',
+          });
+          this.previewErrorMessage.set(
+            'Preview video validation failed. Please check file size and duration.'
+          );
+          return;
+        }
 
-      reader.readAsDataURL(file);
+        // Clean up previous preview URL
+        if (this.previewFileURL) {
+          URL.revokeObjectURL(this.previewFileURL);
+        }
+
+        // Create new preview URL
+        this.previewFileURL = URL.createObjectURL(file);
+
+        this.inputPreviewVideo = file;
+
+        const previewVideoKey = `preview-videos/${Date.now()}-${this.inputPreviewVideo.name
+          .replace(/\s+/g, '')
+          .replace(/[^A-Za-z0-9.\/-]/g, '')}`;
+
+        this.previewVideoKey = previewVideoKey;
+        //upload new media
+        this.uploadMedia(file, previewVideoKey, 'preview');
+      } catch (error) {
+        this.previewErrorMessage.set('Error processing video');
+        console.error(error);
+      }
     }
   }
 
-  onFullVideoSelected(event: any) {
+  async onFullVideoSelected(event: any) {
+    this.fullFileURL = '';
     const file = event.target.files[0];
-    if (file) {
-      this.inputFullVideo = file;
+    if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.fullFileURL = String(reader.result);
-      };
+    try {
+      // Validate full video (larger size and duration limits)
+      const isValid = await FileValidator.validateVideoFile(
+        file,
+        10 * 1024 * 1024 * 1024, // 10GB limit
+        10800 // 3 hours in seconds
+      );
 
-      reader.readAsDataURL(file);
+      if (!isValid) {
+        this.uploadForm.patchValue({ fullvideo: '' });
+        this.fullErrorMessage.set(
+          'Full video validation failed. Please check file size and duration.'
+        );
+        return;
+      }
 
+      // Clean up previous preview URL
+      if (this.fullFileURL) {
+        URL.revokeObjectURL(this.fullFileURL);
+      }
+
+      // Create new preview URL
+      this.fullFileURL = URL.createObjectURL(file);
+
+      // Get video metadata as before
       const video = document.createElement('video');
       video.preload = 'metadata';
 
@@ -397,28 +731,34 @@ export class UploadContentComponent {
         const duration = video.duration;
         const width = video.videoWidth;
         const height = video.videoHeight;
-
-        // Determine video quality based on resolution
         const quality = this.getVideoQuality(width, height);
-
-        console.log('Video Duration:', duration, 'seconds');
-        console.log('Video Quality:', quality);
 
         this.videoMetadata = {
           duration,
           width,
           height,
-          quality, // Add quality to metadata
+          quality,
           size: file.size,
           type: file.type,
         };
 
         URL.revokeObjectURL(url);
       };
+
+      this.inputFullVideo = file;
+
+      const fullVideoKey = `full-videos/${Date.now()}-${this.inputFullVideo.name
+        .replace(/\s+/g, '')
+        .replace(/[^A-Za-z0-9.\/-]/g, '')}`;
+      this.fullVideoKey = fullVideoKey;
+      //upload new media
+      this.uploadMedia(file, fullVideoKey, 'full');
+    } catch (error) {
+      this.fullErrorMessage.set('Error processing video');
+      console.error(error);
     }
   }
 
-  // Add this helper method to determine video quality
   private getVideoQuality(width: number, height: number): string {
     const resolution = Math.max(width, height);
 
@@ -428,21 +768,13 @@ export class UploadContentComponent {
     return '720p';
   }
 
-  private resetForm() {
-    this.inputTitle = '';
-    this.inputDescription = '';
-    this.inputCategory = '';
-    this.inputSubCategory = '';
-    this.inputUserType = '';
-    this.inputLandscapeImage = null;
-    this.inputPortraitImage = null;
-    this.inputPreviewVideo = null;
-    this.inputFullVideo = null;
-
-    // Reset file inputs
-    const fileInputs = document.querySelectorAll('input[type="file"]');
-    fileInputs.forEach((input: any) => {
-      input.value = '';
-    });
+  // ngOnDestroy to clean up URLs
+  ngOnDestroy() {
+    if (this.previewFileURL) {
+      URL.revokeObjectURL(this.previewFileURL);
+    }
+    if (this.fullFileURL) {
+      URL.revokeObjectURL(this.fullFileURL);
+    }
   }
 }

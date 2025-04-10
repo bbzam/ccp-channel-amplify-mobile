@@ -34,6 +34,10 @@ input {
 .table {
   width: 100%;
   overflow: auto;
+
+  .table-header {
+    font-weight: bold;
+  }
 }
 
 .no-rec-found-row:hover {

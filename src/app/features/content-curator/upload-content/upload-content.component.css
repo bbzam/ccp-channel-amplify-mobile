@@ -22,6 +22,7 @@
 
     .form-field-container {
       display: grid;
+      margin-bottom: 1em;
 
       h2 {
         color: var(--primary);
@@ -46,6 +47,24 @@
         border-radius: 0.5em;
       }
 
+      .progress {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        flex-wrap: wrap;
+
+        .progress-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .upload-controls {
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+
       mat-error {
         font-size: 0.875em;
         margin-left: 0.8em;
@@ -58,6 +77,12 @@
 
       .previewMedia {
         max-width: 30em;
+        cursor: pointer;
+      }
+
+      .existing-file {
+        display: flex;
+        align-items: center;
       }
     }
   }
@@ -72,4 +97,23 @@
     gap: 0.5em;
     padding: 0 1em;
   }
+}
+
+/* Hide timeline and other controls */
+.previewMedia::-webkit-media-controls-timeline,
+.previewMedia::-webkit-media-controls-current-time-display,
+.previewMedia::-webkit-media-controls-time-remaining-display,
+.previewMedia::-webkit-media-controls-mute-button,
+.previewMedia::-webkit-media-controls-volume-slider,
+.previewMedia::-webkit-media-controls-volume-control-container,
+.previewMedia::-webkit-media-controls-volume-control,
+.previewMedia::-webkit-media-controls-volume-panel,
+.previewMedia::-webkit-media-controls-toggle-closed-captions-button,
+.previewMedia::-webkit-media-controls-fullscreen-button,
+.previewMedia::-webkit-media-controls-seek-back-button,
+.previewMedia::-webkit-media-controls-seek-forward-button,
+.previewMedia::-webkit-media-controls-rewind-button,
+.previewMedia::-webkit-media-controls-return-to-realtime-button,
+.previewMedia::-webkit-media-controls-panel {
+  display: none !important;
 }

@@ -107,6 +107,12 @@
     font: icon;
   }
 
+  .mdc-linear-progress {
+    margin-left: 0.6em;
+    width: 30%;
+    border-radius: 1em;
+  }
+
   @media (max-width: 767px) {
     .buttonMS {
       background-color: var(--primary);

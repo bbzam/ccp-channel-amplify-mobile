@@ -11,7 +11,6 @@
         id="title"
         name="title"
         formControlName="title"
-        required
         placeholder="Enter title"
       />
       @if (titleErrorMessage()) {
@@ -27,7 +26,6 @@
         id="description"
         name="description"
         formControlName="description"
-        required
         rows="4"
         placeholder="Enter description"
       ></textarea>
@@ -43,7 +41,6 @@
         id="category"
         name="category"
         formControlName="category"
-        required
         placeholder="Select category"
       >
         <option value="theater">Theater</option>
@@ -110,7 +107,7 @@
     <!-- User Type -->
     <div class="form-field-container">
       <label for="userType">For which User Type?</label>
-      <select id="userType" name="userType" formControlName="usertype" required>
+      <select id="userType" name="userType" formControlName="usertype">
         <option value="free">Free</option>
         <option value="subscriber">Subscriber</option>
       </select>
@@ -122,6 +119,28 @@
     <!-- Landscape Image -->
     <div class="form-field-container">
       <label for="landscapeImage">Landscape Image</label>
+      @if (landscapeImageKey) {
+      <div class="existing-file">
+        <div>
+          <span>{{ landscapeImageKey.split("/").pop() }}</span>
+        </div>
+        @if (uploadProgress['landscape'] === 100) {
+        <button
+          mat-icon-button
+          matTooltip="remove"
+          (click)="
+            deleteMedia(
+              landscapeImageKey,
+              'landscapeFileURL',
+              'landscapeImageKey'
+            )
+          "
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+        }
+      </div>
+      } @else {
       <input
         matInput
         type="file"
@@ -130,19 +149,83 @@
         (change)="onLandscapeImageSelected($event)"
         accept="image/*"
         class="form-control-file"
-        required
       />
       @if (landscapeErrorMessage()) {
       <mat-error>{{ landscapeErrorMessage() }}</mat-error>
-      } @if (landscapeFileURL) {
+      } } @if (landscapeFileURL) {
       <img class="previewMedia" [src]="landscapeFileURL" alt="banner-img" />
-      }
-      <!-- <small class="form-text text-muted">Recommended size: 1920x1080px</small> -->
+      @if (uploadProgress['landscape']) {
+      <div class="progress">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="uploadProgress['landscape']"
+        >
+        </mat-progress-bar>
+        <div class="progress-info">
+          @if (uploadProgress["landscape"] !== 100) {
+          <div class="upload-controls">
+            @if (!isPaused['landscape']) {
+            <button
+              mat-icon-button
+              (click)="pauseUpload(landscapeImageKey, 'landscape')"
+              [disabled]="uploadProgress['landscape'] === 100"
+              matTooltip="Pause upload"
+            >
+              <mat-icon>pause</mat-icon>
+            </button>
+            } @else {
+            <button
+              mat-icon-button
+              (click)="resumeUpload(landscapeImageKey, 'landscape')"
+              [disabled]="uploadProgress['landscape'] === 100"
+              matTooltip="Resume upload"
+            >
+              <mat-icon>play_arrow</mat-icon>
+            </button>
+            }
+            <button
+              mat-icon-button
+              (click)="cancelUpload(landscapeImageKey, 'landscape')"
+              [disabled]="uploadProgress['landscape'] === 100"
+              matTooltip="Cancel upload"
+            >
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </div>
+          }
+          <p>
+            <span
+              >{{
+                uploadProgress["landscape"] === 100 ? "Uploaded" : "Uploading"
+              }} </span
+            >{{ uploadProgress["landscape"] }}%
+          </p>
+        </div>
+      </div>
+      } }
     </div>
 
     <!-- Portrait Image -->
     <div class="form-field-container">
       <label for="portraitImage">Portrait Image</label>
+      @if (portraitImageKey) {
+      <div class="existing-file">
+        <div>
+          <span>{{ portraitImageKey.split("/").pop() }}</span>
+        </div>
+        @if (uploadProgress['portrait'] === 100) {
+        <button
+          mat-icon-button
+          matTooltip="remove"
+          (click)="
+            deleteMedia(portraitImageKey, 'portraitFileURL', 'portraitImageKey')
+          "
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+        }
+      </div>
+      } @else {
       <input
         matInput
         type="file"
@@ -151,19 +234,83 @@
         (change)="onPortraitImageSelected($event)"
         accept="image/*"
         class="form-control-file"
-        required
       />
       @if (portraitErrorMessage()) {
       <mat-error>{{ portraitErrorMessage() }}</mat-error
-      >} @if (portraitFileURL) {
+      >} } @if (portraitFileURL) {
       <img class="previewMedia" [src]="portraitFileURL" alt="poster-img" />
-      }
-      <!-- <small class="form-text text-muted">Recommended size: 1080x1920px</small> -->
+      @if (uploadProgress['portrait']) {
+      <div class="progress">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="uploadProgress['portrait']"
+        >
+        </mat-progress-bar>
+        <div class="progress-info">
+          @if (uploadProgress["portrait"] !== 100) {
+          <div class="upload-controls">
+            @if (!isPaused['portrait']) {
+            <button
+              mat-icon-button
+              (click)="pauseUpload(portraitImageKey, 'portrait')"
+              [disabled]="uploadProgress['portrait'] === 100"
+              matTooltip="Pause upload"
+            >
+              <mat-icon>pause</mat-icon>
+            </button>
+            } @else {
+            <button
+              mat-icon-button
+              (click)="resumeUpload(portraitImageKey, 'portrait')"
+              [disabled]="uploadProgress['portrait'] === 100"
+              matTooltip="Resume upload"
+            >
+              <mat-icon>play_arrow</mat-icon>
+            </button>
+            }
+            <button
+              mat-icon-button
+              (click)="cancelUpload(portraitImageKey, 'portrait')"
+              [disabled]="uploadProgress['portrait'] === 100"
+              matTooltip="Cancel upload"
+            >
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </div>
+          }
+          <p>
+            <span
+              >{{
+                uploadProgress["portrait"] === 100 ? "Uploaded" : "Uploading"
+              }} </span
+            >{{ uploadProgress["portrait"] }}%
+          </p>
+        </div>
+      </div>
+      } }
     </div>
 
     <!-- Preview Video -->
     <div class="form-field-container">
       <label for="previewVideo">Preview Video</label>
+      @if (previewVideoKey) {
+      <div class="existing-file">
+        <div>
+          <span>{{ previewVideoKey.split("/").pop() }}</span>
+        </div>
+        @if (uploadProgress["preview"] === 100) {
+        <button
+          mat-icon-button
+          matTooltip="remove"
+          (click)="
+            deleteMedia(previewVideoKey, 'previewFileURL', 'previewVideoKey')
+          "
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+        }
+      </div>
+      } @else {
       <input
         matInput
         type="file"
@@ -172,23 +319,87 @@
         (change)="onPreviewVideoSelected($event)"
         accept="video/*"
         class="form-control-file"
-        required
       />
       @if(previewErrorMessage()) {
       <mat-error>{{ previewErrorMessage() }}</mat-error
-      >} @if (previewFileURL) {
+      >} } @if (previewFileURL) {
       <video
         class="previewMedia"
         [src]="previewFileURL"
         alt="preview-video"
+        controls
+        preload="metadata"
       ></video>
-      }
-      <!-- <small class="form-text text-muted">Maximum duration: 2 minutes</small> -->
+      @if (uploadProgress['preview']) {
+      <div class="progress">
+        <mat-progress-bar
+          mode="determinate"
+          [value]="uploadProgress['preview']"
+        >
+        </mat-progress-bar>
+        <div class="progress-info">
+          @if (uploadProgress["preview"] !== 100) {
+          <div class="upload-controls">
+            @if (!isPaused['preview']) {
+            <button
+              mat-icon-button
+              (click)="pauseUpload(previewVideoKey, 'preview')"
+              [disabled]="uploadProgress['preview'] === 100"
+              matTooltip="Pause upload"
+            >
+              <mat-icon>pause</mat-icon>
+            </button>
+            } @else {
+            <button
+              mat-icon-button
+              (click)="resumeUpload(previewVideoKey, 'preview')"
+              [disabled]="uploadProgress['preview'] === 100"
+              matTooltip="Resume upload"
+            >
+              <mat-icon>play_arrow</mat-icon>
+            </button>
+            }
+            <button
+              mat-icon-button
+              (click)="cancelUpload(previewVideoKey, 'preview')"
+              [disabled]="uploadProgress['preview'] === 100"
+              matTooltip="Cancel upload"
+            >
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </div>
+          }
+          <p>
+            <span
+              >{{
+                uploadProgress["preview"] === 100 ? "Uploaded" : "Uploading"
+              }} </span
+            >{{ uploadProgress["preview"] }}%
+          </p>
+        </div>
+      </div>
+      } }
     </div>
 
     <!-- Full Video -->
     <div class="form-field-container">
       <label for="fullVideo">Full Video</label>
+      @if (fullVideoKey) {
+      <div class="existing-file">
+        <div>
+          <span>{{ fullVideoKey.split("/").pop() }}</span>
+        </div>
+        @if(uploadProgress['full'] === 100) {
+        <button
+          mat-icon-button
+          matTooltip="remove"
+          (click)="deleteMedia(fullVideoKey, 'fullFileURL', 'fullVideoKey')"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+        }
+      </div>
+      } @else {
       <input
         matInput
         type="file"
@@ -197,14 +408,63 @@
         (change)="onFullVideoSelected($event)"
         accept="video/*"
         class="form-control-file"
-        required
       />
       @if(fullErrorMessage()) {
       <mat-error>{{ fullErrorMessage() }}</mat-error
-      >} @if (fullFileURL) {
-      <video class="previewMedia" [src]="fullFileURL" alt="full-video"></video>
-      }
-      <!-- <small class="form-text text-muted">Supported formats: MP4, MOV</small> -->
+      >} } @if (fullFileURL) {
+      <video
+        class="previewMedia"
+        [src]="fullFileURL"
+        alt="full-video"
+        controls
+        preload="metadata"
+      ></video>
+      @if (uploadProgress['full']) {
+      <div class="progress">
+        <mat-progress-bar mode="determinate" [value]="uploadProgress['full']">
+        </mat-progress-bar>
+        <div class="progress-info">
+          @if (uploadProgress["full"] !== 100) {
+          <div class="upload-controls">
+            @if (!isPaused['full']) {
+            <button
+              mat-icon-button
+              (click)="pauseUpload(fullVideoKey, 'full')"
+              [disabled]="uploadProgress['full'] === 100"
+              matTooltip="Pause upload"
+            >
+              <mat-icon>pause</mat-icon>
+            </button>
+            } @else {
+            <button
+              mat-icon-button
+              (click)="resumeUpload(fullVideoKey, 'full')"
+              [disabled]="uploadProgress['full'] === 100"
+              matTooltip="Resume upload"
+            >
+              <mat-icon>play_arrow</mat-icon>
+            </button>
+            }
+            <button
+              mat-icon-button
+              (click)="cancelUpload(fullVideoKey, 'full')"
+              [disabled]="uploadProgress['full'] === 100"
+              matTooltip="Cancel upload"
+            >
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </div>
+          }
+          <p>
+            <span
+              >{{
+                uploadProgress["full"] === 100 ? "Uploaded" : "Uploading"
+              }} </span
+            >{{ uploadProgress["full"] }}%
+          </p>
+        </div>
+      </div>
+      } }
     </div>
   </form>
 

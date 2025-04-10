@@ -1,4 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -7,45 +16,71 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { allFeatured, theaters } from '../../mock-data';
 import { MatIconModule } from '@angular/material/icon';
+import { SharedService } from '../../shared.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatInputModule } from '@angular/material/input';
 
 interface ContentItem {
+  id: string;
   title: string;
-  category: string;
-  subcategory: string;
-  description: string;
-  fullVideoUrl: string;
-  portraitImageUrl: string;
-  landscapeImageUrl: string;
-  previewVideoUrl: string;
-  resolution: string;
-  runtime: string;
+  // category: string;
+  // subcategory: string;
+  // description: string;
+  // fullVideoUrl: string;
+  // portraitImageUrl: string;
+  // landscapeImageUrl: string;
+  // previewVideoUrl: string;
+  // resolution: string;
+  // runtime: string;
 }
 
 @Component({
   selector: 'app-set-featured',
-  imports: [CdkDropListGroup, CdkDropList, CdkDrag, MatIconModule],
+  imports: [
+    CdkDropListGroup,
+    CdkDropList,
+    CdkDrag,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    MatInputModule,
+  ],
   templateUrl: './set-featured.component.html',
   styleUrl: './set-featured.component.css',
 })
-export class SetFeaturedComponent implements OnInit {
+export class SetFeaturedComponent implements OnInit, OnChanges {
+  readonly sharedService = inject(SharedService);
+  @Input() hasChanges: boolean = false;
   @Input() contents!: ContentItem[];
   @Input() featured!: ContentItem[];
-
-  ngOnInit() {
-    this.updateAvailableItems();
-  }
+  @Output() saveFeaturedContent = new EventEmitter<void>();
+  @Output() getFeaturedContent = new EventEmitter<string>();
+  @Output() itemsChanged = new EventEmitter<{
+    featured: ContentItem[];
+    contents: ContentItem[];
+  }>();
+  featuredIds: string[] = [];
 
   updateAvailableItems() {
     // Filter out items that are already in the featured list
-    this.contents = allFeatured.filter(
+    this.contents = this.contents.filter(
       (item) =>
-        !this.featured.some(
-          (featuredItem) =>
-            featuredItem.title === item.title
-        )
+        !this.featured.some((featuredItem) => featuredItem.id === item.id)
     );
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['contents'] || changes['featured']) {
+      this.updateAvailableItems();
+    }
+  }
+
+  ngOnInit() {
+    this.updateAvailableItems();
+    // Initialize featuredIds with current featured items
+    this.featuredIds = this.featured.map((item) => item.id);
   }
 
   drop(event: CdkDragDrop<ContentItem[], ContentItem[]>) {
@@ -62,8 +97,30 @@ export class SetFeaturedComponent implements OnInit {
         event.previousIndex,
         event.currentIndex
       );
+
+      // Update featuredIds based on the current state of featured array
+      this.featuredIds = this.featured.map((item) => item.id);
+      this.hasChanges = true;
+
       // Update the available items list after transfer
       this.updateAvailableItems();
     }
+
+    // Emit the updated arrays
+    this.itemsChanged.emit({
+      featured: this.featured,
+      contents: this.contents,
+    });
+  }
+
+  applyFilter(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const value = target.value;
+    console.log(value);
+    // this.getFeaturedContent.emit(value);
+  }
+
+  save() {
+    this.saveFeaturedContent.emit();
   }
 }

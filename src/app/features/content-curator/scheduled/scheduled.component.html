@@ -6,6 +6,7 @@
     [displayedColumns]="displayedColumns"
     (rowClick)="handleRowClick($event)"
     (refreshClick)="handleRefreshClick()"
+    (getContent)="getAllContents(currentTab, $event)"
   >
   </app-table>
 </div>
