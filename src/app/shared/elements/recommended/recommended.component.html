@@ -5,7 +5,7 @@
       <img
         class="image"
         mat-card-image
-        [src]="item.landscapeImageUrl"
+        [src]="item.landscapeImagePresignedUrl"
         [alt]="item.title"
       />
       <video
@@ -15,7 +15,7 @@
         loading="lazy"
         class="video"
         #video
-        [src]="item.previewVideoUrl"
+        [src]="item.previewVideoPresignedUrl"
         autoplay
         loop
         [muted]="true"
@@ -30,7 +30,7 @@
         <label>{{ item.title }}</label>
         <div class="action-buttons">
           <div>
-            <mat-icon (click)="watchVideo(item.fullVideoUrl)"
+            <mat-icon (click)="watchVideo(item.fullVideoPresignedUrl)"
               >play_circle_filled</mat-icon
             >
             <mat-icon (click)="moreInfo(item)">info</mat-icon>
