@@ -318,7 +318,7 @@ export class FeaturesService {
           ...(category || status || keyword
             ? {
                 selectionSet: fields?.length ? fields : defaultFields,
-                limit: 10,
+                // limit: 10,
                 nextToken,
                 filter: {
                   ...(category && {
@@ -341,7 +341,7 @@ export class FeaturesService {
               }
             : {
                 selectionSet: fields?.length ? fields : defaultFields,
-                limit: 10,
+                // limit: 10,
                 nextToken,
               }),
         });
