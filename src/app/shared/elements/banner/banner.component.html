@@ -3,18 +3,18 @@
   <ng-container>
     <div class="supermain-div">
       <div class="media-container">
-        @if (showPhoto || !banners[currentMediaIndex].previewVideoUrl) {
+        @if (showPhoto || !banners[currentMediaIndex].previewVideoPresignedUrl) {
         <img
-          [src]="banners[currentMediaIndex].landscapeImageUrl"
+          [src]="banners[currentMediaIndex].landscapeImagePresignedUrl"
           [alt]="banners[currentMediaIndex].title"
         />
-        } @if (!showPhoto && banners[currentMediaIndex].previewVideoUrl) {
+        } @if (!showPhoto && banners[currentMediaIndex].previewVideoPresignedUrl) {
         <video
           playsinline
           webkit-playsinline
           preload="metadata"
           #video
-          [src]="banners[currentMediaIndex].previewVideoUrl"
+          [src]="banners[currentMediaIndex].previewVideoPresignedUrl"
           [autoplay]="true"
           [muted]="true"
           (ended)="showPhoto = true"
@@ -43,13 +43,13 @@
             <p>{{ transform(banners[currentMediaIndex].runtime) }}</p>
             }
           </div>
-          @if (banners[currentMediaIndex].fullVideoUrl) {
+          @if (banners[currentMediaIndex].fullVideoPresignedUrl) {
           <div class="action-container">
             <div class="watch">
               <button
                 class="buttonMS"
                 mat-icon-button
-                (click)="watchVideo(banners[currentMediaIndex].fullVideoUrl)"
+                (click)="watchVideo(banners[currentMediaIndex].fullVideoPresignedUrl)"
               >
                 <div>WATCH</div>
                 <mat-icon matSuffix>play_arrow</mat-icon>
