@@ -107,7 +107,6 @@ export class FileValidator {
     maxDurationSeconds = 10800
   ): Promise<boolean> {
     return new Promise((resolve) => {
-      // Check file extension first
       const allowedExtensions = ['mp4', 'mov', 'webm', 'mpeg', 'mpg', 'm4v'];
       const fileExtension = file.name.split('.').pop()?.toLowerCase();
 
@@ -117,14 +116,12 @@ export class FileValidator {
         return;
       }
 
-      // Check file size
       if (file.size > maxSizeBytes) {
         console.error('File size exceeds the limit');
         resolve(false);
         return;
       }
 
-      // Check MIME type
       const allowedMimeTypes = [
         'video/mp4',
         'video/quicktime',
@@ -134,7 +131,7 @@ export class FileValidator {
       ];
 
       if (!allowedMimeTypes.includes(file.type)) {
-        console.error('Invalid file type - not a supported video format');
+        console.error('Invalid file type');
         resolve(false);
         return;
       }
@@ -143,107 +140,65 @@ export class FileValidator {
       reader.onload = async () => {
         const buffer = new Uint8Array(reader.result as ArrayBuffer).slice(
           0,
-          32
+          16
         );
 
-        // Add debug logging to see what we're actually getting
-        console.log('File type:', file.type);
-        console.log(
-          'File signature (hex):',
-          Array.from(buffer)
-            .map((b) => b.toString(16).padStart(2, '0'))
-            .join(' ')
-        );
-
-        // Define type for signatures object
-        type VideoSignatures = {
-          [key in 'mp4' | 'mov' | 'm4v' | 'webm' | 'mpeg']: number[][];
-        };
-
-        // Video file signatures with proper typing
-        const signatures: VideoSignatures = {
-          // MP4 with all its common variants in one signature
+        // Video signatures matching the AWS Lambda implementation
+        const signatures = {
           mp4: [
             [0x00, 0x00, 0x00], // Variable length box size
             [0x66, 0x74, 0x79, 0x70], // 'ftyp'
             [0x69, 0x73, 0x6f, 0x6d], // 'isom'
             [0x6d, 0x70, 0x34, 0x32], // 'mp42'
           ],
-
-          // QuickTime Movie
           mov: [
-            // Standard QuickTime
             [
               0x00, 0x00, 0x00, 0x14, 0x66, 0x74, 0x79, 0x70, 0x71, 0x74, 0x20,
               0x20,
             ],
-            // QuickTime movie
             [0x00, 0x00, 0x00, 0x20, 0x66, 0x74, 0x79, 0x70],
-            // Alternative QuickTime signature
             [0x66, 0x74, 0x79, 0x70, 0x71, 0x74, 0x20, 0x20],
-            // MOV with MP4 compatibility
             [
               0x00, 0x00, 0x00, 0x20, 0x66, 0x74, 0x79, 0x70, 0x6d, 0x70, 0x34,
               0x32,
             ],
-            // Generic MOV container
             [0x6d, 0x6f, 0x6f, 0x76],
           ],
-
-          // M4V
-          m4v: [[0x66, 0x74, 0x79, 0x70, 0x4d, 0x34, 0x56, 0x20]], // ftypM4V
-
-          // WebM
-          webm: [[0x1a, 0x45, 0xdf, 0xa3]], // EBML header
-
-          // MPEG
-          mpeg: [
-            [0x47], // Transport Stream
-            [0x00, 0x00, 0x01, 0xba], // Program Stream
-            [0x00, 0x00, 0x01, 0xb3], // MPEG Elementary Stream
-          ],
+          m4v: [[0x66, 0x74, 0x79, 0x70, 0x4d, 0x34, 0x56, 0x20]],
+          webm: [[0x1a, 0x45, 0xdf, 0xa3]],
+          mpeg: [[0x47], [0x00, 0x00, 0x01, 0xba], [0x00, 0x00, 0x01, 0xb3]],
         };
 
-        // Helper function to check buffer equality with offset
-        const bufferMatches = (
-          buffer: Uint8Array,
-          signature: number[],
-          offset = 0
-        ): boolean => {
-          return signature.every(
-            (byte, index) => buffer[index + offset] === byte
-          );
-        };
+        const bufferHex = Array.from(buffer)
+          .map((b) => b.toString(16).padStart(2, '0'))
+          .join('');
 
-        // Helper function to check if buffer matches any signature
-        const matchesSignature = (
-          buffer: Uint8Array,
-          signatures: number[][]
-        ): boolean => {
-          return signatures.some((signature) => {
-            // Add debug logging for signature matching
-            const matches = signature.every(
-              (byte, index) => buffer[index] === byte
-            );
-            if (matches) {
-              console.log(
-                'Matched signature:',
-                signature.map((b) => b.toString(16)).join(' ')
-              );
-            }
-            return matches;
-          });
-        };
-
-        const extension = file.name.split('.').pop()?.toLowerCase();
+        const extensionSignatures =
+          signatures[fileExtension as keyof typeof signatures];
         let isValidSignature = false;
 
-        if (extension === 'mov') {
-          isValidSignature = matchesSignature(buffer, signatures.mov);
-        }
+        if (extensionSignatures) {
+          isValidSignature = extensionSignatures.some((signature) => {
+            const signatureHex = Array.from(new Uint8Array(signature))
+              .map((b) => b.toString(16).padStart(2, '0'))
+              .join('');
 
-        // Log the validation result
-        console.log('Signature validation result:', isValidSignature);
+            // For MP4, MOV - check if signature exists anywhere in first 16 bytes
+            if (['mp4', 'mov'].includes(fileExtension)) {
+              return bufferHex.includes(signatureHex);
+            }
+
+            // For MPEG - special handling
+            if (fileExtension === 'mpeg') {
+              return signature.length === 1
+                ? buffer[0] === signature[0]
+                : bufferHex.startsWith(signatureHex);
+            }
+
+            // For other formats - check start of buffer
+            return bufferHex.startsWith(signatureHex);
+          });
+        }
 
         if (!isValidSignature) {
           console.error('Invalid video file signature');
@@ -251,6 +206,7 @@ export class FileValidator {
           return;
         }
 
+        // Continue with duration and dimension checks
         const video = document.createElement('video');
         video.preload = 'metadata';
 
@@ -258,9 +214,7 @@ export class FileValidator {
           URL.revokeObjectURL(video.src);
 
           if (video.duration > maxDurationSeconds) {
-            console.error(
-              `Video duration ${video.duration}s exceeds limit of ${maxDurationSeconds}s`
-            );
+            console.error(`Video duration ${video.duration}s exceeds limit`);
             resolve(false);
             return;
           }
@@ -287,11 +241,11 @@ export class FileValidator {
       };
 
       reader.onerror = () => {
-        console.error('Error reading file header');
+        console.error('Error reading file');
         resolve(false);
       };
 
-      reader.readAsArrayBuffer(file.slice(0, 32));
+      reader.readAsArrayBuffer(file.slice(0, 16));
     });
   }
 }
