@@ -653,7 +653,7 @@ export class UploadContentComponent {
         // Validate preview video (smaller size and duration limits)
         const isValid = await FileValidator.validateVideoFile(
           file,
-          100 * 1024 * 1024, // 100MB limit for preview
+          1 * 1024 * 1024 * 1024, // 1GB limit for preview
           40 // 40 secs limit for preview
         );
 
