@@ -1,4 +1,14 @@
-import { AfterViewInit, Component, ElementRef, inject, Input, OnInit, QueryList, ViewChildren } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  Input,
+  OnInit,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { allFeatured } from '../../mock-data';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -25,6 +35,7 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
 
   ngOnInit(): void {
     this.updateVisibleItems();
+    this.updateItemsToShow();
   }
 
   ngAfterViewInit(): void {
@@ -51,6 +62,24 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
   }
 
   constructor() {}
+
+  @HostListener('window:resize') updateItemsToShow(): void {
+    const width = window.innerWidth;
+    if (width <= 480) {
+      this.itemsToShow = 1; // Mobile view
+    } else if (width >= 481 && width <= 767) {
+      this.itemsToShow = 2; // Small tablets to larger tablets
+    } else if (width >= 768 && width <= 1119) {
+      this.itemsToShow = 3; // Small desktop and larger tablets
+    } else if (width >= 1120 && width <= 1439) {
+      this.itemsToShow = 4; // Medium desktop
+    } else if (width >= 1440 && width <= 1919) {
+      this.itemsToShow = 5; // Large desktop
+    } else if (width >= 1920) {
+      this.itemsToShow = 6; // Ultra-wide desktop
+    }
+    this.updateVisibleItems();
+  }
 
   transform(value: number): string {
     if (isNaN(value) || value < 0) return '00:00:00';

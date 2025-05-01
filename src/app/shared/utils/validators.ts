@@ -4,7 +4,8 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 export function disallowCharacters(): (
   control: AbstractControl
 ) => ValidationErrors | null {
-  const regex = /[<>'";()]/; // Regex to match any disallowed character
+  const regex =
+    /javascript:|data:|vbscript:|on\w+\s*=|style\s*=|alert\s*\(|confirm\s*\(|prompt\s*\(|eval\s*\(|<script|<iframe|<object|<embed/i; // Regex to match any disallowed character
 
   return (control: AbstractControl): ValidationErrors | null => {
     return regex.test(control.value || '')

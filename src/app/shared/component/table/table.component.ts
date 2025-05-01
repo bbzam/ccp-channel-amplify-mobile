@@ -56,6 +56,7 @@ export class TableComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
+  private searchTimeout: any;
   dataSource!: MatTableDataSource<any>;
 
   ngOnInit() {
@@ -73,21 +74,28 @@ export class TableComponent {
     }
   }
 
-  // applyFilter(event: Event) {
-  //   const filterValue = (event.target as HTMLInputElement).value;
-  //   this.dataSource.filter = filterValue.trim().toLowerCase();
-
-  //   if (this.dataSource.paginator) {
-  //     this.dataSource.paginator.firstPage();
-  //   }
-  // }
-
   applyFilter(event: Event) {
     const target = event.target as HTMLInputElement;
     const value = target.value;
     console.log(value);
-    // this.getContent.emit(value);
+
+    // Clear any existing timeout
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    // Set new timeout
+    this.searchTimeout = setTimeout(() => {
+      this.getContent.emit(value);
+    }, 500); // .5 second delay
   }
+
+  // applyFilter(event: Event) {
+  //   const target = event.target as HTMLInputElement;
+  //   const value = target.value;
+  //   console.log(value);
+  //   this.getContent.emit(value);
+  // }
 
   truncateText(text: string, limit: number = 20): string {
     if (!text) return '';

@@ -62,6 +62,7 @@ export class SetFeaturedComponent implements OnInit, OnChanges {
     contents: ContentItem[];
   }>();
   featuredIds: string[] = [];
+  private searchTimeout: any;
 
   updateAvailableItems() {
     // Filter out items that are already in the featured list
@@ -113,11 +114,27 @@ export class SetFeaturedComponent implements OnInit, OnChanges {
     });
   }
 
+  // applyFilter(event: Event) {
+  //   const target = event.target as HTMLInputElement;
+  //   const value = target.value;
+  //   console.log(value);
+  //   this.getFeaturedContent.emit(value);
+  // }
+
   applyFilter(event: Event) {
     const target = event.target as HTMLInputElement;
     const value = target.value;
     console.log(value);
-    // this.getFeaturedContent.emit(value);
+
+    // Clear any existing timeout
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    // Set new timeout
+    this.searchTimeout = setTimeout(() => {
+      this.getFeaturedContent.emit(value);
+    }, 500); // .5 second delay
   }
 
   save() {

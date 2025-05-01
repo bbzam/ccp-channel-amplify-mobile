@@ -1,5 +1,5 @@
 import { defineFunction } from '@aws-amplify/backend';
-import { config } from '../config';
+import { config } from '../../config';
 
 export const enableUser = defineFunction({
   name: 'enable-user',

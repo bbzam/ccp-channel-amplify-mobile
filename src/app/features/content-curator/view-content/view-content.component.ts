@@ -406,11 +406,13 @@ export class ViewContentComponent {
           this.featureService.handleError(
             'Please upload all required files before proceeding.'
           );
+          return;
         }
       } else {
         this.featureService.handleError(
           'You have unsaved changes. Save content before proceeding.'
         );
+        return;
       }
 
       if (!isForPublish) {
