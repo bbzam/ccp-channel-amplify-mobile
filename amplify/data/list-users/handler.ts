@@ -1,57 +1,88 @@
 import type { Schema } from '../resource';
 import {
   CognitoIdentityProviderClient,
-  ListUsersCommand,
   ListUsersInGroupCommand,
+  UserType,
 } from '@aws-sdk/client-cognito-identity-provider';
 
 type Handler = Schema['listUsers']['functionHandler'];
+
 const ALLOWED_ROLES = [
   'USER',
   'SUBSCRIBER',
   'CONTENT_CREATOR',
   'IT_ADMIN',
   'SUPER_ADMIN',
-];
+] as const;
+
+type Role = (typeof ALLOWED_ROLES)[number];
 
 export const handler: Handler = async (event) => {
   try {
-    const body = event.arguments;
+    const { role, limit = 60, keyword } = event.arguments;
 
-    // Validate role
-    if (!body.role || !ALLOWED_ROLES.includes(body.role)) {
+    // Validate required environment variables
+    if (!process.env.Region || !process.env.UserPoolId) {
+      throw new Error('Missing required environment variables');
+    }
+
+    // Type guard for role
+    if (!role || !ALLOWED_ROLES.includes(role as Role)) {
       throw new Error(
         `Invalid role. Allowed roles are: ${ALLOWED_ROLES.join(', ')}`
       );
     }
 
+    // Ensure limit is within bounds
+    const validLimit = Math.max(1, Math.min(Number(limit), 60));
+
     const client = new CognitoIdentityProviderClient({
-      region: process.env.Region, // Get region from environment variable
+      region: process.env.Region,
     });
 
-    const command = new ListUsersInGroupCommand({
-      UserPoolId: process.env.UserPoolId, // Get User Pool ID from environment variable
-      GroupName: body.role,
-      Limit: Number(body.limit),
-    });
+    const allUsers: UserType[] = [];
+    let nextToken: string | undefined;
 
-    const response = await client.send(command);
+    try {
+      do {
+        const command = new ListUsersInGroupCommand({
+          UserPoolId: process.env.UserPoolId,
+          GroupName: role,
+          Limit: validLimit,
+          NextToken: nextToken,
+        });
 
-    const keyword = body.keyword?.toLowerCase();
+        const response = await client.send(command);
 
-    const filteredUsers = !keyword
-      ? response.Users
-      : response.Users?.filter((user) =>
+        if (response.Users) {
+          allUsers.push(...response.Users);
+        }
+
+        nextToken = response.NextToken;
+      } while (nextToken);
+    } catch (cognitoError) {
+      console.error('Cognito API error:', cognitoError);
+      throw new Error('Failed to fetch users from Cognito');
+    }
+
+    const normalizedKeyword = keyword?.toLowerCase().trim();
+
+    const filteredUsers = !normalizedKeyword
+      ? allUsers
+      : allUsers.filter((user) =>
           user.Attributes?.some((attr) =>
-            attr.Value?.toLowerCase().includes(keyword)
+            attr.Value?.toLowerCase().includes(normalizedKeyword)
           )
         );
 
-    response.Users = filteredUsers;
-
-    return response;
+    return {
+      Users: filteredUsers,
+      NextToken: null,
+    };
   } catch (error) {
-    console.error('Error creating user:', error);
-    throw error;
+    console.error('Error listing users:', error);
+    throw error instanceof Error
+      ? error
+      : new Error('An unexpected error occurred');
   }
 };
