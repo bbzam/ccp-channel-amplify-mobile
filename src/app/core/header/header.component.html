@@ -13,13 +13,22 @@
     </div>
     } @else {
     <div class="header-logo">
-      <a href="/subscriber"><img src="ccp-logo-rmvbg.png" alt="header-logo" /></a>
+      <a href="/subscriber"
+        ><img src="ccp-logo-rmvbg.png" alt="header-logo"
+      /></a>
     </div>
+    @if (role === 'USER' || role === 'SUBSCRIBER') {
     <div class="hide">
       <app-navigation />
     </div>
+    }
     <div class="hide">
-      <button class="search" mat-icon-button>
+      <!-- @if (role !== 'USER' && role !== 'SUBSCRIBER') {
+      <button class="search" mat-icon-button matTooltip="Go Back to Dashboard" (click)="goToDashboard()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      } -->
+      <button class="search" mat-icon-button matTooltip="Search">
         <mat-icon>search</mat-icon>
       </button>
       <div class="header-right">

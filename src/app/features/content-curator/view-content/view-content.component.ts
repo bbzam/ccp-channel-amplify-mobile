@@ -406,11 +406,13 @@ export class ViewContentComponent {
           this.featureService.handleError(
             'Please upload all required files before proceeding.'
           );
+          return;
         }
       } else {
         this.featureService.handleError(
           'You have unsaved changes. Save content before proceeding.'
         );
+        return;
       }
 
       if (!isForPublish) {
@@ -827,8 +829,8 @@ export class ViewContentComponent {
         // Validate preview video (smaller size and duration limits)
         const isValid = await FileValidator.validateVideoFile(
           file,
-          100 * 1024 * 1024, // 100MB limit for preview
-          40 // 40 secs limit for preview
+          3 * 1024 * 1024 * 1024, // 3GB limit for preview
+          31 // 31 secs limit for preview
         );
 
         if (!isValid) {
@@ -875,7 +877,7 @@ export class ViewContentComponent {
         // Validate full video (larger size and duration limits)
         const isValid = await FileValidator.validateVideoFile(
           file,
-          10 * 1024 * 1024 * 1024, // 10GB limit
+          16 * 1024 * 1024 * 1024, // 16GB limit
           10800 // 3 hours in seconds
         );
 

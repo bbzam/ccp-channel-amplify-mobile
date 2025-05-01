@@ -93,10 +93,11 @@ export class BannerComponent implements OnInit, AfterViewInit {
 
   getVideoDuration(): number {
     const videoElement = document.createElement('video');
-    videoElement.src = this.banners[this.currentMediaIndex].previewVideoUrl;
+    videoElement.src =
+      this.banners[this.currentMediaIndex].previewVideoPresignedUrl;
 
     // Listen for the loadedmetadata event to ensure duration is available
-    if (this.banners[this.currentMediaIndex].previewVideoUrl) {
+    if (this.banners[this.currentMediaIndex].previewVideoPresignedUrl) {
       videoElement.addEventListener('loadedmetadata', () => {
         this.teaserDuration = videoElement.duration * 1000; // Duration in milliseconds
       });

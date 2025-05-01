@@ -32,9 +32,23 @@ export const handler: Handler = async (event) => {
     const command = new ListUsersInGroupCommand({
       UserPoolId: process.env.UserPoolId, // Get User Pool ID from environment variable
       GroupName: body.role,
+      Limit: Number(body.limit),
     });
 
     const response = await client.send(command);
+
+    const keyword = body.keyword?.toLowerCase();
+
+    const filteredUsers = !keyword
+      ? response.Users
+      : response.Users?.filter((user) =>
+          user.Attributes?.some((attr) =>
+            attr.Value?.toLowerCase().includes(keyword)
+          )
+        );
+
+    response.Users = filteredUsers;
+
     return response;
   } catch (error) {
     console.error('Error creating user:', error);

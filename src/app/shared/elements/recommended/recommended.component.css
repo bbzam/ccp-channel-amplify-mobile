@@ -12,7 +12,7 @@
   grid-template-columns: repeat(5, minmax(0, 1fr));
   grid-auto-flow: column;
   gap: 10px;
-  overflow: hidden; /* Ensure only 5 items are visible */
+  overflow: hidden;
   min-height: 21em;
   align-items: center;
   justify-content: center;
@@ -28,6 +28,9 @@
 
   .image {
     display: block;
+    width: 100%;
+    min-height: 10.5em;
+    max-height: 10.5em;
   }
 
   .video {
@@ -41,8 +44,10 @@
     display: block;
     color: var(--gray);
     font-size: 0.9em;
-    padding: 1em 0;
+    padding: 0.5em;
     font-weight: bold;
+    align-content: center;
+    min-height: 4em;
   }
 
   .actions-hovered {
@@ -133,6 +138,52 @@
 
 .scroll-btn:hover {
   background: rgba(0, 0, 0, 0.8);
+}
+
+/* Mobile view */
+@media (max-width: 480px) {
+  .main-div {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .card {
+    .video,
+    .image {
+      max-height: unset;
+    }
+  }
+
+  .card:hover {
+    transform: unset;
+  }
+}
+
+/* Tablet view (Small tablets to larger tablets) */
+@media (min-width: 481px) and (max-width: 767px) {
+  .main-div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Small desktop and larger tablets */
+@media (min-width: 768px) and (max-width: 1119px) {
+  .main-div {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Medium desktop */
+@media (min-width: 1120px) and (max-width: 1439px) {
+  .main-div {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Large desktop */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .main-div {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
 }
 
 /* Hide timeline, volume slider */

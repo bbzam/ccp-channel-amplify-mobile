@@ -45,6 +45,10 @@ export const routes: Routes = [
     path: 'subscriber',
     canActivate: [roleGuard, authGuard],
     data: { roles: ['SUBSCRIBER', 'USER'] },
+    loadComponent: () =>
+      import('./features/subscriber/subscriber/subscriber.component').then(
+        (m) => m.SubscriberComponent
+      ),
     children: [
       {
         path: '',
@@ -132,6 +136,8 @@ export const routes: Routes = [
     path: 'content-curator',
     canActivate: [roleGuard, authGuard],
     data: { roles: ['CONTENT_CREATOR'] },
+    loadComponent: () =>
+      import('./features/admin/admin.component').then((m) => m.AdminComponent),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
@@ -171,6 +177,15 @@ export const routes: Routes = [
           ).then((m) => m.SetfeaturedComponent),
       },
       {
+        path: 'configure-landing-page',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import(
+            './features/content-curator/configure-landing-page/configure-landing-page.component'
+          ).then((m) => m.ConfigureLandingPageComponent),
+      },
+      {
         path: 'manage-users',
         resolve: { loading: loaderResolver },
         data: { loadingMessage: 'Loading Page...' },
@@ -193,9 +208,9 @@ export const routes: Routes = [
         resolve: { loading: loaderResolver },
         data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
-          import(
-            './beta-test/manage-keys/manage-keys.component'
-          ).then((m) => m.ManageKeysComponent),
+          import('./beta-test/manage-keys/manage-keys.component').then(
+            (m) => m.ManageKeysComponent
+          ),
       },
       {
         path: 'notfound',
@@ -211,6 +226,8 @@ export const routes: Routes = [
     path: 'it-admin',
     canActivate: [roleGuard, authGuard],
     data: { roles: ['IT_ADMIN'] },
+    loadComponent: () =>
+      import('./features/admin/admin.component').then((m) => m.AdminComponent),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
@@ -244,6 +261,8 @@ export const routes: Routes = [
     path: 'super-admin',
     canActivate: [roleGuard, authGuard],
     data: { roles: ['SUPER_ADMIN'] },
+    loadComponent: () =>
+      import('./features/admin/admin.component').then((m) => m.AdminComponent),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {

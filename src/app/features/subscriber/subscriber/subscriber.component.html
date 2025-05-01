@@ -9,4 +9,17 @@
     <app-footer />
   </div>
   <app-sidenav #sidenav></app-sidenav>
+  @if (showScrollHint) {
+  <div
+    class="scroll-indicator"
+    [ngClass]="{
+      'scroll-up': direction === 'up',
+      'scroll-down': direction === 'down'
+    }"
+  >
+    <span>{{
+      direction === "down" ? "↓ Next Section" : "↑ Previous Section"
+    }}</span>
+  </div>
+  }
 </div>

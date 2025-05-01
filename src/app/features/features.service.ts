@@ -45,13 +45,20 @@ export class FeaturesService {
   async getAllKeys(keyword?: string): Promise<any> {
     try {
       this.sharedService.showLoader('Fetching content...');
-      const { data } = await this.client.models.Keys.list();
+      const { data } = await this.client.models.Keys.list({
+        limit: 5000,
+        filter: {
+          id: {
+            contains: keyword,
+          },
+        },
+      });
       if (data) {
         this.sharedService.hideLoader();
         return data;
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('Error fetching keys:', error);
       throw error;
     }
   }
@@ -168,11 +175,17 @@ export class FeaturesService {
     }
   }
 
-  async getAllUsers(role: string): Promise<any> {
+  async getAllUsers(
+    role: string,
+    limit?: string,
+    keyword?: string
+  ): Promise<any> {
     try {
       this.sharedService.showLoader('Fetching content...');
       const result = await this.client.queries.listUsers({
         role: role,
+        limit: '1000',
+        keyword: keyword,
       });
       if (result.data && typeof result.data === 'string') {
         const parsedData = JSON.parse(result.data);
@@ -285,7 +298,7 @@ export class FeaturesService {
     status: boolean,
     fields?: any[],
     keyword?: string,
-    nextToken?: string,
+    nextToken?: string
   ): Promise<any> {
     console.log(keyword);
 
@@ -318,7 +331,7 @@ export class FeaturesService {
           ...(category || status || keyword
             ? {
                 selectionSet: fields?.length ? fields : defaultFields,
-                limit: 10,
+                limit: 5000,
                 nextToken,
                 filter: {
                   ...(category && {
@@ -332,16 +345,21 @@ export class FeaturesService {
                         eq: status,
                       },
                     }),
-                  // ...(keyword && {
-                  //   content: {
-                  //     beginsWith: keyword.toLowerCase(),
-                  //   },
-                  // }),
+                  ...(keyword && {
+                    or: [
+                      { title: { contains: keyword } },
+                      { description: { contains: keyword } },
+                      { category: { contains: keyword } },
+                      { subCategory: { contains: keyword } },
+                      { director: { contains: keyword } },
+                      { writer: { contains: keyword } },
+                    ],
+                  }),
                 },
               }
             : {
                 selectionSet: fields?.length ? fields : defaultFields,
-                limit: 10,
+                limit: 5000,
                 nextToken,
               }),
         });

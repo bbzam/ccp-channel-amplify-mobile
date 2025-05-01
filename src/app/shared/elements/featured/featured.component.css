@@ -28,10 +28,13 @@
 
   .image {
     display: block;
+    width: 100%;
+    min-height: 10.5em;
+    max-height: 10.5em;
   }
 
   .video {
-    width: 100%;
+    max-width: 100%;
     max-height: 10.5em;
     display: none;
     object-fit: cover;
@@ -144,8 +147,14 @@
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 
+  .card {
+    .video, .image {
+      max-height: unset;
+    }
+  }
+
   .card:hover {
-    transform: none;
+    transform: unset;
   }
 }
 

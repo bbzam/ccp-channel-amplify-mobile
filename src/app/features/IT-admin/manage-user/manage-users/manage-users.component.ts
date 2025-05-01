@@ -51,8 +51,8 @@ export class ManageUsersComponent {
     this.role = role;
   }
 
-  getAllUsers(role: string) {
-    this.featuresService.getAllUsers(role).then((data: any) => {
+  getAllUsers(role: string, limit?: string) {
+    this.featuresService.getAllUsers(role, limit).then((data: any) => {
       if (data) {
         this.tableData = data;
       }

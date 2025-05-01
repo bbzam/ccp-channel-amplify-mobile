@@ -20,6 +20,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthServiceService } from '../../auth/auth-service.service';
 import { FeaturesService } from '../../features/features.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-header',
@@ -31,6 +32,7 @@ import { FeaturesService } from '../../features/features.service';
     MatCardModule,
     MatMenuModule,
     MatDividerModule,
+    MatTooltipModule,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
@@ -70,6 +72,10 @@ export class HeaderComponent implements OnInit {
     return true;
   }
 
+  get role(): string {
+    return String(sessionStorage.getItem('role'));
+  }
+
   get username(): string {
     return String(sessionStorage.getItem('username'));
   }
@@ -100,5 +106,9 @@ export class HeaderComponent implements OnInit {
 
   menu() {
     this.menuClicked.emit();
+  }
+
+  goToDashboard() {
+    this.router.navigate(['/subscriber']);
   }
 }
