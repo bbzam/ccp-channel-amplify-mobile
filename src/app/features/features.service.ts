@@ -182,6 +182,8 @@ export class FeaturesService {
   ): Promise<any> {
     try {
       this.sharedService.showLoader('Fetching content...');
+      console.log(keyword);
+
       const result = await this.client.queries.listUsers({
         role: role,
         limit: '1000',

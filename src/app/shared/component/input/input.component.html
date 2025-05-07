@@ -1,0 +1,37 @@
+<div class="signin-main">
+  <form [formGroup]="inputForm" (ngSubmit)="submit()">
+    <div class="form-field-container">
+      <h2>{{ content.title }}</h2>
+      <p>{{ content.subtitle }}</p>
+    </div>
+    <div class="form-field-container">
+      <label for="input">{{ content.label }}</label>
+      <input
+        id="input"
+        type="{{ content.inputType }}"
+        matInput
+        [placeholder]="content.placeholder"
+        formControlName="input"
+        autocomplete="off"
+        [attr.aria-label]="content.label"
+        [attr.aria-describedby]="
+          inputForm.get('input')?.errors ? 'input-error' : null
+        "
+        required
+      />
+      <mat-error id="input-error">{{ inputErrorMessage() }}</mat-error>
+    </div>
+
+    <div class="form-field-container">
+      <button
+        class="buttonSignIn"
+        mat-raised-button
+        type="submit"
+        [disabled]="inputForm.invalid || isLoading()"
+        [attr.aria-busy]="isLoading()"
+      >
+        {{ isLoading() ? content.buttonTextLoading : content.buttonText }}
+      </button>
+    </div>
+  </form>
+</div>

@@ -12,7 +12,7 @@ const CONTENT_VALIDATION_CONFIG = {
   VIDEO: {
     PREVIEW: {
       maxSizeBytes: 100 * 1024 * 1024,
-      maxDurationSeconds: 40,
+      maxDurationSeconds: 35,
       allowedTypes: ['mp4', 'mov', 'webm', 'mpeg', 'mpg', 'm4v'],
       allowedMimeTypes: [
         'video/mp4',

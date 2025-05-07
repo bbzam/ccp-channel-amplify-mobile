@@ -24,9 +24,15 @@
         color: var(--primary);
       }
 
-      p {
-        text-align: center;
-        font-size: 0.875em;
+      button {
+        p {
+          text-align: center;
+          font-size: 0.875em;
+        }
+
+        p:hover {
+          color: var(--primary-hovered);
+        }
       }
 
       label {

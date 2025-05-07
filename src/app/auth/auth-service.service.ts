@@ -12,6 +12,8 @@ import {
   resendSignUpCode,
   ResendSignUpCodeOutput,
   confirmSignIn,
+  resetPassword,
+  confirmResetPassword,
 } from 'aws-amplify/auth';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
 import { SharedService } from '../shared/shared.service';
@@ -231,12 +233,57 @@ export class AuthServiceService {
     return false;
   }
 
+  async resetPassword(username: string): Promise<any> {
+    try {
+      this.sharedService.showLoader('Sending code to email...');
+      // Initiate the password reset
+      const { nextStep } = await resetPassword({ username });
+
+      if (nextStep.resetPasswordStep === 'CONFIRM_RESET_PASSWORD_WITH_CODE') {
+        this.sharedService.hideLoader();
+        return nextStep.resetPasswordStep;
+      }
+    } catch (error) {
+      this.sharedService.hideLoader();
+      this.handleError(error);
+      console.error('Error initiating password reset:', error);
+      throw error;
+    } finally {
+      this.sharedService.hideLoader();
+    }
+  }
+
+  async confirmResetPassword(
+    username: string,
+    newPassword: string,
+    confirmationCode: string
+  ): Promise<boolean> {
+    try {
+      this.sharedService.showLoader('Resetting your password...');
+      // Confirm the password reset with the code
+      await confirmResetPassword({
+        username,
+        newPassword,
+        confirmationCode,
+      });
+
+      this.sharedService.hideLoader();
+      return true;
+    } catch (error) {
+      this.sharedService.hideLoader();
+      this.handleError(error);
+      console.error('Error confirming password reset:', error);
+      throw error;
+    } finally {
+      this.sharedService.hideLoader();
+    }
+  }
+
   async logout() {
     try {
-      await signOut({ global: true });
       sessionStorage.clear();
       localStorage.clear();
-
+      await signOut({ global: true });
       await this.router.navigate(['landing-page']);
       window.location.reload();
     } catch (error) {

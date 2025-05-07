@@ -20,6 +20,7 @@ export class ScheduledComponent {
   readonly featuresService = inject(FeaturesService);
   readonly dialog = inject(MatDialog);
   currentTab!: string;
+  keyword!: string;
 
   tabs: Tab[] = [
     { label: 'THEATER', category: 'theater' },
@@ -52,11 +53,12 @@ export class ScheduledComponent {
   }
 
   onTabChanged(category: string): void {
-    this.getAllContents(category);
+    this.getAllContents(category, this.keyword);
     this.currentTab = category;
   }
 
   getAllContents(category: string, keyword?: string) {
+    this.keyword = keyword || '';
     this.featuresService
       .getAllContents(category, false, [], keyword)
       .then((data: any) => {
@@ -82,6 +84,6 @@ export class ScheduledComponent {
   }
 
   handleRefreshClick() {
-    this.getAllContents(this.currentTab);
+    this.getAllContents(this.currentTab, this.keyword);
   }
 }

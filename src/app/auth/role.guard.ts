@@ -28,7 +28,6 @@ export const roleGuard: CanActivateFn = (route, state) => {
           roleCheckInterval = null;
 
           // Logout and show error message
-          authService.logout();
           dialog
             .open(ErrorMessageDialogComponent, {
               data: {
@@ -37,7 +36,10 @@ export const roleGuard: CanActivateFn = (route, state) => {
               },
               disableClose: true,
             })
-            .afterClosed();
+            .afterClosed()
+            .subscribe(() => {
+              authService.logout();
+            });
         }
       }, 1000); // Check every second
     }
@@ -45,13 +47,15 @@ export const roleGuard: CanActivateFn = (route, state) => {
 
   // Check if user has valid role and is authenticated
   if (!userRole || !requiredRoles.includes(userRole)) {
-    authService.logout();
     dialog
       .open(ErrorMessageDialogComponent, {
         data: { message: 'You must be logged in to access this page.' },
         disableClose: true,
       })
-      .afterClosed();
+      .afterClosed()
+      .subscribe(() => {
+        authService.logout();
+      });
     return false;
   }
 

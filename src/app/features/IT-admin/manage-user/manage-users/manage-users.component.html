@@ -6,6 +6,7 @@
     [displayedColumns]="displayedColumns"
     (rowClick)="handleRowClick($event)"
     (refreshClick)="handleRefreshClick()"
+    (getContent)="getAllUsers(role, '', $event)"
   >
   </app-table>
 </div>

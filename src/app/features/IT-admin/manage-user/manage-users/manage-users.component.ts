@@ -19,7 +19,8 @@ export interface Tab {
 export class ManageUsersComponent {
   private readonly featuresService = inject(FeaturesService);
   private readonly dialog = inject(MatDialog);
-  private role!: string;
+  role!: string;
+  keyword!: string;
 
   tabs: Tab[] = [
     { label: 'FREE USERS', role: 'USER' },
@@ -47,12 +48,13 @@ export class ManageUsersComponent {
   }
 
   onTabChanged(role: any): void {
-    this.getAllUsers(role);
+    this.getAllUsers(role, this.keyword);
     this.role = role;
   }
 
-  getAllUsers(role: string, limit?: string) {
-    this.featuresService.getAllUsers(role, limit).then((data: any) => {
+  getAllUsers(role: string, limit?: string, keyword?: string) {
+    this.keyword = keyword || '';
+    this.featuresService.getAllUsers(role, limit, keyword).then((data: any) => {
       if (data) {
         this.tableData = data;
       }
@@ -77,6 +79,6 @@ export class ManageUsersComponent {
   }
 
   handleRefreshClick() {
-    this.getAllUsers(this.role);
+    this.getAllUsers(this.role, this.keyword);
   }
 }
