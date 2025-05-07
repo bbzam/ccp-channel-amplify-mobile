@@ -21,6 +21,8 @@ import { SignupComponent } from '../signup/signup.component';
 import { Router } from '@angular/router';
 import { AuthServiceService } from '../../auth-service.service';
 import { BetaAccessComponent } from '../../../beta-test/beta-access/beta-access.component';
+import { ResetPasswordComponent } from '../reset-password/reset-password.component';
+import { InputComponent } from '../../../shared/component/input/input.component';
 
 @Component({
   selector: 'app-signin',
@@ -112,13 +114,78 @@ export class SigninComponent implements OnInit {
     }
   }
 
+  resetPasswordOnClick() {
+    this.dialogRef.close();
+    const content = {
+      inputType: 'email',
+      title: 'Email Verification',
+      subtitle: 'Enter your email to proceed',
+      label: 'Email',
+      placeholder: 'Enter your email',
+      buttonText: 'Submit',
+      buttonTextLoading: 'Submitting...',
+    };
+    this.dialog
+      .open(InputComponent, { data: content })
+      .afterClosed()
+      .subscribe((data) => {
+        if (data) {
+          this.handlePasswordReset(data);
+        }
+      });
+  }
+
+  async handlePasswordReset(username: string) {
+    try {
+      const response = await this.authService.resetPassword(username);
+      if (response) {
+        this.dialog
+          .open(ResetPasswordComponent, { panelClass: 'dialog' })
+          .afterClosed()
+          .subscribe((data) => {
+            if (data) {
+              this.handleConfirmReset(username, data.password, data.code);
+            }
+          });
+      }
+    } catch (error) {
+      console.error('Failed to initiate password reset');
+      this.authService.handleError(error);
+    }
+  }
+
+  async handleConfirmReset(
+    username: string,
+    newPassword: string,
+    code: string
+  ) {
+    try {
+      const isConfirmed = await this.authService.confirmResetPassword(
+        username,
+        newPassword,
+        code
+      );
+      if (isConfirmed) {
+        this.authService.handleSuccess('Password reset successful!');
+      }
+    } catch (error) {
+      console.error('Failed to confirm password reset');
+      this.authService.handleError(error);
+    }
+  }
+
   signUpOnClick(): void {
     this.dialogRef.close();
-    this.dialog.open(BetaAccessComponent).afterClosed().subscribe(data => {
-      if (data) {
-        this.dialog.open(SignupComponent, {disableClose: true}).afterClosed();
-      }
-    });
+    this.dialog
+      .open(BetaAccessComponent)
+      .afterClosed()
+      .subscribe((data) => {
+        if (data) {
+          this.dialog
+            .open(SignupComponent, { disableClose: true })
+            .afterClosed();
+        }
+      });
   }
 
   togglePasswordVisibility(): void {

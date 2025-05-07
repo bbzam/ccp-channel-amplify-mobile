@@ -1,35 +1,26 @@
-.signup-main {
+.signin-main {
   background-color: var(--secondary);
   color: var(--tertiary);
   display: inline-table;
-  width: 100%;
+  min-width: 19em;
   height: 100%;
-  padding: 1em 0;
-
-  .header-logo {
-    display: flex;
-    justify-content: center;
-
-    img {
-      width: 60%;
-    }
-  }
+  padding: 2em 0;
 
   form {
-    max-height: 30em;
-    min-width: 30em;
-
     .form-field-container {
       display: grid;
       justify-content: center;
 
       h2 {
-        color: var(--primary);
+        color: var(--gray);
+        margin: 0;
+        text-align: center;
       }
 
       p {
         text-align: center;
         font-size: 0.875em;
+        margin: 0 0 2em;
       }
 
       label {
@@ -50,7 +41,7 @@
         color: red;
       }
 
-      .signingUp {
+      .signingIn {
         background-color: var(--gray) !important;
       }
     }
@@ -61,9 +52,4 @@
     text-align: center;
     color: gray;
   }
-}
-
-::ng-deep .dialog {
-  min-width: 50% !important;
-  overflow: unset;
 }

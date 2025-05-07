@@ -140,7 +140,7 @@ export class ViewContentComponent {
     this.inputTitle = data.title;
     this.inputDescription = data.description;
     this.inputCategory = data.category;
-    this.inputSubCategory = data.subcategory;
+    this.inputSubCategory = data.subCategory;
     this.inputDirector = data.director;
     this.inputWriter = data.writer;
     this.inputUserType = data.userType;
@@ -160,10 +160,10 @@ export class ViewContentComponent {
       title: data.title,
       description: data.description,
       category: data.category,
-      subcategory: data.subcategory,
+      subCategory: data.subCategory,
       director: data.director,
       writer: data.writer,
-      usertype: data.userType,
+      userType: data.userType,
       landscapeimage: data.landscapeImageUrl,
       portraitimage: data.portraitImageUrl,
       previewvideo: data.previewVideoUrl,
@@ -222,7 +222,7 @@ export class ViewContentComponent {
         { value: this.inputCategory, disabled: !this.isEditing() },
         [Validators.required],
       ],
-      subcategory: [
+      subCategory: [
         { value: this.inputSubCategory, disabled: !this.isEditing() },
         [],
       ],
@@ -231,7 +231,7 @@ export class ViewContentComponent {
         [],
       ],
       writer: [{ value: this.inputWriter, disabled: !this.isEditing() }, []],
-      usertype: [
+      userType: [
         { value: this.inputUserType, disabled: !this.isEditing() },
         [Validators.required],
       ],
@@ -259,10 +259,10 @@ export class ViewContentComponent {
       'title',
       'description',
       'category',
-      'subcategory',
+      'subCategory',
       'director',
       'writer',
-      'usertype',
+      'userType',
       'landscapeimage',
       'portraitimage',
       'previewvideo',
@@ -287,10 +287,10 @@ export class ViewContentComponent {
       title: this.titleErrorMessage,
       description: this.descriptionErrorMessage,
       category: this.categoryErrorMessage,
-      subcategory: this.subCategoryErrorMessage,
+      subCategory: this.subCategoryErrorMessage,
       director: this.directorErrorMessage,
       writer: this.writerErrorMessage,
-      usertype: this.userTypeErrorMessage,
+      userType: this.userTypeErrorMessage,
       landscapeimage: this.landscapeErrorMessage,
       portraitimage: this.portraitErrorMessage,
       previewvideo: this.previewErrorMessage,
@@ -830,7 +830,7 @@ export class ViewContentComponent {
         const isValid = await FileValidator.validateVideoFile(
           file,
           3 * 1024 * 1024 * 1024, // 3GB limit for preview
-          31 // 31 secs limit for preview
+          35 // 35 secs limit for preview
         );
 
         if (!isValid) {

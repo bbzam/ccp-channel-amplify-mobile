@@ -17,6 +17,14 @@ const ALLOWED_ROLES = [
 
 type Role = (typeof ALLOWED_ROLES)[number];
 
+// Attributes to search through when filtering users
+const SEARCHABLE_ATTRIBUTES = [
+  'email',
+  'given_name',
+  'family_name',
+  'custom:role',
+];
+
 export const handler: Handler = async (event) => {
   try {
     const { role, limit = 60, keyword } = event.arguments;
@@ -62,18 +70,34 @@ export const handler: Handler = async (event) => {
       } while (nextToken);
     } catch (cognitoError) {
       console.error('Cognito API error:', cognitoError);
-      throw new Error('Failed to fetch users from Cognito');
+      throw cognitoError;
     }
 
+    // Only filter if keyword is provided and not empty
     const normalizedKeyword = keyword?.toLowerCase().trim();
 
     const filteredUsers = !normalizedKeyword
       ? allUsers
-      : allUsers.filter((user) =>
-          user.Attributes?.some((attr) =>
-            attr.Value?.toLowerCase().includes(normalizedKeyword)
-          )
-        );
+      : allUsers.filter((user) => {
+          // Check Username
+          if (user.Username?.toLowerCase().includes(normalizedKeyword)) {
+            return true;
+          }
+
+          // Check in Attributes
+          return user.Attributes?.some(
+            (attr) =>
+              // Only search through relevant attributes
+              SEARCHABLE_ATTRIBUTES.includes(attr.Name || '') &&
+              attr.Value?.toLowerCase().includes(normalizedKeyword)
+          );
+        });
+
+    console.info(
+      `Total users: ${allUsers.length}, Filtered users: ${
+        filteredUsers.length
+      }, Keyword: ${normalizedKeyword || 'none'}`
+    );
 
     return {
       Users: filteredUsers,
