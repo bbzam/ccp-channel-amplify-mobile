@@ -19,7 +19,7 @@
       color: var(--gray);
       margin: 0;
       text-align: justify;
-      padding: 0 1em;
+      padding: 0 12em 3em;
     }
   }
 
@@ -111,11 +111,11 @@
   text-decoration: none;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .footer-main {
     .about {
       p {
-        padding: 0;
+        padding: 0 0 3em;
       }
     }
 

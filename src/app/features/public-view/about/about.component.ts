@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { aboutDetails } from '../mock-data';
+import { aboutDetails } from '../../../core/footer/footer-contents';
 import { BannerComponent } from '../public-banner/banner.component';
 
 @Component({

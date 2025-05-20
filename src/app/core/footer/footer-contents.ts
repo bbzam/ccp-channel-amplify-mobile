@@ -1,6 +1,6 @@
 export interface LinkItem {
   label?: string; // For navigation and legal
-  name?: string;  // For social links
+  name?: string; // For social links
   url: string;
   icon?: string;
 }
@@ -44,4 +44,13 @@ export const contents: Section[] = [
       { name: 'Twitter', icon: 'fa-brands fa-twitter', url: '' },
     ],
   },
-]
+];
+
+export const aboutDetails = [
+  {
+    title: 'ABOUT',
+    description:
+      'The CCP Channel is a nationwide streaming platform that offers the CCP’s quality and exclusive content in a celebration of local arts and culture while pushing local and international awareness of the Center’s programs, world-class artists, and creative endeavors. From live theater performances to award-winning independent films, a curated collection of exclusive and original CCP productions awaits discovery.',
+    landscapeImageUrl: 'cinemalaya.jpg',
+  },
+];
