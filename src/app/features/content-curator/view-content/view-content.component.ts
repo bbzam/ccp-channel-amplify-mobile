@@ -730,7 +730,7 @@ export class ViewContentComponent {
       return;
     } else {
       try {
-        const isValid = await FileValidator.validateImageFile(
+        const validation = await FileValidator.validateImageFile(
           file,
           5 * 1024 * 1024, // 5MB max size
           1920,
@@ -739,12 +739,12 @@ export class ViewContentComponent {
           2160
         );
 
-        if (!isValid) {
+        if (!validation.valid) {
           this.uploadForm.patchValue({
             landscapeimage: '',
           });
           this.landscapeErrorMessage.set(
-            'Landscape image validation failed. Image must be between 1920x1080 and 3840x2160, max 5MB.'
+            validation.error || 'Landscape image validation failed'
           );
           return;
         }
@@ -778,7 +778,7 @@ export class ViewContentComponent {
       return;
     } else {
       try {
-        const isValid = await FileValidator.validateImageFile(
+        const validation = await FileValidator.validateImageFile(
           file,
           5 * 1024 * 1024, // 5MB max size
           1080, // min width
@@ -787,12 +787,12 @@ export class ViewContentComponent {
           3840 // max height
         );
 
-        if (!isValid) {
+        if (!validation.valid) {
           this.uploadForm.patchValue({
             portraitimage: '',
           });
           this.portraitErrorMessage.set(
-            'Portrait image validation failed. Image must be between 1080x1920 and 2160x3840, max 5MB.'
+            validation.error || 'Portrait image validation failed'
           );
           return;
         }
@@ -827,18 +827,18 @@ export class ViewContentComponent {
     } else {
       try {
         // Validate preview video (smaller size and duration limits)
-        const isValid = await FileValidator.validateVideoFile(
+        const validation = await FileValidator.validateVideoFile(
           file,
           3 * 1024 * 1024 * 1024, // 3GB limit for preview
           35 // 35 secs limit for preview
         );
 
-        if (!isValid) {
+        if (!validation.valid) {
           this.uploadForm.patchValue({
             previewvideo: '',
           });
           this.previewErrorMessage.set(
-            'Preview video validation failed. Please check file size and duration.'
+            validation.error || 'Preview video validation failed'
           );
           return;
         }
@@ -875,18 +875,18 @@ export class ViewContentComponent {
     } else {
       try {
         // Validate full video (larger size and duration limits)
-        const isValid = await FileValidator.validateVideoFile(
+        const validation = await FileValidator.validateVideoFile(
           file,
           16 * 1024 * 1024 * 1024, // 16GB limit
           10800 // 3 hours in seconds
         );
 
-        if (!isValid) {
+        if (!validation.valid) {
           this.uploadForm.patchValue({
             fullvideo: '',
           });
           this.fullErrorMessage.set(
-            'Full video validation failed. Please check file size and duration.'
+            validation.error || 'Full video validation failed'
           );
           return;
         }

@@ -26,6 +26,7 @@
 
       button {
         p {
+          color: var(--tertiary);
           text-align: center;
           font-size: 0.875em;
         }
@@ -62,6 +63,6 @@
   mat-divider {
     width: 16em;
     text-align: center;
-    color: gray;
+    background-color: var(--gray);
   }
 }

@@ -47,7 +47,6 @@ export class SharedService {
       });
       if (data) {
         this.hideLoader();
-        console.log(data);
         return data;
       }
     } catch (error) {

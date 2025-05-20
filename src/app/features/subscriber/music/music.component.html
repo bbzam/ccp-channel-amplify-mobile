@@ -5,7 +5,9 @@ continueWatching.length) {
     <app-banner [banners]="banners" />
   </div>
   <div class="frc">
-    <h1 class="label">Featured</h1>
+    <div class="label-wrapper">
+      <h1 class="label">Featured</h1>
+    </div>
     @if (featured.length) {
     <app-featured [featured]="featured" />
     } @else {
@@ -13,7 +15,9 @@ continueWatching.length) {
     }
   </div>
   <div class="frc">
-    <h1 class="label">Recommended</h1>
+    <div class="label-wrapper">
+      <h1 class="label">Recommended</h1>
+    </div>
     @if (recommended.length) {
     <app-recommended [recommended]="recommended" />
     } @else {
@@ -22,7 +26,9 @@ continueWatching.length) {
   </div>
   @if (continueWatching.length) {
   <div class="frc">
-    <h1 class="label">Continue watching</h1>
+    <div class="label-wrapper">
+      <h1 class="label">Continue watching</h1>
+    </div>
     @if (continueWatching.length) {
     <app-continue-watching [continueWatching]="continueWatching" />
     } @else {

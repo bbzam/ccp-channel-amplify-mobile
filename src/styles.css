@@ -117,6 +117,10 @@
     border-radius: 1em;
   }
 
+  .mat-mdc-menu-content {
+    padding: 0;
+  }
+
   @media (max-width: 767px) {
     .buttonMS {
       background-color: var(--primary);
@@ -146,15 +150,35 @@ body {
   .frc {
     min-height: 21em;
 
-    .label {
-      color: var(--gray);
-      line-height: 0;
+    .label-wrapper {
       display: flex;
-      align-content: center;
       align-items: center;
-      flex-wrap: wrap;
-      margin-left: 1.5em;
-      font-size: 1.5em;
+      gap: 10px;
+
+      .see-more {
+        cursor: pointer;
+        opacity: 0;
+        color: var(--accent);
+        font-size: 1em;
+        transition: opacity 0.4s ease-in-out;
+        visibility: hidden;
+      }
+
+      .label {
+        color: var(--gray);
+        line-height: 0;
+        display: flex;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-left: 1.5em;
+        font-size: 1.5em;
+      }
+    }
+
+    .label-wrapper:hover .see-more {
+      opacity: 1;
+      visibility: visible;
     }
   }
 }
@@ -192,6 +216,13 @@ body {
   min-width: 50% !important;
   max-width: 100% !important;
   max-height: 90% !important;
+  overflow: auto;
+}
+
+.seemore-dialog {
+  max-height: 90% !important;
+  min-height: 90% !important;
+  background-color: var(--secondary) !important;
   overflow: auto;
 }
 

@@ -123,6 +123,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'account-settings',
+        loadComponent: () =>
+          import(
+            './shared/component/account-settings/account-settings.component'
+          ).then((m) => m.AccountSettingsComponent),
+      },
+      {
         path: 'notfound',
         loadComponent: () =>
           import('./shared/page-not-found/page-not-found.component').then(
@@ -213,6 +220,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'account-settings',
+        loadComponent: () =>
+          import(
+            './shared/component/account-settings/account-settings.component'
+          ).then((m) => m.AccountSettingsComponent),
+      },
+      {
         path: 'notfound',
         loadComponent: () =>
           import('./shared/page-not-found/page-not-found.component').then(
@@ -246,6 +260,13 @@ export const routes: Routes = [
         path: 'add-user',
         resolve: { loading: loaderResolver },
         data: { loadingMessage: 'Loading Page...' },
+      },
+      {
+        path: 'account-settings',
+        loadComponent: () =>
+          import(
+            './shared/component/account-settings/account-settings.component'
+          ).then((m) => m.AccountSettingsComponent),
       },
       {
         path: 'notfound',
@@ -305,6 +326,13 @@ export const routes: Routes = [
       //       './features/content-curator/upload-content/upload-content.component'
       //     ).then((m) => m.UploadContentComponent),
       // },
+      {
+        path: 'account-settings',
+        loadComponent: () =>
+          import(
+            './shared/component/account-settings/account-settings.component'
+          ).then((m) => m.AccountSettingsComponent),
+      },
       {
         path: 'notfound',
         loadComponent: () =>

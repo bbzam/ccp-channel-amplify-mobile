@@ -14,7 +14,7 @@ export class ManageKeysComponent {
   readonly dialog = inject(MatDialog);
 
   columns = [
-    { def: 'id', header: 'ID', sortable: true },
+    { def: 'id', header: 'Code', sortable: true },
     { def: 'isUsed', header: 'Is Used', sortable: true },
     { def: 'createdAt', header: 'Date Created', sortable: true },
     { def: 'updatedAt', header: 'Last Modified', sortable: true },

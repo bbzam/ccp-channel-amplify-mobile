@@ -23,38 +23,40 @@ mat-drawer-container {
   }
 }
 
-mat-card-content {
-  display: flex;
+mat-card {
+  background-color: unset;
+  box-shadow: unset;
+  
+  mat-card-content {
+    display: flex;
 
-  button {
-    width: 100%;
-    justify-content: flex-start;
-    border-radius: 5em;
+    button {
+      width: 100%;
+      justify-content: flex-start;
+      border-radius: 5em;
 
-    mat-icon {
-      color: var(--gray);
+      mat-icon,
+      span {
+        color: var(--gray);
+      }
     }
 
-    span {
-      color: var(--gray);
+    button:hover {
+      background-color: #725c00;
+
+      mat-icon,
+      span {
+        color: var(--gray);
+      }
     }
-  }
 
-  button:hover {
-    background-color: #725c00;
+    .focus-menu {
+      background-color: var(--accent);
 
-    mat-icon,
-    span {
-      color: var(--gray);
-    }
-  }
-
-  .focus-menu {
-    background-color: var(--accent);
-
-    mat-icon,
-    span {
-      color: var(--gray);
+      mat-icon,
+      span {
+        color: var(--gray);
+      }
     }
   }
 }

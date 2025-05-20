@@ -6,6 +6,7 @@ import { listUsers } from '../data/list-users/resource';
 import { editUser } from '../data/edit-user/resource';
 import { disableUser } from '../data/disable-user/resource';
 import { enableUser } from '../data/enable-user/resource';
+import { listUser } from '../data/list-user/resource';
 
 /**
  * Define and configure your auth resource
@@ -147,5 +148,6 @@ export const auth = defineAuth({
       ]),
     allow.resource(disableUser).to(['disableUser']),
     allow.resource(enableUser).to(['enableUser']),
+    allow.resource(listUser).to(['getUser']),
   ],
 });

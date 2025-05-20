@@ -1,0 +1,10 @@
+.close-button-container {
+  display: flex;
+  justify-content: flex-end;
+
+  .close-button {
+    color: var(--tertiary);
+    position: fixed;
+    z-index: 1;
+  }
+}

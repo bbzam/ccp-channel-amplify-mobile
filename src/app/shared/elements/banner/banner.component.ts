@@ -71,24 +71,47 @@ export class BannerComponent implements OnInit, AfterViewInit {
       .subscribe((data) => {});
   }
 
+  // In banner.component.ts, improve the video handling:
   autoPlayMedia() {
+    // Preload only the next video in sequence
+    const preloadNextVideo = (index: number) => {
+      const nextIndex = (index + 1) % this.banners.length;
+      const videoUrl = this.banners[nextIndex].previewVideoPresignedUrl;
+
+      if (videoUrl) {
+        const preloadVideo = document.createElement('video');
+        preloadVideo.preload = 'metadata';
+        preloadVideo.src = videoUrl;
+
+        // Remove after metadata is loaded to free memory
+        preloadVideo.addEventListener('loadedmetadata', () => {
+          this.teaserDuration = preloadVideo.duration * 1000;
+          preloadVideo.src = '';
+        });
+      }
+    };
+
     const updateMedia = () => {
-      this.getVideoDuration();
       const currentMedia = this.banners[this.currentMediaIndex];
 
       if (this.showPhoto) {
         this.showPhoto = false;
+        // Preload the next banner while showing video
+        preloadNextVideo(this.currentMediaIndex);
       } else {
         this.showPhoto = true;
         this.currentMediaIndex =
           (this.currentMediaIndex + 1) % this.banners.length;
       }
-      // Dynamically adjust the timeout based on the updated `showPhoto` value
-      setTimeout(updateMedia, this.showPhoto ? 5000 : this.teaserDuration);
+
+      // Use requestAnimationFrame for better performance
+      const timeout = this.showPhoto ? 5000 : this.teaserDuration || 5000;
+      setTimeout(() => requestAnimationFrame(updateMedia), timeout);
     };
-    // Start the first timeout
-    this.getVideoDuration();
-    setTimeout(updateMedia, this.showPhoto ? 5000 : this.teaserDuration);
+
+    // Start with preloading the first video
+    preloadNextVideo(this.currentMediaIndex);
+    setTimeout(() => requestAnimationFrame(updateMedia), 5000);
   }
 
   getVideoDuration(): number {

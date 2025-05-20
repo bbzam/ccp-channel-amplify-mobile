@@ -14,11 +14,13 @@ import {
   confirmSignIn,
   resetPassword,
   confirmResetPassword,
+  updatePassword,
 } from 'aws-amplify/auth';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
 import { SharedService } from '../shared/shared.service';
 import { SigninComponent } from './components/signin/signin.component';
 import { ForcedChangePasswordComponent } from './components/forced-change-password/forced-change-password.component';
+import { ConfirmationDialogComponent } from '../shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 interface CognitoIdTokenPayload {
   'cognito:groups'?: string[];
@@ -276,6 +278,34 @@ export class AuthServiceService {
       throw error;
     } finally {
       this.sharedService.hideLoader();
+    }
+  }
+
+  async updatePassword(data: any): Promise<boolean> {
+    try {
+      await updatePassword({
+        oldPassword: data.oldPassword,
+        newPassword: data.newPassword,
+      });
+
+      this.dialog
+        .open(ConfirmationDialogComponent, {
+          data: {
+            message:
+              'Password Updated Successfully! Do you want to log out now?',
+          },
+        })
+        .afterClosed()
+        .subscribe((confirmed) => {
+          if (confirmed) {
+            this.logout();
+          }
+        });
+      return true;
+    } catch (error) {
+      console.error('Error updating password:', error);
+      this.handleError(error);
+      return false;
     }
   }
 

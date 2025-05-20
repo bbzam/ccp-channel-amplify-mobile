@@ -62,13 +62,15 @@
 
       .button {
         display: flex;
-        gap: 1em;
+        gap: 6em;
         flex-wrap: wrap;
       }
     }
 
     mat-divider {
-      color: var(--gray);
+      min-width: 16em;
+      text-align: center;
+      background-color: var(--gray);
     }
   }
 }

@@ -6,24 +6,29 @@ export class FileValidator {
     minHeight = 100,
     maxWidth = 2000,
     maxHeight = 2000
-  ): Promise<boolean> {
+  ): Promise<{ valid: boolean; error?: string }> {
     return new Promise((resolve) => {
       // Check file extension
       const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
       const fileExtension = file.name.split('.').pop()?.toLowerCase();
 
       if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
-        console.error('Invalid file extension');
-        resolve(false);
-        return false;
+        const error = `Invalid file extension: ${
+          fileExtension || 'unknown'
+        }. Allowed extensions are: ${allowedExtensions.join(', ')}`;
+        console.error(error);
+        resolve({ valid: false, error });
+        return;
       }
 
       const reader = new FileReader();
 
       reader.onloadend = (event) => {
         if (!event.target?.result) {
-          resolve(false);
-          return false;
+          const error = 'Failed to read file content';
+          console.error(error);
+          resolve({ valid: false, error });
+          return;
         }
 
         const uintArray = new Uint8Array(event.target.result as ArrayBuffer);
@@ -54,15 +59,20 @@ export class FileValidator {
         }
 
         if (!isValidType) {
-          console.error('File type does not match extension');
-          resolve(false);
-          return false;
+          const error = `File content does not match the extension: ${fileExtension}. The file may be corrupted or renamed.`;
+          console.error(error);
+          resolve({ valid: false, error });
+          return;
         }
 
         if (file.size > maxSizeBytes) {
-          console.error('File size exceeds the limit');
-          resolve(false);
-          return false;
+          const maxSizeMB = maxSizeBytes / (1024 * 1024);
+          const error = `File size (${(file.size / (1024 * 1024)).toFixed(
+            2
+          )} MB) exceeds the limit of ${maxSizeMB.toFixed(2)} MB`;
+          console.error(error);
+          resolve({ valid: false, error });
+          return;
         }
 
         const img = new Image();
@@ -73,31 +83,30 @@ export class FileValidator {
             img.width > maxWidth ||
             img.height > maxHeight
           ) {
-            console.error(
-              `Invalid image dimensions: ${img.width}x${img.height}`
-            );
-            resolve(false);
-            return false;
+            const error = `Invalid image dimensions: ${img.width}x${img.height}. Required dimensions: width between ${minWidth} and ${maxWidth}px, height between ${minHeight} and ${maxHeight}px`;
+            console.error(error);
+            resolve({ valid: false, error });
+            return;
           } else {
             console.info(
               `Valid image: ${img.width}x${img.height}, ${file.size} bytes`
             );
-            resolve(true);
-            return true;
+            resolve({ valid: true });
+            return;
           }
         };
         img.onerror = () => {
-          console.error('Error loading image');
-          resolve(false);
-          return 'Error loading image';
+          const error =
+            'Error loading image: The file may be corrupted or not a valid image';
+          console.error(error);
+          resolve({ valid: false, error });
+          return;
         };
 
         img.src = URL.createObjectURL(file);
-        return true;
       };
 
       reader.readAsArrayBuffer(file.slice(0, 4));
-      return true;
     });
   }
 
@@ -105,20 +114,27 @@ export class FileValidator {
     file: File,
     maxSizeBytes = 10 * 1024 * 1024 * 1024,
     maxDurationSeconds = 10800
-  ): Promise<boolean> {
+  ): Promise<{ valid: boolean; error?: string }> {
     return new Promise((resolve) => {
       const allowedExtensions = ['mp4', 'mov', 'webm', 'mpeg', 'mpg', 'm4v'];
       const fileExtension = file.name.split('.').pop()?.toLowerCase();
 
       if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
-        console.error('Invalid file extension');
-        resolve(false);
+        const error = `Invalid file extension: ${
+          fileExtension || 'unknown'
+        }. Allowed extensions are: ${allowedExtensions.join(', ')}`;
+        console.error(error);
+        resolve({ valid: false, error });
         return;
       }
 
       if (file.size > maxSizeBytes) {
-        console.error('File size exceeds the limit');
-        resolve(false);
+        const maxSizeGB = maxSizeBytes / (1024 * 1024 * 1024);
+        const error = `File size (${(file.size / (1024 * 1024 * 1024)).toFixed(
+          2
+        )} GB) exceeds the limit of ${maxSizeGB.toFixed(2)} GB`;
+        console.error(error);
+        resolve({ valid: false, error });
         return;
       }
 
@@ -131,8 +147,11 @@ export class FileValidator {
       ];
 
       if (!allowedMimeTypes.includes(file.type)) {
-        console.error('Invalid file type');
-        resolve(false);
+        const error = `Invalid file type: ${
+          file.type
+        }. Allowed types are: ${allowedMimeTypes.join(', ')}`;
+        console.error(error);
+        resolve({ valid: false, error });
         return;
       }
 
@@ -201,8 +220,9 @@ export class FileValidator {
         }
 
         if (!isValidSignature) {
-          console.error('Invalid video file signature');
-          resolve(false);
+          const error = `Invalid video file signature for ${fileExtension} format. The file may be corrupted or renamed.`;
+          console.error(error);
+          resolve({ valid: false, error });
           return;
         }
 
@@ -214,35 +234,44 @@ export class FileValidator {
           URL.revokeObjectURL(video.src);
 
           if (video.duration > maxDurationSeconds) {
-            console.error(`Video duration ${video.duration}s exceeds limit`);
-            resolve(false);
+            const maxDurationMinutes = Math.floor(maxDurationSeconds / 60);
+            const error = `Video duration (${Math.floor(
+              video.duration / 60
+            )} minutes) exceeds the limit of ${maxDurationMinutes} minutes`;
+            console.error(error);
+            resolve({ valid: false, error });
             return;
           }
 
           if (video.videoWidth === 0 || video.videoHeight === 0) {
-            console.error('Invalid video dimensions');
-            resolve(false);
+            const error =
+              'Invalid video dimensions: The video has zero width or height';
+            console.error(error);
+            resolve({ valid: false, error });
             return;
           }
 
           console.info(
             `Valid video: ${video.videoWidth}x${video.videoHeight}, ${file.size} bytes, ${video.duration}s`
           );
-          resolve(true);
+          resolve({ valid: true });
         };
 
         video.onerror = () => {
-          console.error('Error loading video');
-          URL.revokeObjectURL(video.src);
-          resolve(false);
+          const error =
+            'Error loading video: The file may be corrupted or not a valid video format';
+          console.error(error);
+          resolve({ valid: false, error });
         };
 
         video.src = URL.createObjectURL(file);
       };
 
       reader.onerror = () => {
-        console.error('Error reading file');
-        resolve(false);
+        const error =
+          'Error reading file: The file may be inaccessible or corrupted';
+        console.error(error);
+        resolve({ valid: false, error });
       };
 
       reader.readAsArrayBuffer(file.slice(0, 16));
