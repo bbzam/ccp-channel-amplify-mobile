@@ -22,15 +22,15 @@
       <div class="button">
         <button
           class="buttonSecondary"
-          mat-raised-button
+          mat-button
           type="button"
           (click)="addKey()"
         >
           Add Key
         </button>
         <button
-          class="buttonSecondary"
-          mat-raised-button
+          class="buttonTertiary"
+          mat-button
           type="button"
           (click)="cancelOnClick()"
         >
@@ -57,7 +57,10 @@
       </div>
     </div>
     } @if (keys.length > 0) {
-    <mat-divider></mat-divider>
+
+    <div class="form-field-container">
+      <mat-divider></mat-divider>
+    </div>
 
     <div class="form-field-container">
       <button

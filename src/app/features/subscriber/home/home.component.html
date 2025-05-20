@@ -5,29 +5,134 @@ continueWatching.length) {
     <app-banner [banners]="banners" />
   </div>
   <div class="frc">
-    <h1 class="label">Featured</h1>
+    <div class="label-wrapper">
+      <h1 class="label">Featured</h1>
+    </div>
     @if (featured.length) {
     <app-featured [featured]="featured" />
     } @else {
     <app-no-video-available />
     }
   </div>
+  @if (recommended.length) {
   <div class="frc">
-    <h1 class="label">Recommended</h1>
-    @if (recommended.length) {
+    <div class="label-wrapper">
+      <h1 class="label">Recommended</h1>
+    </div>
     <app-recommended [recommended]="recommended" />
-    } @else {
-    <app-no-video-available />
-    }
   </div>
-  @if (continueWatching.length) {
+  } @if (continueWatching.length) {
   <div class="frc">
-    <h1 class="label">Continue watching</h1>
-    @if (continueWatching.length) {
+    <div class="label-wrapper">
+      <h1 class="label">Continue watching</h1>
+    </div>
     <app-continue-watching [continueWatching]="continueWatching" />
-    } @else {
-    <app-no-video-available />
-    }
+  </div>
+  }
+
+  <!-- Theater Category -->
+  <!-- @if (theater.length) {
+  <div class="frc">
+    <div class="label-wrapper">
+      <h1 class="label">Theater</h1>
+      <span class="see-more" (click)="seeMoreOnClick(theater, 'Theater')">See more ></span>
+    </div>
+    <app-recommended [recommended]="theater" />
+  </div>
+  } -->
+
+  <!-- Theater Category -->
+  @if (theater.length) {
+  <div class="frc" data-category="theater">
+    <div class="label-wrapper">
+      <h1 class="label">Theater</h1>
+      <span class="see-more" (click)="seeMoreOnClick(theater, 'Theater')"
+        >See more ></span
+      >
+    </div>
+    <app-recommended [recommended]="theater" />
+  </div>
+  }
+
+  <!-- Film Category -->
+  @if (film.length) {
+  <div class="frc" data-category="film">
+    <div class="label-wrapper">
+      <h1 class="label">Film</h1>
+      <span class="see-more" (click)="seeMoreOnClick(film, 'Film')"
+        >See more ></span
+      >
+    </div>
+    <app-recommended [recommended]="film" />
+  </div>
+  }
+
+  <!-- Music Category -->
+  @if (music.length) {
+  <div class="frc" data-category="music">
+    <div class="label-wrapper">
+      <h1 class="label">Music</h1>
+      <span class="see-more" (click)="seeMoreOnClick(music, 'Music')"
+        >See more ></span
+      >
+    </div>
+    <app-recommended [recommended]="music" />
+  </div>
+  }
+
+  <!-- Dance Category -->
+  @if (dance.length) {
+  <div class="frc" data-category="dance">
+    <div class="label-wrapper">
+      <h1 class="label">Dance</h1>
+      <span class="see-more" (click)="seeMoreOnClick(dance, 'Dance')"
+        >See more ></span
+      >
+    </div>
+    <app-recommended [recommended]="dance" />
+  </div>
+  }
+
+  <!-- Education Category -->
+  @if (education.length) {
+  <div class="frc" data-category="education">
+    <div class="label-wrapper">
+      <h1 class="label">Education</h1>
+      <span class="see-more" (click)="seeMoreOnClick(education, 'Education')"
+        >See more ></span
+      >
+    </div>
+    <app-recommended [recommended]="education" />
+  </div>
+  }
+
+  <!-- CCP Specials Category -->
+  @if (ccpspecials.length) {
+  <div class="frc" data-category="ccpspecials">
+    <div class="label-wrapper">
+      <h1 class="label">CCP Specials</h1>
+      <span
+        class="see-more"
+        (click)="seeMoreOnClick(ccpspecials, 'CCP Specials')"
+        >See more ></span
+      >
+    </div>
+    <app-recommended [recommended]="ccpspecials" />
+  </div>
+  }
+
+  <!-- CCP Classics Category -->
+  @if (ccpclassics.length) {
+  <div class="frc" data-category="ccpclassics">
+    <div class="label-wrapper">
+      <h1 class="label">CCP Classics</h1>
+      <span
+        class="see-more"
+        (click)="seeMoreOnClick(ccpclassics, 'CCP Classics')"
+        >See more ></span
+      >
+    </div>
+    <app-recommended [recommended]="ccpclassics" />
   </div>
   }
 </div>

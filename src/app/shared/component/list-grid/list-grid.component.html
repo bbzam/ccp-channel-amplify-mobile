@@ -1,0 +1,56 @@
+<div class="grid-container">
+  <div class="title">
+    <h1>{{ title }}</h1>
+  </div>
+  <mat-divider></mat-divider>
+  <br />
+  <div class="grid-layout">
+    @for (item of items; track item) {
+    <mat-card class="card">
+      <img
+        class="image"
+        mat-card-image
+        [src]="item.landscapeImagePresignedUrl"
+        [alt]="item.title"
+      />
+      <video
+        playsinline
+        webkit-playsinline
+        preload="metadata"
+        loading="lazy"
+        class="video"
+        #video
+        [src]="item.previewVideoPresignedUrl"
+        autoplay
+        loop
+        [muted]="true"
+        (click)="moreInfo(item)"
+        controls
+        controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
+      ></video>
+      <div class="actions">
+        <label>{{ item.title }}</label>
+      </div>
+      <div class="actions-hovered">
+        <label>{{ item.title }}</label>
+        <div class="action-buttons">
+          <div>
+            <mat-icon (click)="watchVideo(item.fullVideoPresignedUrl)"
+              >play_circle_filled</mat-icon
+            >
+            <mat-icon (click)="moreInfo(item)">info</mat-icon>
+            <mat-icon>add_circle</mat-icon>
+          </div>
+          @if (item.resolution) {
+          <p>•</p>
+          <p>{{ item.resolution }}</p>
+          } @if (item.runtime) {
+          <p>•</p>
+          <p>{{ transform(item.runtime) }}</p>
+          }
+        </div>
+      </div>
+    </mat-card>
+    }
+  </div>
+</div>

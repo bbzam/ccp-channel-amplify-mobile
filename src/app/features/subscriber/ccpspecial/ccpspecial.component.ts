@@ -6,6 +6,7 @@ import { ContinueWatchingComponent } from '../../../shared/elements/continue-wat
 import { NoVideoAvailableComponent } from '../../../shared/elements/no-video-available/no-video-available.component';
 import { ccpspecial } from '../../../shared/mock-data';
 import { FeaturesService } from '../../features.service';
+import { SharedService } from '../../../shared/shared.service';
 
 @Component({
   selector: 'app-ccpspecial',
@@ -27,15 +28,41 @@ export class CcpspecialComponent implements OnInit {
   category: string = 'ccpspecials';
 
   readonly featuresService = inject(FeaturesService);
+  readonly sharedService = inject(SharedService);
 
   ngOnInit(): void {
-    this.getAllContents();
+    this.getAllContents(this.category);
   }
 
-  getAllContents() {
-    this.featuresService.getAllContents(this.category, true).then((data: any) => {
-      this.banners = data;
-      this.featured = data;
-    });
+  async getAllContents(currentTab: string) {
+    try {
+      // First get all contents
+      const data = await this.featuresService.getAllContents(currentTab, true);
+
+      // Then get featured data and filter
+      const featuredData = await this.sharedService.getFeaturedAll(currentTab);
+
+      // Only process data if it matches the current category
+      if (featuredData) {
+        const selectedIds = featuredData[0].selectedContent.split(',');
+
+        this.featured = selectedIds.map((id: string) => {
+          const matchingContent = data.find(
+            (content: any) => content.id === id
+          );
+
+          return matchingContent;
+        });
+        this.banners = this.featured;
+      } else {
+        // Reset if category doesn't match
+        this.featured = [];
+        this.banners = [];
+      }
+    } catch (error) {
+      console.error('Error fetching content data:', error);
+      this.banners = [];
+      this.featured = [];
+    }
   }
 }

@@ -59,26 +59,39 @@
 
 mat-card-content {
   display: flex;
+  margin-bottom: 0.5em;
 
   button {
-    mat-icon {
+    width: 100%;
+    justify-content: flex-start;
+    border-radius: 5em;
+
+    mat-icon,
+    span {
       color: var(--primary);
     }
+  }
 
+  button:hover {
+    background-color: var(--primary);
+
+    mat-icon,
     span {
-      color: #808191;
+      color: var(--gray);
     }
   }
 }
 
 mat-card-actions {
-  button {
-    mat-icon {
-      color: var(--primary);
-    }
+  display: flex;
 
+  button {
+    width: 100%;
+    background-color: var(--primary);
+
+    mat-icon,
     span {
-      color: #808191;
+      color: var(--tertiary);
     }
   }
 }

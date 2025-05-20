@@ -4,6 +4,7 @@ import { listUsers } from './list-users/resource';
 import { editUser } from './edit-user/resource';
 import { disableUser } from './disable-user/resource';
 import { enableUser } from './enable-user/resource';
+import { listUser } from './list-user/resource';
 
 const schema = a.schema({
   Content: a
@@ -83,6 +84,23 @@ const schema = a.schema({
       allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(addUser))
+    .returns(a.json()),
+
+  listUser: a
+    .query()
+    .arguments({
+      email: a.string(),
+    })
+    .authorization((allow) => [
+      allow.groups([
+        'USER',
+        'SUBSCRIBER',
+        'CONTENT_CREATOR',
+        'IT_ADMIN',
+        'SUPER_ADMIN',
+      ]),
+    ])
+    .handler(a.handler.function(listUser))
     .returns(a.json()),
 
   listUsers: a

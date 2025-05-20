@@ -1,0 +1,24 @@
+@use "@angular/material" as mat;
+@include mat.core();
+
+// Import prebuilt theme
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+
+// Checkbox overrides
+@include mat.checkbox-overrides(
+  (
+    label-text-color: var(--tertiary),
+    selected-pressed-icon-color: var(--tertiary),
+    selected-icon-color: var(--primary),
+    selected-hover-icon-color: var(--primary),
+    selected-focus-icon-color: var(--primary),
+    selected-checkmark-color: white,
+    unselected-pressed-state-layer-color: var(--primary),
+    selected-focus-state-layer-color: var(--primary),
+    selected-hover-state-layer-color: var(--primary),
+    selected-pressed-state-layer-color: var(--primary),
+    unselected-icon-color: var(--primary),
+    unselected-hover-icon-color: var(--primary),
+    unselected-focus-icon-color: var(--primary),
+  )
+);

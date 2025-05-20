@@ -43,7 +43,7 @@ form {
 mat-divider {
   width: 16em;
   text-align: center;
-  color: gray;
+  background-color: var(--gray);
 }
 
 .action-buttons {

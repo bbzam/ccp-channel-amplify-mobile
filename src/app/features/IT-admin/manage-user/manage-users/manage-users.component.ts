@@ -48,7 +48,7 @@ export class ManageUsersComponent {
   }
 
   onTabChanged(role: any): void {
-    this.getAllUsers(role, this.keyword);
+    this.getAllUsers(role, '', this.keyword);
     this.role = role;
   }
 
@@ -73,12 +73,12 @@ export class ManageUsersComponent {
       .afterClosed()
       .subscribe((data) => {
         if (data) {
-          this.getAllUsers(this.role);
+          this.getAllUsers(this.role, '', this.keyword);
         }
       });
   }
 
   handleRefreshClick() {
-    this.getAllUsers(this.role, this.keyword);
+    this.getAllUsers(this.role, '', this.keyword);
   }
 }

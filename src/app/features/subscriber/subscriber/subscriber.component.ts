@@ -41,8 +41,22 @@ export class SubscriberComponent implements OnInit {
   // To control visibility of scroll hint
   showScrollHint = false;
 
+  // Routes that should have continuous scrolling enabled
+  private scrollEnabledRoutes = [
+    '/subscriber',
+    '/subscriber/theater',
+    '/subscriber/film',
+    '/subscriber/music',
+    '/subscriber/dance',
+    '/subscriber/education',
+    '/subscriber/ccpspecial',
+    '/subscriber/ccpclassic',
+  ];
+
   ngOnInit(): void {
-    this.router.navigateByUrl(navItems[this.currentIndex].routeLink);
+    if (this.router.url === '/subscriber') {
+      this.router.navigateByUrl(navItems[this.currentIndex].routeLink);
+    }
 
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -57,6 +71,13 @@ export class SubscriberComponent implements OnInit {
 
   @HostListener('window:scroll', [])
   onScroll(): void {
+    // Check if current route should have continuous scrolling
+    const currentRoute = this.router.url;
+    if (!this.scrollEnabledRoutes.includes(currentRoute)) {
+      this.showScrollHint = false;
+      return;
+    }
+
     const currentScrollTop =
       window.pageYOffset || document.documentElement.scrollTop;
 

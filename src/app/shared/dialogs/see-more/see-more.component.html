@@ -1,0 +1,11 @@
+<div class="close-button-container">
+  <button
+    class="close-button"
+    mat-icon-button
+    matTooltip="close"
+    (click)="close()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<app-list-grid [items]="contentData" [title]="title"/>

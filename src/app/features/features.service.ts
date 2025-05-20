@@ -18,6 +18,7 @@ export class FeaturesService {
   private readonly router = inject(Router);
   private readonly client = generateClient<Schema>();
   private readonly sharedService = inject(SharedService);
+  private contentCache: Map<string, any[]> = new Map();
 
   constructor() {}
 
@@ -100,6 +101,69 @@ export class FeaturesService {
           ? error
           : 'An error occurred while updating the key';
       throw new Error(errorMessage);
+    }
+  }
+
+  async getCurrentUser(email: string): Promise<any> {
+    try {
+      this.sharedService.showLoader('Fetching content...');
+      const currentUser = await this.client.queries.listUser({
+        email: email,
+      });
+
+      // Check if we have data in the expected format
+      if (
+        currentUser &&
+        currentUser.data &&
+        typeof currentUser.data === 'string'
+      ) {
+        // Parse the data string
+        let parsedData = JSON.parse(currentUser.data);
+
+        // If the parsed result is still a string (which happens with nested JSON strings)
+        if (typeof parsedData === 'string') {
+          parsedData = JSON.parse(parsedData);
+        }
+
+        // Format user attributes into a more accessible structure if they exist
+        if (parsedData && parsedData.UserAttributes) {
+          // Create an object to store user attributes
+          const userAttributes = parsedData.UserAttributes.reduce(
+            (acc: any, attr: any) => {
+              acc[attr.Name] = attr.Value;
+              return acc;
+            },
+            {}
+          );
+
+          // Create formatted user object similar to getAllUsers
+          const formattedUser = {
+            id: parsedData.Username,
+            email: userAttributes.email,
+            given_name: userAttributes.given_name,
+            family_name: userAttributes.family_name,
+            birthdate: userAttributes.birthdate,
+            email_verified: userAttributes.email_verified,
+            user_status: parsedData.UserStatus,
+            enabled: parsedData.Enabled,
+            created_at: parsedData.UserCreateDate,
+            last_modified: parsedData.UserLastModifiedDate,
+          };
+          this.sharedService.hideLoader();
+
+          return formattedUser;
+        }
+        this.sharedService.hideLoader();
+
+        return parsedData;
+      }
+
+      return currentUser;
+    } catch (error) {
+      this.sharedService.hideLoader();
+      this.handleError(error);
+      console.error('Error fetching current user:', error);
+      throw error;
     }
   }
 
@@ -302,8 +366,13 @@ export class FeaturesService {
     keyword?: string,
     nextToken?: string
   ): Promise<any> {
-    console.log(keyword);
+    // Create a cache key based on parameters
+    const cacheKey = `${category}-${status}-${keyword || ''}`;
 
+    // Check if we have cached data
+    if (this.contentCache.has(cacheKey)) {
+      return this.contentCache.get(cacheKey);
+    }
     try {
       this.sharedService.showLoader('Fetching content...');
 
@@ -388,6 +457,11 @@ export class FeaturesService {
             };
           })
         );
+
+        // Cache the results before returning
+        if (updatedData) {
+          this.contentCache.set(cacheKey, updatedData);
+        }
 
         this.sharedService.hideLoader();
 

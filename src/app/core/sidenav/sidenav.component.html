@@ -25,7 +25,7 @@
     <mat-card>
       <mat-card-content>
         @for (item of navItems; track item) {
-        <button [ngClass]="{ 'focus-menu': item.routeLink === currentRoute }" mat-raised-button (click)="navigate(item.routeLink)">
+        <button [ngClass]="{ 'focus-menu': item.routeLink === currentRoute }" mat-button (click)="navigate(item.routeLink)">
           <mat-icon>play_arrow</mat-icon><span>{{ item.label }}</span>
         </button>
         }
@@ -36,13 +36,13 @@
     </div>
     <mat-card>
       <mat-card-content>
-        <button mat-raised-button color="primary">
+        <button mat-button color="primary">
           <mat-icon>add_circle</mat-icon><span>Favourites</span>
         </button>
-        <button mat-raised-button color="primary" (click)="settings()">
+        <button mat-button color="primary" (click)="settingOnClick()">
           <mat-icon>settings</mat-icon><span>Settings</span>
         </button>
-        <button mat-raised-button color="primary" (click)="logout()">
+        <button mat-button color="primary" (click)="logout()">
           <mat-icon>logout</mat-icon><span>Logout</span>
         </button>
       </mat-card-content>
