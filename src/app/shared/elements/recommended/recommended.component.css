@@ -186,6 +186,13 @@
   }
 }
 
+/* Ultra-wide desktop */
+@media (min-width: 1920px) {
+  .main-div {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
 /* Hide timeline, volume slider */
 video::-webkit-media-controls-timeline,
 video::-webkit-media-controls-volume-slider,

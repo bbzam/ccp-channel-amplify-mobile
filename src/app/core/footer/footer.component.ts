@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
-import { aboutDetails } from '../../features/public-view/mock-data';
+import { aboutDetails } from './footer-contents';
 import { MatDividerModule } from '@angular/material/divider';
 
 interface NavigationItem {
