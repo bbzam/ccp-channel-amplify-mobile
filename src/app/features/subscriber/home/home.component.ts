@@ -22,6 +22,7 @@ import { SeeMoreComponent } from '../../../shared/dialogs/see-more/see-more.comp
   styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit {
+  customTags: { name: string; content: any[] }[] = [];
   banners: any[] = [];
   featured: any[] = [];
   recommended: any[] = [];
@@ -98,8 +99,38 @@ export class HomeComponent implements OnInit {
         // Update the category array
         this.updateCategoryData(category, filteredData);
       });
+
+      await this.loadCustomTagCategories(allData);
     } catch (error) {
       console.error('Error loading categories:', error);
+    }
+  }
+
+  async loadCustomTagCategories(allData: any[]) {
+    try {
+      // Get all tags from the service
+      const tags = await this.sharedService.getAllTags('', true);
+
+      if (tags && tags.length > 0) {
+        // Process each tag
+        this.customTags = tags.map((tagItem: any) => {
+          // Filter content that has this tag
+          const tagContent = allData.filter((item) => item.tag === tagItem.tag);
+
+          return {
+            name: tagItem.tag,
+            content: tagContent,
+          };
+        });
+
+        // Remove empty categories
+        this.customTags = this.customTags.filter(
+          (tag) => tag.content.length > 0
+        );
+      }
+    } catch (error) {
+      console.error('Error loading custom tag categories:', error);
+      this.customTags = [];
     }
   }
 
