@@ -770,7 +770,7 @@ export class UploadContentComponent {
       // Validate full video (larger size and duration limits)
       const validation = await FileValidator.validateVideoFile(
         file,
-        16 * 1024 * 1024 * 1024, // 10GB limit
+        16 * 1024 * 1024 * 1024, // 16GB limit
         10800 // 3 hours in seconds
       );
 

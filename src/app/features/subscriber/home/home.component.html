@@ -41,6 +41,19 @@ continueWatching.length) {
   </div>
   } -->
 
+  <!-- Custom Tag Categories -->
+  @for (tag of customTags; track tag.name) {
+  <div class="frc" [attr.data-category]="tag.name.toLowerCase()">
+    <div class="label-wrapper">
+      <h1 class="label">{{ tag.name }}</h1>
+      <span class="see-more" (click)="seeMoreOnClick(tag.content, tag.name)"
+        >See more ></span
+      >
+    </div>
+    <app-recommended [recommended]="tag.content" />
+  </div>
+  }
+
   <!-- Theater Category -->
   @if (theater.length) {
   <div class="frc" data-category="theater">
