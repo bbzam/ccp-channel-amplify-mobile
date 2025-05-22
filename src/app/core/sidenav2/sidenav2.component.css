@@ -75,6 +75,20 @@ mat-card {
         color: var(--tertiary);
       }
     }
+
+    .parent-item-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-item-container {
+      width: 100%;
+    }
+
+    .child-items {
+      padding-left: 1em;
+    }
   }
 }
 

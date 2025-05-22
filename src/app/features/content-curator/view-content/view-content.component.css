@@ -103,6 +103,27 @@
         display: flex;
         align-items: center;
       }
+
+      .tag-selection-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+      }
+
+      .tag-selection-container select {
+        flex: 1;
+      }
+
+      .custom-tag-input {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        margin-top: 0.5em;
+      }
+
+      .custom-tag-input input {
+        flex: 1;
+      }
     }
   }
 

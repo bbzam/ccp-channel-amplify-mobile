@@ -17,6 +17,7 @@ const schema = a.schema({
       director: a.string(),
       writer: a.string(),
       userType: a.string().required(),
+      tag: a.string(),
       landscapeImageUrl: a.string().required(),
       portraitImageUrl: a.string().required(),
       previewVideoUrl: a.string().required(),
@@ -52,6 +53,18 @@ const schema = a.schema({
     })
     .authorization((allow) => [
       allow.guest().to(['read']),
+      allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
+      allow
+        .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
+        .to(['create', 'read', 'update', 'delete']),
+    ]),
+
+  tags: a
+    .model({
+      tag: a.string(),
+      isVisible: a.boolean(),
+    })
+    .authorization((allow) => [
       allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])

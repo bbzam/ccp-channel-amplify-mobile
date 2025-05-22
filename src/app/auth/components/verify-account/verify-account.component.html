@@ -1,8 +1,13 @@
+<div class="close-button-container">
+  <button class="close-button" mat-icon-button matTooltip="close" (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 <div class="signin-main">
   <form [formGroup]="verifyForm" (ngSubmit)="confirm()">
     <div class="form-field-container">
       <h2>Email Confirmation</h2>
-      <p>Enter the code we emailed to {{destination}}</p>
+      <p>Enter the code we emailed to {{ destination }}</p>
     </div>
     <div class="form-field-container">
       <label>Confirmation Code</label>
@@ -23,12 +28,12 @@
         type="submit"
         [disabled]="verifyForm.invalid || isLoading()"
       >
-        {{ isLoading() ? 'Verifying...' : 'Verify' }}
+        {{ isLoading() ? "Verifying..." : "Verify" }}
       </button>
     </div>
 
     <div class="form-field-container">
-        <br>
+      <br />
       <mat-divider></mat-divider>
     </div>
 

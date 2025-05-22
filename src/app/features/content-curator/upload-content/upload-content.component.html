@@ -43,6 +43,7 @@
         formControlName="category"
         placeholder="Select category"
       >
+        <option value="" disabled selected>Select a category</option>
         <option value="theater">Theater</option>
         <option value="film">Film</option>
         <option value="music">Music</option>
@@ -108,11 +109,55 @@
     <div class="form-field-container">
       <label for="userType">For which User Type?</label>
       <select id="userType" name="userType" formControlName="usertype">
+        <option value="" disabled selected>Select a user type</option>
         <option value="free">Free</option>
         <option value="subscriber">Subscriber</option>
       </select>
       @if(userTypeErrorMessage()) {
       <mat-error>{{ userTypeErrorMessage() }}</mat-error>
+      }
+    </div>
+
+    <!-- Tag -->
+    <div class="form-field-container">
+      <label for="tag">Tag</label>
+      <div class="tag-selection-container">
+        <select id="tag" name="tag" formControlName="tag">
+          <option value="" disabled selected>Select a tag</option>
+          @for (tag of tags(); track tag.tag) {
+          <option [value]="tag.tag">{{ tag.tag }}</option>
+          }
+        </select>
+        <button
+          mat-icon-button
+          type="button"
+          matTooltip="Add custom tag"
+          (click)="toggleCustomTagInput()"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+      @if(showCustomTagInput) {
+      <div class="custom-tag-input">
+        <input
+          matInput
+          type="text"
+          id="customTag"
+          name="customTag"
+          formControlName="customTag"
+          placeholder="Enter custom tag"
+        />
+        <button
+          mat-icon-button
+          type="button"
+          matTooltip="Save custom tag"
+          (click)="createTag()"
+        >
+          <mat-icon>check</mat-icon>
+        </button>
+      </div>
+      } @if(tagErrorMessage()) {
+      <mat-error>{{ tagErrorMessage() }}</mat-error>
       }
     </div>
 

@@ -34,6 +34,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { AuthServiceService } from '../../auth-service.service';
 import { VerifyAccountData } from '../../models/verify.model';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-verify-account',
@@ -47,6 +48,7 @@ import { VerifyAccountData } from '../../models/verify.model';
     MatDividerModule,
     FormsModule,
     ReactiveFormsModule,
+    MatTooltip,
   ],
   templateUrl: './verify-account.component.html',
   styleUrl: './verify-account.component.css',
@@ -156,5 +158,9 @@ export class VerifyAccountComponent implements OnInit {
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  close() {
+    this.dialogRef.close();
   }
 }
