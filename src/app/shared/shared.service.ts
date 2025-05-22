@@ -32,15 +32,10 @@ export class SharedService {
     try {
       this.showLoader('Fetching content...');
       const { data } = await this.client.models.FeaturedAll.list({
-        // filter: {
-        //   category: {
-        //     eq: category,
-        //   },
-        // },
         filter: {
           ...(category && {
             category: {
-              eq: category,
+              contains: category,
             },
           }),
         },
@@ -52,7 +47,7 @@ export class SharedService {
     } catch (error) {
       this.handleError(error);
       this.hideLoader();
-      console.error('Error adding featured content:', error);
+      console.error('Error fetching featured content:', error);
       throw error;
     }
   }
@@ -87,6 +82,76 @@ export class SharedService {
     } catch (error) {
       this.handleError(error);
       console.error('Error updating featured content:', error);
+      throw error;
+    }
+  }
+
+  async addTag(data: any) {
+    try {
+      const result = await this.client.models.tags.create(data);
+      if (!result.errors) {
+        this.handleSuccess('Tag added successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while adding a tag. Please try again'
+        );
+      }
+    } catch (error) {
+      this.handleError(error);
+      console.error('Error adding a tag:', error);
+      throw error;
+    }
+  }
+
+  async updateTag(data: any) {
+    try {
+      const result = await this.client.models.tags.update(data);
+      if (!result.errors) {
+        this.handleSuccess('Updated successfully!');
+      } else {
+        this.handleError('An error occurred while updating. Please try again');
+      }
+    } catch (error) {
+      this.handleError(error);
+      console.error('Error updating:', error);
+      throw error;
+    }
+  }
+
+  async deleteTag(id: string) {
+    try {
+      const result = await this.client.models.tags.delete({ id });
+      if (!result.errors) {
+        this.handleSuccess('Tag deleted successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while deleting the tag. Please try again'
+        );
+      }
+    } catch (error) {
+      this.handleError(error);
+      console.error('Error deleting tag:', error);
+      throw error;
+    }
+  }
+
+  async getAllTags(keyword?: string): Promise<any> {
+    try {
+      const { data } = await this.client.models.tags.list({
+        filter: {
+          ...(keyword && {
+            tag: {
+              contains: keyword,
+            },
+          }),
+        },
+      });
+      if (data) {
+        return data;
+      }
+    } catch (error) {
+      this.handleError(error);
+      console.error('Error fetching tags:', error);
       throw error;
     }
   }

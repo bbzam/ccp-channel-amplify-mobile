@@ -1,3 +1,14 @@
+.close-button-container {
+  display: flex;
+  justify-content: flex-end;
+
+  .close-button {
+    color: var(--gray);
+    position: fixed;
+    z-index: 1;
+  }
+}
+
 .signin-main {
   background-color: var(--secondary);
   color: var(--tertiary);

@@ -19,7 +19,9 @@
         "
         required
       />
+      @if (inputErrorMessage()) {
       <mat-error id="input-error">{{ inputErrorMessage() }}</mat-error>
+      }
     </div>
 
     <div class="form-field-container">

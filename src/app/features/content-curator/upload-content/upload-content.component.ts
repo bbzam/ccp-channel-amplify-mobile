@@ -23,6 +23,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ConfirmationDialogComponent } from '../../../shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { disallowCharacters } from '../../../shared/utils/validators';
+import { SharedService } from '../../../shared/shared.service';
 
 interface VideoMetadata {
   duration: number;
@@ -31,6 +33,11 @@ interface VideoMetadata {
   quality: string;
   size: number;
   type: string;
+}
+
+interface Tag {
+  tag: string;
+  isVisible: boolean;
 }
 
 @Component({
@@ -85,11 +92,14 @@ export class UploadContentComponent {
     preview: false,
     full: false,
   };
+  showCustomTagInput = false;
 
   readonly isLoading = signal(false);
   readonly isScheduling = signal(false);
+  readonly tags = signal<Tag[]>([]);
   private readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
   private readonly featureService = inject(FeaturesService);
+  private readonly sharedService = inject(SharedService);
   private readonly location = inject(Location);
   private readonly fb = inject(FormBuilder);
   private readonly dialog = inject(MatDialog);
@@ -106,6 +116,7 @@ export class UploadContentComponent {
   portraitErrorMessage = signal('');
   previewErrorMessage = signal('');
   fullErrorMessage = signal('');
+  tagErrorMessage = signal('');
 
   // Form status computed value
   readonly formStatus = computed(() => ({
@@ -118,21 +129,24 @@ export class UploadContentComponent {
     this.createForm();
     this.setupValidationSubscriptions();
     this.isPaused['preview'] = false;
+    this.getAllTags();
   }
 
   private createForm(): void {
     this.uploadForm = this.fb.group({
-      title: ['', [Validators.required]],
-      description: ['', [Validators.required]],
-      category: ['', [Validators.required]],
-      subcategory: ['', []],
-      director: ['', []],
-      writer: ['', []],
-      usertype: ['', [Validators.required]],
-      landscapeimage: ['', [Validators.required]],
-      portraitimage: ['', [Validators.required]],
-      previewvideo: ['', [Validators.required]],
-      fullvideo: ['', [Validators.required]],
+      title: ['', [Validators.required, disallowCharacters()]],
+      description: ['', [Validators.required, disallowCharacters()]],
+      category: ['', [Validators.required, disallowCharacters()]],
+      subcategory: ['', [disallowCharacters()]],
+      director: ['', [disallowCharacters()]],
+      writer: ['', [disallowCharacters()]],
+      usertype: ['', [Validators.required, disallowCharacters()]],
+      tag: ['', [disallowCharacters()]],
+      customTag: ['', [disallowCharacters()]],
+      landscapeimage: ['', [Validators.required, disallowCharacters()]],
+      portraitimage: ['', [Validators.required, disallowCharacters()]],
+      previewvideo: ['', [Validators.required, disallowCharacters()]],
+      fullvideo: ['', [Validators.required, disallowCharacters()]],
     });
   }
 
@@ -145,6 +159,8 @@ export class UploadContentComponent {
       'director',
       'writer',
       'usertype',
+      'tag',
+      'customTag',
       'landscapeimage',
       'portraitimage',
       'previewvideo',
@@ -173,6 +189,8 @@ export class UploadContentComponent {
       director: this.directorErrorMessage,
       writer: this.writerErrorMessage,
       usertype: this.userTypeErrorMessage,
+      tag: this.tagErrorMessage,
+      customTag: this.tagErrorMessage,
       landscapeimage: this.landscapeErrorMessage,
       portraitimage: this.portraitErrorMessage,
       previewvideo: this.previewErrorMessage,
@@ -268,6 +286,57 @@ export class UploadContentComponent {
     this.dialogRef.close();
   }
 
+  private async getAllTags(): Promise<void> {
+    try {
+      const response = await this.sharedService.getAllTags();
+      if (response) {
+        this.tags.set(response.filter((tag: any) => tag.isVisible));
+      }
+    } catch (error) {
+      console.error('Error loading tags:', error);
+    }
+  }
+
+  toggleCustomTagInput(): void {
+    this.showCustomTagInput = !this.showCustomTagInput;
+    if (this.showCustomTagInput) {
+      this.uploadForm.get('tag')?.setValue('other');
+    }
+  }
+
+  async createTag(): Promise<void> {
+    const customTagValue = this.uploadForm.get('customTag')?.value;
+    if (customTagValue && customTagValue.trim()) {
+      try {
+        const tagData = {
+          tag: customTagValue.trim(),
+          isVisible: true,
+        };
+
+        await this.sharedService.addTag(tagData);
+
+        // Add the new tag to the tags list
+        const updatedTags = [
+          ...this.tags(),
+          { tag: customTagValue.trim(), isVisible: true },
+        ];
+        this.tags.set(updatedTags);
+
+        // Set the new tag as the selected value
+        this.uploadForm.get('tag')?.setValue(customTagValue.trim());
+
+        // Hide the custom tag input
+        this.showCustomTagInput = false;
+
+        // Clear the custom tag input
+        this.uploadForm.get('customTag')?.reset();
+      } catch (error) {
+        console.error('Error creating tag:', error);
+        this.featureService.handleError('Failed to create tag');
+      }
+    }
+  }
+
   async publishContent(isForPublish: boolean) {
     try {
       // Check all possible uploads
@@ -308,6 +377,7 @@ export class UploadContentComponent {
         director: formData.director,
         writer: formData.writer,
         userType: formData.usertype,
+        tag: formData.tag,
         landscapeImageUrl: this.landscapeImageKey,
         portraitImageUrl: this.portraitImageKey,
         previewVideoUrl: this.previewVideoKey,
@@ -653,8 +723,8 @@ export class UploadContentComponent {
         // Validate preview video (smaller size and duration limits)
         const validation = await FileValidator.validateVideoFile(
           file,
-          1 * 1024 * 1024 * 1024, // 1GB limit for preview
-          40 // 40 secs limit for preview
+          3 * 1024 * 1024 * 1024, // 3GB limit for preview
+          35 // 35 secs limit for preview
         );
 
         if (!validation.valid) {
@@ -700,7 +770,7 @@ export class UploadContentComponent {
       // Validate full video (larger size and duration limits)
       const validation = await FileValidator.validateVideoFile(
         file,
-        10 * 1024 * 1024 * 1024, // 10GB limit
+        16 * 1024 * 1024 * 1024, // 10GB limit
         10800 // 3 hours in seconds
       );
 

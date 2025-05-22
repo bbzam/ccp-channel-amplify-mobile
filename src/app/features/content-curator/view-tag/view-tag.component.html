@@ -1,0 +1,78 @@
+<form [formGroup]="editTagForm">
+  <div class="form-field-container">
+    <div class="header">
+      <h2>Tag Details</h2>
+      <div class="buttons">
+        @if (isEditing()) {
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="deleteTag()"
+          matTooltip="Delete Tag"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+        }
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="toggleEditMode()"
+          matTooltip="{{ isEditing() ? 'Disable Edit' : 'Enable Edit' }}"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-field-container">
+    <!-- Tag Field -->
+    <label for="tag">Tag</label>
+    <input
+      id="tag"
+      matInput
+      placeholder="Enter tag"
+      formControlName="tag"
+      required
+    />
+    @if (tagErrorMessage()) {
+    <mat-error>{{ tagErrorMessage() }}</mat-error>
+    }
+  </div>
+
+  <div class="form-field-container">
+    <!-- Visibility Field -->
+    <div class="visibility-toggle">
+      <label for="isVisible">Visibility</label>
+      <mat-slide-toggle
+        id="isVisible"
+        formControlName="isVisible"
+        color="primary"
+      >
+        {{ editTagForm.get("isVisible")?.value ? "Visible" : "Hidden" }}
+      </mat-slide-toggle>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button
+      class="buttonTertiary"
+      mat-button
+      type="button"
+      (click)="cancelButton()"
+    >
+      {{ isEditing() ? "Cancel" : "Close" }}
+    </button>
+    @if (isEditing()) {
+    <button
+      class="buttonSignIn"
+      mat-raised-button
+      type="submit"
+      (click)="updateTagOnClick()"
+      [disabled]="editTagForm.invalid || isLoading()"
+    >
+      {{ isLoading() ? "Updating Tag..." : "Update Tag" }}
+    </button>
+    }
+  </div>
+</form>

@@ -184,6 +184,15 @@ export const routes: Routes = [
           ).then((m) => m.SetfeaturedComponent),
       },
       {
+        path: 'tag',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import('./features/content-curator/tag/tag.component').then(
+            (m) => m.TagComponent
+          ),
+      },
+      {
         path: 'configure-landing-page',
         resolve: { loading: loaderResolver },
         data: { loadingMessage: 'Loading Page...' },

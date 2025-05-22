@@ -303,6 +303,7 @@ export class FeaturesService {
         director: contentMetadata.director,
         writer: contentMetadata.writer,
         userType: contentMetadata.userType,
+        tag: contentMetadata.tag,
         landscapeImageUrl: contentMetadata.landscapeImageUrl,
         portraitImageUrl: contentMetadata.portraitImageUrl,
         previewVideoUrl: contentMetadata.previewVideoUrl,
@@ -315,6 +316,7 @@ export class FeaturesService {
       console.log(data);
 
       if (data) {
+        this.clearContentCache();
         this.sharedService.hideLoader();
       }
 
@@ -338,6 +340,7 @@ export class FeaturesService {
         }
       );
 
+      this.clearContentCache();
       return result;
     } catch (error) {
       console.error('Error updating contents:', error);
@@ -352,10 +355,32 @@ export class FeaturesService {
         ...contentData,
       });
 
+      this.clearContentCache();
       return result;
     } catch (error) {
       console.error('Error updating contents:', error);
       throw error;
+    }
+  }
+
+  private clearContentCache(
+    category?: string,
+    status?: boolean,
+    keyword?: string
+  ): void {
+    if (
+      category !== undefined ||
+      status !== undefined ||
+      keyword !== undefined
+    ) {
+      // Clear specific cache entry if parameters are provided
+      const cacheKey = `${category || ''}-${
+        status === undefined ? '' : status
+      }-${keyword || ''}`;
+      this.contentCache.delete(cacheKey);
+    } else {
+      // Clear the entire cache if no parameters are provided
+      this.contentCache.clear();
     }
   }
 
@@ -385,6 +410,7 @@ export class FeaturesService {
         'director',
         'writer',
         'userType',
+        'tag',
         'landscapeImageUrl',
         'portraitImageUrl',
         'previewVideoUrl',
@@ -407,7 +433,7 @@ export class FeaturesService {
                 filter: {
                   ...(category && {
                     category: {
-                      eq: category,
+                      contains: category,
                     },
                   }),
                   ...(status !== undefined &&

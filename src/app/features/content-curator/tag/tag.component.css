@@ -1,0 +1,3 @@
+::ng-deep .dialog {
+  min-width: 50% !important;
+}

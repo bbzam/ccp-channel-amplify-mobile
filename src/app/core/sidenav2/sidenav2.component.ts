@@ -1,5 +1,12 @@
 import { NgClass } from '@angular/common';
-import { Component, HostListener, inject, OnInit, signal, ViewChild } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  inject,
+  OnInit,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
@@ -15,6 +22,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { UploadContentComponent } from '../../features/content-curator/upload-content/upload-content.component';
 import { AddUserComponent } from '../../features/IT-admin/manage-user/add-user/add-user.component';
 import { AddKeyComponent } from '../../beta-test/add-key/add-key.component';
+import { SharedService } from '../../shared/shared.service';
+import { InputComponent } from '../../shared/component/input/input.component';
 
 @Component({
   selector: 'app-sidenav2',
@@ -32,6 +41,7 @@ export class Sidenav2Component implements OnInit {
   @ViewChild('drawer') drawer!: MatDrawer;
   readonly router = inject(Router);
   readonly dialog = inject(MatDialog);
+  readonly sharedService = inject(SharedService);
   private userRole!: string;
   currentRoute!: string;
   lastSegment!: string;
@@ -77,12 +87,20 @@ export class Sidenav2Component implements OnInit {
     this.router.navigate([routeLink]);
   }
 
+  toggleExpand(item: any, event: Event): void {
+    event.stopPropagation();
+    item.expanded = !item.expanded;
+  }
+
   uploadNewContent() {
     // this.router.navigate(['content-curator/upload-content']);
     this.dialog
-    .open(UploadContentComponent, { disableClose: true, panelClass: 'dialog' })
-    .afterClosed()
-    .subscribe((data) => {});
+      .open(UploadContentComponent, {
+        disableClose: true,
+        panelClass: 'dialog',
+      })
+      .afterClosed()
+      .subscribe((data) => {});
   }
 
   addNewUser() {
@@ -97,5 +115,30 @@ export class Sidenav2Component implements OnInit {
       .open(AddKeyComponent, { disableClose: true, panelClass: 'dialog2' })
       .afterClosed()
       .subscribe((data) => {});
+  }
+
+  async createTag(): Promise<void> {
+    const content = {
+      inputType: 'text',
+      title: 'Create a Tag',
+      subtitle: '',
+      label: 'Tag Name',
+      placeholder: 'Enter the tag name',
+      buttonText: 'Submit',
+      buttonTextLoading: 'Submitting...',
+    };
+    this.dialog
+      .open(InputComponent, { data: content })
+      .afterClosed()
+      .subscribe(async (data) => {
+        if (data) {
+          const tagData = {
+            tag: data,
+            isVisible: true,
+          };
+
+          await this.sharedService.addTag(tagData);
+        }
+      });
   }
 }

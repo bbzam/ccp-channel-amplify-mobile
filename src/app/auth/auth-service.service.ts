@@ -325,6 +325,7 @@ export class AuthServiceService {
     this.dialog
       .open(VerifyAccountComponent, {
         data: { destination: destination, username: username },
+        disableClose: true,
       })
       .afterClosed()
       .subscribe();

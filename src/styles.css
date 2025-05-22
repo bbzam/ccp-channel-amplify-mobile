@@ -80,6 +80,7 @@
   }
 
   .buttonSecondary {
+    background-color: var(--primary) !important;
     border: 1px solid var(--tertiary);
     border-radius: 0.5em;
     color: var(--tertiary) !important;
@@ -89,7 +90,7 @@
   }
 
   .buttonSecondary:hover {
-    background-color: var(--primary-hovered);
+    background-color: var(--primary-hovered) !important;
   }
 
   .buttonTertiary {

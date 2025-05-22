@@ -3,15 +3,13 @@ import {
   S3Client,
   GetObjectCommand,
   DeleteObjectCommand,
-  ListMultipartUploadsCommand,
-  AbortMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
 
 // Content type validation configurations
 const CONTENT_VALIDATION_CONFIG = {
   VIDEO: {
     PREVIEW: {
-      maxSizeBytes: 100 * 1024 * 1024,
+      maxSizeBytes: 3 * 1024 * 1024 * 1024,
       maxDurationSeconds: 35,
       allowedTypes: ['mp4', 'mov', 'webm', 'mpeg', 'mpg', 'm4v'],
       allowedMimeTypes: [
@@ -23,7 +21,7 @@ const CONTENT_VALIDATION_CONFIG = {
       ],
     },
     FULL: {
-      maxSizeBytes: 10 * 1024 * 1024 * 1024,
+      maxSizeBytes: 16 * 1024 * 1024 * 1024,
       maxDurationSeconds: 10800,
       allowedTypes: ['mp4', 'mov', 'webm', 'mpeg', 'mpg', 'm4v'],
       allowedMimeTypes: [
