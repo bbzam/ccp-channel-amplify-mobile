@@ -35,11 +35,6 @@ interface VideoMetadata {
   type: string;
 }
 
-interface Tag {
-  tag: string;
-  isVisible: boolean;
-}
-
 @Component({
   selector: 'app-upload-content',
   imports: [
@@ -92,11 +87,9 @@ export class UploadContentComponent {
     preview: false,
     full: false,
   };
-  showCustomTagInput = false;
 
   readonly isLoading = signal(false);
   readonly isScheduling = signal(false);
-  readonly tags = signal<Tag[]>([]);
   private readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
   private readonly featureService = inject(FeaturesService);
   private readonly sharedService = inject(SharedService);
@@ -116,7 +109,6 @@ export class UploadContentComponent {
   portraitErrorMessage = signal('');
   previewErrorMessage = signal('');
   fullErrorMessage = signal('');
-  tagErrorMessage = signal('');
 
   // Form status computed value
   readonly formStatus = computed(() => ({
@@ -129,7 +121,6 @@ export class UploadContentComponent {
     this.createForm();
     this.setupValidationSubscriptions();
     this.isPaused['preview'] = false;
-    this.getAllTags();
   }
 
   private createForm(): void {
@@ -141,8 +132,6 @@ export class UploadContentComponent {
       director: ['', [disallowCharacters()]],
       writer: ['', [disallowCharacters()]],
       usertype: ['', [Validators.required, disallowCharacters()]],
-      tag: ['', [disallowCharacters()]],
-      customTag: ['', [disallowCharacters()]],
       landscapeimage: ['', [Validators.required, disallowCharacters()]],
       portraitimage: ['', [Validators.required, disallowCharacters()]],
       previewvideo: ['', [Validators.required, disallowCharacters()]],
@@ -159,8 +148,6 @@ export class UploadContentComponent {
       'director',
       'writer',
       'usertype',
-      'tag',
-      'customTag',
       'landscapeimage',
       'portraitimage',
       'previewvideo',
@@ -189,8 +176,6 @@ export class UploadContentComponent {
       director: this.directorErrorMessage,
       writer: this.writerErrorMessage,
       usertype: this.userTypeErrorMessage,
-      tag: this.tagErrorMessage,
-      customTag: this.tagErrorMessage,
       landscapeimage: this.landscapeErrorMessage,
       portraitimage: this.portraitErrorMessage,
       previewvideo: this.previewErrorMessage,
@@ -286,57 +271,6 @@ export class UploadContentComponent {
     this.dialogRef.close();
   }
 
-  private async getAllTags(): Promise<void> {
-    try {
-      const response = await this.sharedService.getAllTags();
-      if (response) {
-        this.tags.set(response.filter((tag: any) => tag.isVisible));
-      }
-    } catch (error) {
-      console.error('Error loading tags:', error);
-    }
-  }
-
-  toggleCustomTagInput(): void {
-    this.showCustomTagInput = !this.showCustomTagInput;
-    if (this.showCustomTagInput) {
-      this.uploadForm.get('tag')?.setValue('other');
-    }
-  }
-
-  async createTag(): Promise<void> {
-    const customTagValue = this.uploadForm.get('customTag')?.value;
-    if (customTagValue && customTagValue.trim()) {
-      try {
-        const tagData = {
-          tag: customTagValue.trim(),
-          isVisible: true,
-        };
-
-        await this.sharedService.addTag(tagData);
-
-        // Add the new tag to the tags list
-        const updatedTags = [
-          ...this.tags(),
-          { tag: customTagValue.trim(), isVisible: true },
-        ];
-        this.tags.set(updatedTags);
-
-        // Set the new tag as the selected value
-        this.uploadForm.get('tag')?.setValue(customTagValue.trim());
-
-        // Hide the custom tag input
-        this.showCustomTagInput = false;
-
-        // Clear the custom tag input
-        this.uploadForm.get('customTag')?.reset();
-      } catch (error) {
-        console.error('Error creating tag:', error);
-        this.featureService.handleError('Failed to create tag');
-      }
-    }
-  }
-
   async publishContent(isForPublish: boolean) {
     try {
       // Check all possible uploads
@@ -377,7 +311,6 @@ export class UploadContentComponent {
         director: formData.director,
         writer: formData.writer,
         userType: formData.usertype,
-        tag: formData.tag,
         landscapeImageUrl: this.landscapeImageKey,
         portraitImageUrl: this.portraitImageKey,
         previewVideoUrl: this.previewVideoKey,

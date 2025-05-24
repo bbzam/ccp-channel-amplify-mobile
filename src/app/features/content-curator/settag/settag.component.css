@@ -1,0 +1,11 @@
+.form-field-container {
+  display: grid;
+  max-width: 40%;
+}
+
+.form-field-container select {
+  font-size: 0.875em;
+  min-width: 18em;
+  padding: 0.7em;
+  border-radius: 0.5em;
+}

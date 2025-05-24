@@ -233,11 +233,22 @@ export class FileValidator {
         video.onloadedmetadata = () => {
           URL.revokeObjectURL(video.src);
 
-          if (video.duration > maxDurationSeconds) {
-            const maxDurationMinutes = Math.floor(maxDurationSeconds / 60);
-            const error = `Video duration (${Math.floor(
-              video.duration / 60
-            )} minutes) exceeds the limit of ${maxDurationMinutes} minutes`;
+          if (
+            video.duration > maxDurationSeconds ||
+            !video.duration ||
+            video.duration === 0
+          ) {
+            if (!video.duration || video.duration === 0) {
+              const error =
+                'Unable to determine video duration. The file may be corrupted or in an unsupported format';
+              console.error(error);
+              resolve({ valid: false, error });
+              return;
+            }
+
+            const error = `Video duration (${Math.round(
+              video.duration
+            )} seconds) exceeds the limit of ${maxDurationSeconds} seconds`;
             console.error(error);
             resolve({ valid: false, error });
             return;

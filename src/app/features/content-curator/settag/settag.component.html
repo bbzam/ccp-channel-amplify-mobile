@@ -1,0 +1,23 @@
+<div class="form-field-container">
+  <select
+    #tagSelect
+    (change)="onTagChanged(tagSelect.value)"
+    class="form-select"
+  >
+    <option value="">Select a tag</option>
+    @for (tagItem of tagData; track tagItem.id) {
+    <option [value]="tagItem.id">{{ tagItem.tag }}</option>
+    }
+  </select>
+</div>
+
+<app-set-featured
+  [optionName]="optionName"
+  [selectedName]="selectedName"
+  [featured]="tag"
+  [contents]="contents"
+  [hasChanges]="hasChanges"
+  (itemsChanged)="onItemsChanged($event)"
+  (saveFeaturedContent)="saveTagContent()"
+  (getFeaturedContent)="getAllContents($event)"
+/>

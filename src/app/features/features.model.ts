@@ -7,7 +7,6 @@ export interface ContentMetadata {
   director: string;
   writer: string;
   userType: string;
-  tag: string;
   landscapeImageUrl: string;
   portraitImageUrl: string;
   previewVideoUrl: string;

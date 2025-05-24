@@ -6,7 +6,7 @@
 
   input {
     font-size: 0.875em;
-    min-width: 18em;
+    min-width: 40%;
     padding: 0.5em;
     border-radius: 0.5em;
     border-color: var(--gray);

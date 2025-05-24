@@ -55,10 +55,12 @@ export class SetFeaturedComponent implements OnInit, OnChanges {
   @Input() hasChanges: boolean = false;
   @Input() contents!: ContentItem[];
   @Input() featured!: ContentItem[];
+  @Input() optionName!: string;
+  @Input() selectedName!: string;
   @Output() saveFeaturedContent = new EventEmitter<void>();
   @Output() getFeaturedContent = new EventEmitter<string>();
   @Output() itemsChanged = new EventEmitter<{
-    featured: ContentItem[];
+    options: ContentItem[];
     contents: ContentItem[];
   }>();
   featuredIds: string[] = [];
@@ -109,7 +111,7 @@ export class SetFeaturedComponent implements OnInit, OnChanges {
 
     // Emit the updated arrays
     this.itemsChanged.emit({
-      featured: this.featured,
+      options: this.featured,
       contents: this.contents,
     });
   }

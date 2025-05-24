@@ -25,6 +25,8 @@ export interface ContentItem {
 export class SetfeaturedComponent {
   readonly featuresService = inject(FeaturesService);
   readonly sharedService = inject(SharedService);
+  optionName: string = "List of Contents";
+  selectedName: string = "Featured Content/s";
   hasChanges: boolean = false;
   contents: ContentItem[] = [];
   featured: ContentItem[] = [];
@@ -98,8 +100,8 @@ export class SetfeaturedComponent {
     }
   }
 
-  onItemsChanged(event: { featured: ContentItem[]; contents: ContentItem[] }) {
-    this.featured = event.featured;
+  onItemsChanged(event: { options: ContentItem[]; contents: ContentItem[] }) {
+    this.featured = event.options;
     this.contents = event.contents;
     this.featuredIds = this.featured.map((item) => item.id);
     this.hasChanges = true;

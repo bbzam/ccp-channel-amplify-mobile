@@ -1,5 +1,11 @@
 <div class="search-button">
-  <input matInput (keyup)="applyFilter($event)" placeholder="Search" #input />
+  <input
+    matInput
+    (keyup)="applyFilter($event)"
+    placeholder="Search"
+    #input
+    [disabled]="!contents.length && !featured.length"
+  />
   <button
     mat-icon-button
     (click)="save()"
@@ -12,7 +18,7 @@
 </div>
 <div class="main-container" cdkDropListGroup>
   <div class="container">
-    <h2>List of Contents</h2>
+    <h2>{{ optionName }}</h2>
 
     <div
       cdkDropList
@@ -31,7 +37,7 @@
   </div>
 
   <div class="container">
-    <h2>Featured Content/s</h2>
+    <h2>{{ selectedName }}</h2>
 
     <div
       cdkDropList

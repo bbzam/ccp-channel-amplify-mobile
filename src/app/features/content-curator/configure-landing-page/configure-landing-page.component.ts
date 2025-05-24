@@ -92,8 +92,8 @@ export class ConfigureLandingPageComponent {
     }
   }
 
-  onItemsChanged(event: { featured: ContentItem[]; contents: ContentItem[] }) {
-    this.featured = event.featured;
+  onItemsChanged(event: { options: ContentItem[]; contents: ContentItem[] }) {
+    this.featured = event.options;
     this.contents = event.contents;
     this.featuredIds = this.featured.map((item) => item.id);
     this.hasChanges = true;

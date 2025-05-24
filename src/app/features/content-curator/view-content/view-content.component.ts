@@ -63,8 +63,6 @@ export class ViewContentComponent {
   inputDirector!: string;
   inputWriter!: string;
   inputUserType!: string;
-  inputTag!: string;
-  showCustomTagInput = false;
   inputLandscapeImage!: any;
   inputPortraitImage!: any;
   inputPreviewVideo!: any;
@@ -105,7 +103,6 @@ export class ViewContentComponent {
   readonly isScheduling = signal(false);
   readonly isUpdating = signal(false);
   readonly buttonDisabled = signal(true);
-  readonly tags = signal<any[]>([]);
   readonly dialogRef = inject(MatDialogRef<ViewContentComponent>);
   readonly featureService = inject(FeaturesService);
   readonly sharedService = inject(SharedService);
@@ -121,7 +118,6 @@ export class ViewContentComponent {
   directorErrorMessage = signal('');
   writerErrorMessage = signal('');
   userTypeErrorMessage = signal('');
-  tagErrorMessage = signal('');
   landscapeErrorMessage = signal('');
   portraitErrorMessage = signal('');
   previewErrorMessage = signal('');
@@ -140,7 +136,6 @@ export class ViewContentComponent {
     console.log(this.content);
     this.createForm();
     this.setupValidationSubscriptions();
-    this.loadTags();
   }
 
   private setDefaultValue(data: any) {
@@ -152,7 +147,6 @@ export class ViewContentComponent {
     this.inputDirector = data.director;
     this.inputWriter = data.writer;
     this.inputUserType = data.userType;
-    this.inputTag = data.tag;
     this.landscapeFileURL = data.landscapeImageUrl;
     this.portraitFileURL = data.portraitImageUrl;
     this.previewFileURL = data.previewVideoUrl;
@@ -173,7 +167,6 @@ export class ViewContentComponent {
       director: data.director,
       writer: data.writer,
       userType: data.userType,
-      tag: data.tag,
       landscapeimage: data.landscapeImageUrl,
       portraitimage: data.portraitImageUrl,
       previewvideo: data.previewVideoUrl,
@@ -248,14 +241,6 @@ export class ViewContentComponent {
         { value: this.inputUserType, disabled: !this.isEditing() },
         [Validators.required, disallowCharacters()],
       ],
-      tag: [
-        { value: this.inputTag, disabled: !this.isEditing() },
-        [disallowCharacters()],
-      ],
-      customTag: [
-        { value: '', disabled: !this.isEditing() },
-        [disallowCharacters()],
-      ],
       landscapeimage: [
         { value: this.landscapeFileURL, disabled: !this.isEditing() },
         [Validators.required, disallowCharacters()],
@@ -284,8 +269,6 @@ export class ViewContentComponent {
       'director',
       'writer',
       'userType',
-      'tag',
-      'customTag',
       'landscapeimage',
       'portraitimage',
       'previewvideo',
@@ -314,8 +297,6 @@ export class ViewContentComponent {
       director: this.directorErrorMessage,
       writer: this.writerErrorMessage,
       userType: this.userTypeErrorMessage,
-      tag: this.tagErrorMessage,
-      customTag: this.tagErrorMessage,
       landscapeimage: this.landscapeErrorMessage,
       portraitimage: this.portraitErrorMessage,
       previewvideo: this.previewErrorMessage,
@@ -399,42 +380,6 @@ export class ViewContentComponent {
       this.uploadForm.enable();
     } else {
       this.uploadForm.disable();
-    }
-  }
-
-  toggleCustomTagInput(): void {
-    this.showCustomTagInput = !this.showCustomTagInput;
-  }
-
-  async createTag(): Promise<void> {
-    const customTagValue = this.uploadForm.get('customTag')?.value;
-    if (!customTagValue) {
-      return;
-    }
-
-    try {
-      const tagData = {
-        tag: customTagValue.trim(),
-        isVisible: true,
-      };
-      await this.sharedService.addTag(tagData);
-      this.uploadForm.patchValue({ tag: customTagValue });
-      this.showCustomTagInput = false;
-      this.uploadForm.get('customTag')?.reset();
-      this.loadTags();
-    } catch (error) {
-      this.featureService.handleError('Failed to create tag');
-    }
-  }
-
-  async loadTags(): Promise<void> {
-    try {
-      const result = await this.sharedService.getAllTags();
-      if (result) {
-        this.tags.set(result);
-      }
-    } catch (error) {
-      console.error('Error loading tags:', error);
     }
   }
 

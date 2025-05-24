@@ -135,13 +135,13 @@ export class SharedService {
     }
   }
 
-  async getAllTags(keyword?: string, isVisible?: boolean): Promise<any> {
+  async getAllTags(id?: string, isVisible?: boolean): Promise<any> {
     try {
       const { data } = await this.client.models.tags.list({
         filter: {
-          ...(keyword && {
-            tag: {
-              contains: keyword,
+          ...(id && {
+            id: {
+              contains: id,
             },
           }),
           ...(isVisible !== undefined && {

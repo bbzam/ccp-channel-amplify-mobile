@@ -65,6 +65,11 @@ export const curatorNavItems = [
         icon: 'drag_indicator',
       },
       {
+        label: 'Set Tag',
+        routeLink: '/content-curator/settag',
+        icon: 'drag_indicator',
+      },
+      {
         label: 'Manage Tag',
         routeLink: '/content-curator/tag',
         icon: 'bookmark',

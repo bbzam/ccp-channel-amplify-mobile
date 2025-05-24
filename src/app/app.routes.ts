@@ -184,6 +184,15 @@ export const routes: Routes = [
           ).then((m) => m.SetfeaturedComponent),
       },
       {
+        path: 'settag',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import('./features/content-curator/settag/settag.component').then(
+            (m) => m.SettagComponent
+          ),
+      },
+      {
         path: 'tag',
         resolve: { loading: loaderResolver },
         data: { loadingMessage: 'Loading Page...' },

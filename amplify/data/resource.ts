@@ -17,7 +17,6 @@ const schema = a.schema({
       director: a.string(),
       writer: a.string(),
       userType: a.string().required(),
-      tag: a.string(),
       landscapeImageUrl: a.string().required(),
       portraitImageUrl: a.string().required(),
       previewVideoUrl: a.string().required(),
@@ -63,6 +62,7 @@ const schema = a.schema({
     .model({
       tag: a.string(),
       isVisible: a.boolean(),
+      selectedContent: a.string(),
     })
     .authorization((allow) => [
       allow.groups(['USER', 'SUBSCRIBER']).to(['read']),

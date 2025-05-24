@@ -1,5 +1,7 @@
 <app-tab [tabs]="tabs" (tabChanged)="onTabChanged($event)"> </app-tab>
 <app-set-featured
+  [optionName]="optionName"
+  [selectedName]="selectedName"
   [featured]="featured"
   [contents]="contents"
   [hasChanges]="hasChanges"

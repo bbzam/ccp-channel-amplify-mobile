@@ -112,16 +112,25 @@ export class HomeComponent implements OnInit {
       const tags = await this.sharedService.getAllTags('', true);
 
       if (tags && tags.length > 0) {
-        // Process each tag
-        this.customTags = tags.map((tagItem: any) => {
-          // Filter content that has this tag
-          const tagContent = allData.filter((item) => item.tag === tagItem.tag);
+        // Process each tag that is visible
+        this.customTags = tags
+          .filter((tagItem: any) => tagItem.isVisible) // Only include visible tags
+          .map((tagItem: any) => {
+            // Get the selected content IDs
+            const selectedIds = tagItem.selectedContent
+              ? tagItem.selectedContent.split(',')
+              : [];
 
-          return {
-            name: tagItem.tag,
-            content: tagContent,
-          };
-        });
+            // Filter content that matches the selected IDs
+            const tagContent = selectedIds
+              .map((id: any) => allData.find((item) => item.id === id))
+              .filter(Boolean); // Remove any undefined items
+
+            return {
+              name: tagItem.tag,
+              content: tagContent,
+            };
+          });
 
         // Remove empty categories
         this.customTags = this.customTags.filter(
