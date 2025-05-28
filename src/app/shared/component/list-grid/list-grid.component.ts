@@ -14,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MoreInfoComponent } from '../../dialogs/more-info/more-info.component';
 import { MatDividerModule } from '@angular/material/divider';
+import { FeaturesService } from '../../../features/features.service';
 
 @Component({
   selector: 'app-list-grid',
@@ -28,6 +29,7 @@ export class ListGridComponent implements AfterViewInit, OnInit {
 
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
+  readonly featuresService = inject(FeaturesService);
 
   ngOnInit(): void {
     // No pagination logic needed
@@ -78,9 +80,11 @@ export class ListGridComponent implements AfterViewInit, OnInit {
     return timeParts.join(' ');
   }
 
-  watchVideo(videoUrl: string, id: string) {
-    this.router.navigate(['subscriber/video-player'], {
-      queryParams: { videoUrl, id },
+  watchVideo(videoUrl: string) {
+    this.featuresService.getFileUrl(videoUrl).then((presignedUrl) => {
+      this.router.navigate(['subscriber/video-player'], {
+        queryParams: { videoUrl: presignedUrl },
+      });
     });
   }
 

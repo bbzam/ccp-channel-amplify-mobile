@@ -9,11 +9,10 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { allFeatured } from '../../mock-data';
 import { MoreInfoComponent } from '../../dialogs/more-info/more-info.component';
 import { MatDialog } from '@angular/material/dialog';
-import { VideoPlayerComponent } from '../../component/video-player/video-player.component';
 import { Router } from '@angular/router';
+import { FeaturesService } from '../../../features/features.service';
 
 @Component({
   selector: 'app-banner',
@@ -24,6 +23,7 @@ import { Router } from '@angular/router';
 export class BannerComponent implements OnInit, AfterViewInit {
   @ViewChild('video') videoElement!: ElementRef<HTMLVideoElement>;
   @Input() banners!: any[];
+  readonly featuresService = inject(FeaturesService);
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
   currentMediaIndex: number = 0;
@@ -58,20 +58,31 @@ export class BannerComponent implements OnInit, AfterViewInit {
     return timeParts.join(' ');
   }
 
-  watchVideo(videoUrl: string, id: string) {
-    this.router.navigate(['subscriber/video-player'], {
-      queryParams: { videoUrl, id },
+  watchVideo(videoUrl: string) {
+    this.featuresService.getFileUrl(videoUrl).then((presignedUrl) => {
+      this.router.navigate(['subscriber/video-player'], {
+        queryParams: { videoUrl: presignedUrl },
+      });
     });
   }
 
   moreInfo(item: any) {
-    this.dialog
-      .open(MoreInfoComponent, { data: { data: item } })
-      .afterClosed()
-      .subscribe((data) => {});
+    // Get presigned URL directly
+    this.featuresService
+      .getFileUrl(item.portraitImageUrl)
+      .then((urlPortrait) => {
+        const updatedItem = {
+          ...item,
+          portraitImagePresignedUrl: urlPortrait,
+        };
+
+        this.dialog
+          .open(MoreInfoComponent, { data: { data: updatedItem } })
+          .afterClosed()
+          .subscribe((data) => {});
+      });
   }
 
-  // In banner.component.ts, improve the video handling:
   autoPlayMedia() {
     // Preload only the next video in sequence
     const preloadNextVideo = (index: number) => {

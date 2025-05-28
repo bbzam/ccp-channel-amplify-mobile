@@ -458,40 +458,14 @@ export class FeaturesService {
                 nextToken,
               }),
         });
-      if (data && !fields?.length) {
-        // Process each content item and update their URLs
-        const updatedData = await Promise.all(
-          data.map(async (content: any) => {
-            const urlLandscape = await this.getFileUrl(
-              content.landscapeImageUrl
-            );
-            const urlPortrait = await this.getFileUrl(content.portraitImageUrl);
-            const urlPreviewVideo = await this.getFileUrl(
-              content.previewVideoUrl
-            );
-            const urlFullVideo = await this.getFileUrl(content.fullVideoUrl);
 
-            // Return updated content object with new URLs
-            return {
-              ...content,
-              landscapeImagePresignedUrl: urlLandscape,
-              portraitImagePresignedUrl: urlPortrait,
-              previewVideoPresignedUrl: urlPreviewVideo,
-              fullVideoPresignedUrl: urlFullVideo,
-            };
-          })
-        );
-
-        // Cache the results before returning
-        if (updatedData) {
-          this.contentCache.set(cacheKey, updatedData);
-        }
-
-        this.sharedService.hideLoader();
-
-        return updatedData;
+      // Cache the results before returning
+      if (data) {
+        this.contentCache.set(cacheKey, data);
       }
+
       this.sharedService.hideLoader();
+
       return data;
     } catch (error) {
       this.sharedService.hideLoader();

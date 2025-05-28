@@ -59,9 +59,27 @@ export class HomeComponent implements OnInit {
         featuredData[0].selectedContent
       ) {
         const selectedIds = featuredData[0].selectedContent.split(',');
-        this.featured = selectedIds
-          .map((id: string) => data.find((content: any) => content.id === id))
-          .filter(Boolean); // Remove undefined items
+
+        // Get content items and add presigned URLs
+        const processedItems = await Promise.all(
+          selectedIds.map((id: string) => {
+            const content = data.find((item: any) => item.id === id);
+            if (!content) return null;
+
+            return Promise.all([
+              this.featuresService.getFileUrl(content.landscapeImageUrl),
+              this.featuresService.getFileUrl(content.previewVideoUrl),
+            ]).then(([urlLandscape, urlPreviewVideo]) => {
+              return {
+                ...content,
+                landscapeImagePresignedUrl: urlLandscape,
+                previewVideoPresignedUrl: urlPreviewVideo,
+              };
+            });
+          })
+        );
+
+        this.featured = processedItems.filter(Boolean);
         this.banners = [...this.featured]; // Create a new array to ensure change detection
       }
     } catch (error) {
@@ -113,29 +131,43 @@ export class HomeComponent implements OnInit {
 
       if (tags && tags.length > 0) {
         // Process each tag that is visible
-        this.customTags = tags
-          .filter((tagItem: any) => tagItem.isVisible) // Only include visible tags
-          .map((tagItem: any) => {
-            // Get the selected content IDs
-            const selectedIds = tagItem.selectedContent
-              ? tagItem.selectedContent.split(',')
-              : [];
+        const processedTags = await Promise.all(
+          tags
+            .filter((tagItem: any) => tagItem.isVisible) // Only include visible tags
+            .map(async (tagItem: any) => {
+              // Get the selected content IDs
+              const selectedIds = tagItem.selectedContent
+                ? tagItem.selectedContent.split(',')
+                : [];
 
-            // Filter content that matches the selected IDs
-            const tagContent = selectedIds
-              .map((id: any) => allData.find((item) => item.id === id))
-              .filter(Boolean); // Remove any undefined items
+              // Process content with presigned URLs
+              const tagContent = await Promise.all(
+                selectedIds.map(async (id: any) => {
+                  const content = allData.find((item) => item.id === id);
+                  if (!content) return null;
 
-            return {
-              name: tagItem.tag,
-              content: tagContent,
-            };
-          });
+                  return Promise.all([
+                    this.featuresService.getFileUrl(content.landscapeImageUrl),
+                    this.featuresService.getFileUrl(content.previewVideoUrl),
+                  ]).then(([urlLandscape, urlPreviewVideo]) => {
+                    return {
+                      ...content,
+                      landscapeImagePresignedUrl: urlLandscape,
+                      previewVideoPresignedUrl: urlPreviewVideo,
+                    };
+                  });
+                })
+              );
+
+              return {
+                name: tagItem.tag,
+                content: tagContent.filter(Boolean),
+              };
+            })
+        );
 
         // Remove empty categories
-        this.customTags = this.customTags.filter(
-          (tag) => tag.content.length > 0
-        );
+        this.customTags = processedTags.filter((tag) => tag.content.length > 0);
       }
     } catch (error) {
       console.error('Error loading custom tag categories:', error);
@@ -144,28 +176,45 @@ export class HomeComponent implements OnInit {
   }
 
   // Helper method to update category data
-  private updateCategoryData(category: string, data: any[]) {
+  private async updateCategoryData(category: string, data: any[]) {
+    // Process presigned URLs for all items in the category
+    const processedData = await Promise.all(
+      data.map((content) => {
+        return Promise.all([
+          this.featuresService.getFileUrl(content.landscapeImageUrl),
+          this.featuresService.getFileUrl(content.previewVideoUrl),
+        ]).then(([urlLandscape, urlPreviewVideo]) => {
+          return {
+            ...content,
+            landscapeImagePresignedUrl: urlLandscape,
+            previewVideoPresignedUrl: urlPreviewVideo,
+          };
+        });
+      })
+    );
+
+    // Update the appropriate category array
     switch (category) {
       case 'theater':
-        this.theater = [...data];
+        this.theater = [...processedData];
         break;
       case 'film':
-        this.film = [...data];
+        this.film = [...processedData];
         break;
       case 'music':
-        this.music = [...data];
+        this.music = [...processedData];
         break;
       case 'dance':
-        this.dance = [...data];
+        this.dance = [...processedData];
         break;
       case 'education':
-        this.education = [...data];
+        this.education = [...processedData];
         break;
       case 'ccpspecials':
-        this.ccpspecials = [...data];
+        this.ccpspecials = [...processedData];
         break;
       case 'ccpclassics':
-        this.ccpclassics = [...data];
+        this.ccpclassics = [...processedData];
         break;
     }
   }
