@@ -164,7 +164,7 @@ export class SharedService {
   async createContentToUser(data: any) {
     try {
       const result = await this.client.models.contentToUser.list({
-        filter: { contentId: { contains: data.contentId } },
+        filter: { contentId: { eq: data.contentId } },
       });
 
       if (result.data && result.data.length > 0) {
