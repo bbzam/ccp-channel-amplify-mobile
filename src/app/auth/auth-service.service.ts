@@ -78,6 +78,8 @@ export class AuthServiceService {
   }
 
   private setSessionData(idToken: any) {
+    console.log(idToken?.payload['sub']);
+    sessionStorage.setItem('userId', String(idToken?.payload['sub']))
     sessionStorage.setItem('auth', String(idToken));
     sessionStorage.setItem(
       'username',
@@ -111,7 +113,6 @@ export class AuthServiceService {
         username: username,
         password: password,
       });
-      console.log(nextStep);
 
       if (nextStep.signInStep === 'DONE') {
         this.currentSession();
@@ -217,7 +218,6 @@ export class AuthServiceService {
       });
 
       if (confirmSignUpNextStep.signUpStep === 'DONE') {
-        console.log(`SignUp Complete`);
         this.dialog
           .open(SuccessMessageDialogComponent, {
             data: { message: 'SignUp Completed!' },
@@ -358,7 +358,6 @@ export class AuthServiceService {
   }
 
   public handleSuccess(success: any) {
-    console.log(success);
     this.sharedService.hideLoader();
     return this.dialog
       .open(SuccessMessageDialogComponent, {

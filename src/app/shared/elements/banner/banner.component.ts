@@ -58,9 +58,9 @@ export class BannerComponent implements OnInit, AfterViewInit {
     return timeParts.join(' ');
   }
 
-  watchVideo(videoUrl: string) {
+  watchVideo(videoUrl: string, id: string) {
     this.router.navigate(['subscriber/video-player'], {
-      queryParams: { videoUrl },
+      queryParams: { videoUrl, id },
     });
   }
 

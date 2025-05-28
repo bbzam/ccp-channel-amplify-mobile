@@ -25,12 +25,25 @@ const schema = a.schema({
       resolution: a.string(),
       status: a.boolean(), //published or scheduled
       publishDate: a.date(),
+      contentToUser: a.hasMany('contentToUser', 'contentId'),
     })
     .authorization((allow) => [
       allow.authenticated().to(['read']),
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['create', 'update', 'delete']),
+    ]),
+
+  contentToUser: a
+    .model({
+      userId: a.string().required(),
+      pauseTime: a.string().required(),
+      contentId: a.id().required(),
+      content: a.belongsTo('Content', 'contentId'),
+    })
+    .authorization((allow) => [
+      allow.groups(['USER', 'SUBSCRIBER']).to(['create', 'update', 'read']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']).to(['read']),
     ]),
 
   Keys: a

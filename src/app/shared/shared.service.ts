@@ -161,6 +161,33 @@ export class SharedService {
     }
   }
 
+  async createContentToUser(data: any) {
+    try {
+      const result = await this.client.models.contentToUser.list({
+        filter: { contentId: { contains: data.contentId } },
+      });
+
+      if (result.data && result.data.length > 0) {
+        await this.updateContentToUser({ ...data, id: result.data[0].id });
+        return;
+      }
+
+      await this.client.models.contentToUser.create(data);
+    } catch (error) {
+      console.error('Error adding featured content:', error);
+      throw error;
+    }
+  }
+
+  async updateContentToUser(data: any) {
+    try {
+      await this.client.models.contentToUser.update(data);
+    } catch (error) {
+      console.error('Error adding featured content:', error);
+      throw error;
+    }
+  }
+
   public handleError(error: any) {
     console.error(error);
     return this.dialog

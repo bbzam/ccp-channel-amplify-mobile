@@ -11,6 +11,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Location } from '@angular/common';
 import { ShakaPlayerService } from '../../shaka-player.service';
+import { SharedService } from '../../shared.service';
 
 @Component({
   selector: 'app-video-player',
@@ -25,7 +26,9 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   readonly route = inject(ActivatedRoute);
   readonly location = inject(Location);
   readonly shakaService = inject(ShakaPlayerService);
+  readonly sharedService = inject(SharedService);
   videoUrl!: string;
+  contentId!: string;
 
   isLoading = false;
   errorMessage = '';
@@ -35,6 +38,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.videoUrl = params['videoUrl'];
+      this.contentId = params['id'];
     });
   }
 
@@ -47,6 +51,28 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
       this.isLoading = true;
 
       const videoElement = this.videoPlayer.nativeElement;
+
+      // Add event listeners for tracking video playback
+      videoElement.addEventListener('pause', () => {
+        console.log('Paused at', videoElement.currentTime);
+        sessionStorage.setItem(
+          'videoProgress',
+          JSON.stringify({
+            contentId: this.contentId,
+            pauseTime: videoElement.currentTime,
+            userId: String(sessionStorage.getItem('userId')),
+          })
+        );
+      });
+
+      videoElement.addEventListener('seeked', () => {
+        console.log('Seeked to', videoElement.currentTime);
+      });
+
+      videoElement.addEventListener('play', () => {
+        console.log('Playback started at', videoElement.currentTime);
+      });
+
       // For Amplify hosted videos, we might not need Shaka Player
       // if they're standard MP4/WebM files
       if (this.isStreamingUrl(this.videoUrl)) {
@@ -118,5 +144,10 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
 
   ngOnDestroy() {
     this.shakaService.destroy();
+    const progressData = JSON.parse(
+      sessionStorage.getItem('videoProgress') || 'null'
+    );
+    console.log(progressData);
+    this.sharedService.createContentToUser(progressData);
   }
 }

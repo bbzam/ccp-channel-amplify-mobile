@@ -82,10 +82,10 @@ export class MoreInfoComponent implements AfterViewInit {
     return timeParts.join(' ');
   }
 
-  watchVideo(videoUrl: string) {
+  watchVideo(videoUrl: string, id: string) {
     this.dialogRef.close();
     this.router.navigate(['subscriber/video-player'], {
-      queryParams: { videoUrl },
+      queryParams: { videoUrl, id },
     });
   }
 

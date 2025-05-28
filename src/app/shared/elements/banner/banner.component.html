@@ -3,12 +3,14 @@
   <ng-container>
     <div class="supermain-div">
       <div class="media-container">
-        @if (showPhoto || !banners[currentMediaIndex].previewVideoPresignedUrl) {
+        @if (showPhoto || !banners[currentMediaIndex].previewVideoPresignedUrl)
+        {
         <img
           [src]="banners[currentMediaIndex].landscapeImagePresignedUrl"
           [alt]="banners[currentMediaIndex].title"
         />
-        } @if (!showPhoto && banners[currentMediaIndex].previewVideoPresignedUrl) {
+        } @if (!showPhoto &&
+        banners[currentMediaIndex].previewVideoPresignedUrl) {
         <video
           playsinline
           webkit-playsinline
@@ -49,7 +51,12 @@
               <button
                 class="buttonMS"
                 mat-icon-button
-                (click)="watchVideo(banners[currentMediaIndex].fullVideoPresignedUrl)"
+                (click)="
+                  watchVideo(
+                    banners[currentMediaIndex].fullVideoPresignedUrl,
+                    banners[currentMediaIndex].id
+                  )
+                "
               >
                 <div>WATCH</div>
                 <mat-icon matSuffix>play_arrow</mat-icon>

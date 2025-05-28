@@ -8,7 +8,11 @@
       </div>
       @if (item.teaser == '') {
       <div class="media-container">
-        <img class="media" [src]="item.landscapeImagePresignedUrl" [alt]="item.title" />
+        <img
+          class="media"
+          [src]="item.landscapeImagePresignedUrl"
+          [alt]="item.title"
+        />
       </div>
       } @else {
       <div class="media-container">
@@ -31,7 +35,11 @@
     <div class="gradient">
       <div class="details-container">
         <div class="poster">
-          <img class="image" [src]="item.portraitImagePresignedUrl" [alt]="item.title" />
+          <img
+            class="image"
+            [src]="item.portraitImagePresignedUrl"
+            [alt]="item.title"
+          />
         </div>
         <div class="details">
           <h1>{{ item.title }}</h1>
@@ -58,7 +66,7 @@
               <button
                 class="buttonMS"
                 mat-icon-button
-                (click)="watchVideo(item.fullVideoPresignedUrl)"
+                (click)="watchVideo(item.fullVideoPresignedUrl, item.id)"
               >
                 <div>WATCH</div>
                 <mat-icon matSuffix>play_arrow</mat-icon>
