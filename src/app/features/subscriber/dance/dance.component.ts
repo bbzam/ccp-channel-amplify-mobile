@@ -45,13 +45,25 @@ export class DanceComponent implements OnInit {
       if (featuredData) {
         const selectedIds = featuredData[0].selectedContent.split(',');
 
-        this.featured = selectedIds.map((id: string) => {
-          const matchingContent = data.find(
-            (content: any) => content.id === id
-          );
+        const processedContents = await Promise.all(
+          selectedIds.map((id: string) => {
+            const content = data.find((item: any) => item.id === id);
+            if (!content) return null;
 
-          return matchingContent;
-        });
+            return Promise.all([
+              this.featuresService.getFileUrl(content.landscapeImageUrl),
+              this.featuresService.getFileUrl(content.previewVideoUrl),
+            ]).then(([urlLandscape, urlPreviewVideo]) => {
+              return {
+                ...content,
+                landscapeImagePresignedUrl: urlLandscape,
+                previewVideoPresignedUrl: urlPreviewVideo,
+              };
+            });
+          })
+        );
+
+        this.featured = processedContents.filter(Boolean);
         this.banners = this.featured;
       } else {
         // Reset if category doesn't match

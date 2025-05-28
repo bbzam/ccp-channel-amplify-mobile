@@ -69,18 +69,33 @@ export class ScheduledComponent {
   }
 
   handleRowClick(row: any): void {
-    this.dialog
-      .open(ViewContentComponent, {
-        data: row,
-        panelClass: 'dialog',
-        disableClose: true,
-      })
-      .afterClosed()
-      .subscribe((data) => {
-        if (data) {
-          this.getAllContents(row.category);
-        }
-      });
+    Promise.all([
+      this.featuresService.getFileUrl(row.landscapeImageUrl),
+      this.featuresService.getFileUrl(row.portraitImageUrl),
+      this.featuresService.getFileUrl(row.previewVideoUrl),
+      this.featuresService.getFileUrl(row.fullVideoUrl),
+    ]).then(([urlLandscape, urlPortrait, urlPreviewVideo, urlFullVideo]) => {
+      const updatedRow = {
+        ...row,
+        landscapeImagePresignedUrl: urlLandscape,
+        portraitImagePresignedUrl: urlPortrait,
+        previewVideoPresignedUrl: urlPreviewVideo,
+        fullVideoPresignedUrl: urlFullVideo,
+      };
+
+      this.dialog
+        .open(ViewContentComponent, {
+          data: updatedRow,
+          panelClass: 'dialog',
+          disableClose: true,
+        })
+        .afterClosed()
+        .subscribe((data) => {
+          if (data) {
+            this.getAllContents(row.category);
+          }
+        });
+    });
   }
 
   handleRefreshClick() {

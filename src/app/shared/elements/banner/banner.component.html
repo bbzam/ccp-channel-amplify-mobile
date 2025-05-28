@@ -1,4 +1,4 @@
-<div class="main-media-container">
+<div class="main-media-container" #bannerContainer>
   @if (banners.length > 0) {
   <ng-container>
     <div class="supermain-div">
@@ -43,13 +43,13 @@
             <p>{{ transform(banners[currentMediaIndex].runtime) }}</p>
             }
           </div>
-          @if (banners[currentMediaIndex].fullVideoPresignedUrl) {
+          @if (banners[currentMediaIndex].fullVideoUrl) {
           <div class="action-container">
             <div class="watch">
               <button
                 class="buttonMS"
                 mat-icon-button
-                (click)="watchVideo(banners[currentMediaIndex].fullVideoPresignedUrl)"
+                (click)="watchVideo(banners[currentMediaIndex].fullVideoUrl)"
               >
                 <div>WATCH</div>
                 <mat-icon matSuffix>play_arrow</mat-icon>

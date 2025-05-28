@@ -9,12 +9,12 @@ import {
   QueryList,
   ViewChildren,
 } from '@angular/core';
-import { allFeatured } from '../../mock-data';
 import { MatCardModule } from '@angular/material/card';
 import { MoreInfoComponent } from '../../dialogs/more-info/more-info.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { FeaturesService } from '../../../features/features.service';
 
 @Component({
   selector: 'app-recommended',
@@ -27,6 +27,7 @@ export class RecommendedComponent implements AfterViewInit, OnInit {
   @Input() recommended!: any[];
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
+  readonly featuresService = inject(FeaturesService);
 
   visibleItems: any[] = [];
   startIndex: number = 0;
@@ -103,16 +104,28 @@ export class RecommendedComponent implements AfterViewInit, OnInit {
   }
 
   watchVideo(videoUrl: string) {
-    this.router.navigate(['subscriber/video-player'], {
-      queryParams: { videoUrl },
+    this.featuresService.getFileUrl(videoUrl).then((presignedUrl) => {
+      this.router.navigate(['subscriber/video-player'], {
+        queryParams: { videoUrl: presignedUrl },
+      });
     });
   }
 
   moreInfo(item: any) {
-    this.dialog
-      .open(MoreInfoComponent, { data: { data: item } })
-      .afterClosed()
-      .subscribe((data) => {});
+    // Get presigned URL directly
+    this.featuresService
+      .getFileUrl(item.portraitImageUrl)
+      .then((urlPortrait) => {
+        const updatedItem = {
+          ...item,
+          portraitImagePresignedUrl: urlPortrait,
+        };
+
+        this.dialog
+          .open(MoreInfoComponent, { data: { data: updatedItem } })
+          .afterClosed()
+          .subscribe((data) => {});
+      });
   }
 
   updateVisibleItems(): void {

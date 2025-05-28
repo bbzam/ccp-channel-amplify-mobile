@@ -69,55 +69,55 @@ export class SubscriberComponent implements OnInit {
     });
   }
 
-  @HostListener('window:scroll', [])
-  onScroll(): void {
-    // Check if current route should have continuous scrolling
-    const currentRoute = this.router.url;
-    if (!this.scrollEnabledRoutes.includes(currentRoute)) {
-      this.showScrollHint = false;
-      return;
-    }
+  // @HostListener('window:scroll', [])
+  // onScroll(): void {
+  //   // Check if current route should have continuous scrolling
+  //   const currentRoute = this.router.url;
+  //   if (!this.scrollEnabledRoutes.includes(currentRoute)) {
+  //     this.showScrollHint = false;
+  //     return;
+  //   }
 
-    const currentScrollTop =
-      window.pageYOffset || document.documentElement.scrollTop;
+  //   const currentScrollTop =
+  //     window.pageYOffset || document.documentElement.scrollTop;
 
-    if (this.isNavigating) return;
+  //   if (this.isNavigating) return;
 
-    const scrollHeight = document.documentElement.scrollHeight;
-    const clientHeight = document.documentElement.clientHeight;
+  //   const scrollHeight = document.documentElement.scrollHeight;
+  //   const clientHeight = document.documentElement.clientHeight;
 
-    // Detect scroll direction
-    const newDirection = currentScrollTop > this.lastScrollTop ? 'down' : 'up';
-    this.lastScrollTop = currentScrollTop;
+  //   // Detect scroll direction
+  //   const newDirection = currentScrollTop > this.lastScrollTop ? 'down' : 'up';
+  //   this.lastScrollTop = currentScrollTop;
 
-    if (newDirection !== this.direction) {
-      this.direction = newDirection;
-      this.scrollAttempts = 1; // reset counter for new direction
-    } else {
-      this.scrollAttempts++;
-    }
+  //   if (newDirection !== this.direction) {
+  //     this.direction = newDirection;
+  //     this.scrollAttempts = 1; // reset counter for new direction
+  //   } else {
+  //     this.scrollAttempts++;
+  //   }
 
-    // Detect if we are near top or bottom
-    const isNearBottom = currentScrollTop + clientHeight >= scrollHeight - 10;
-    const isNearTop = currentScrollTop <= 10;
+  //   // Detect if we are near top or bottom
+  //   const isNearBottom = currentScrollTop + clientHeight >= scrollHeight - 10;
+  //   const isNearTop = currentScrollTop <= 10;
 
-    // Check if there's a next or previous route available
-    const hasNext = this.currentIndex < navItems.length - 1;
-    const hasPrevious = this.currentIndex > 0;
+  //   // Check if there's a next or previous route available
+  //   const hasNext = this.currentIndex < navItems.length - 1;
+  //   const hasPrevious = this.currentIndex > 0;
 
-    // Show scroll hint based on direction and availability of next/previous route
-    this.showScrollHint =
-      (isNearBottom && hasNext) || (isNearTop && hasPrevious);
+  //   // Show scroll hint based on direction and availability of next/previous route
+  //   this.showScrollHint =
+  //     (isNearBottom && hasNext) || (isNearTop && hasPrevious);
 
-    // If scroll attempts exceed max, trigger navigation
-    if (this.scrollAttempts >= this.maxAttempts) {
-      if (this.direction === 'down' && isNearBottom && hasNext) {
-        this.goToNextRoute();
-      } else if (this.direction === 'up' && isNearTop && hasPrevious) {
-        this.goToPreviousRoute();
-      }
-    }
-  }
+  //   // If scroll attempts exceed max, trigger navigation
+  //   if (this.scrollAttempts >= this.maxAttempts) {
+  //     if (this.direction === 'down' && isNearBottom && hasNext) {
+  //       this.goToNextRoute();
+  //     } else if (this.direction === 'up' && isNearTop && hasPrevious) {
+  //       this.goToPreviousRoute();
+  //     }
+  //   }
+  // }
 
   goToNextRoute() {
     if (this.currentIndex < navItems.length - 1) {

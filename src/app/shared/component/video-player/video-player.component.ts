@@ -47,6 +47,20 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
       this.isLoading = true;
 
       const videoElement = this.videoPlayer.nativeElement;
+
+      // Add event listeners for tracking video playback
+      videoElement.addEventListener('pause', () => {
+        console.log('Paused at', videoElement.currentTime);
+      });
+
+      videoElement.addEventListener('seeked', () => {
+        console.log('Seeked to', videoElement.currentTime);
+      });
+
+      videoElement.addEventListener('play', () => {
+        console.log('Playback started at', videoElement.currentTime);
+      });
+
       // For Amplify hosted videos, we might not need Shaka Player
       // if they're standard MP4/WebM files
       if (this.isStreamingUrl(this.videoUrl)) {

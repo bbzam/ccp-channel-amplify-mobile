@@ -13,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { FeaturesService } from '../../../features/features.service';
 
 @Component({
   selector: 'app-more-info',
@@ -25,6 +26,7 @@ export class MoreInfoComponent implements AfterViewInit {
   @Input() item: any;
   readonly dialogRef = inject(MatDialogRef<MoreInfoComponent>);
   readonly router = inject(Router);
+  readonly featuresService = inject(FeaturesService);
 
   // Disable right-click for more info dialog
   @HostListener('contextmenu', ['$event'])
@@ -83,9 +85,10 @@ export class MoreInfoComponent implements AfterViewInit {
   }
 
   watchVideo(videoUrl: string) {
-    this.dialogRef.close();
-    this.router.navigate(['subscriber/video-player'], {
-      queryParams: { videoUrl },
+    this.featuresService.getFileUrl(videoUrl).then((presignedUrl) => {
+      this.router.navigate(['subscriber/video-player'], {
+        queryParams: { videoUrl: presignedUrl },
+      });
     });
   }
 
