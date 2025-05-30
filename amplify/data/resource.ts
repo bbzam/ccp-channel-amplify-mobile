@@ -25,8 +25,8 @@ const schema = a.schema({
       subCategory: a.string(),
       director: a.string(),
       writer: a.string(),
-      userType: a.string(),
       // userType: a.enum(['free', 'subscriber']),
+      userType: a.string().required(),
       landscapeImageUrl: a.string().required(),
       portraitImageUrl: a.string().required(),
       previewVideoUrl: a.string().required(),
@@ -58,7 +58,7 @@ const schema = a.schema({
   FeaturedAll: a
     .model({
       selectedContent: a.string(),
-      category: a.string().required(),
+      category: a.string(),
       // category: a.enum([
       //   'theater',
       //   'film',
@@ -93,7 +93,7 @@ const schema = a.schema({
   FeaturedLandingPage: a
     .model({
       selectedContent: a.string(),
-      category: a.string().required(),
+      category: a.string(),
       // category: a.enum([
       //   'theater',
       //   'film',
