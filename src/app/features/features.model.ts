@@ -2,11 +2,18 @@ export interface ContentMetadata {
   id?: any;
   title: string;
   description: string;
-  category: string;
+  category:
+    | 'theater'
+    | 'film'
+    | 'music'
+    | 'dance'
+    | 'education'
+    | 'ccpspecials'
+    | 'ccpclassics';
   subCategory: string;
   director: string;
   writer: string;
-  userType: string;
+  userType: 'free' | 'subscriber';
   landscapeImageUrl: string;
   portraitImageUrl: string;
   previewVideoUrl: string;

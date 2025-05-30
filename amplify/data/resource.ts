@@ -12,11 +12,19 @@ const schema = a.schema({
       id: a.id().required(),
       title: a.string().required(),
       description: a.string().required(),
-      category: a.string().required(),
+      category: a.enum([
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
       subCategory: a.string(),
       director: a.string(),
       writer: a.string(),
-      userType: a.string().required(),
+      userType: a.enum(['free', 'subscriber']),
       landscapeImageUrl: a.string().required(),
       portraitImageUrl: a.string().required(),
       previewVideoUrl: a.string().required(),
@@ -48,7 +56,15 @@ const schema = a.schema({
   FeaturedAll: a
     .model({
       selectedContent: a.string(),
-      category: a.string(),
+      category: a.enum([
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
     })
     .authorization((allow) => [
       allow.guest().to(['read']),
@@ -74,7 +90,15 @@ const schema = a.schema({
   FeaturedLandingPage: a
     .model({
       selectedContent: a.string(),
-      category: a.string(),
+      category: a.enum([
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
     })
     .authorization((allow) => [
       allow.guest().to(['read']),

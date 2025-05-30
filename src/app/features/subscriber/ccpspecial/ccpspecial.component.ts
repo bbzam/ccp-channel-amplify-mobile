@@ -25,6 +25,7 @@ export class CcpspecialComponent implements OnInit {
   featured: any[] = [];
   recommended: any[] = [];
   continueWatching: any[] = [];
+  allContents: any[] = [];
   category: string = 'ccpspecials';
 
   readonly featuresService = inject(FeaturesService);
@@ -39,6 +40,22 @@ export class CcpspecialComponent implements OnInit {
       // First get all contents
       const data = await this.featuresService.getAllContents(currentTab, true);
 
+      // Process all content items to add presigned URLs
+      this.allContents = await Promise.all(
+        data.map(async (content: any) => {
+          const [urlLandscape, urlPreviewVideo] = await Promise.all([
+            this.featuresService.getFileUrl(content.landscapeImageUrl),
+            this.featuresService.getFileUrl(content.previewVideoUrl),
+          ]);
+
+          return {
+            ...content,
+            landscapeImagePresignedUrl: urlLandscape,
+            previewVideoPresignedUrl: urlPreviewVideo,
+          };
+        })
+      );
+
       // Then get featured data and filter
       const featuredData = await this.sharedService.getFeaturedAll(currentTab);
 
@@ -46,35 +63,24 @@ export class CcpspecialComponent implements OnInit {
       if (featuredData) {
         const selectedIds = featuredData[0].selectedContent.split(',');
 
-        const processedContents = await Promise.all(
-          selectedIds.map((id: string) => {
-            const content = data.find((item: any) => item.id === id);
-            if (!content) return null;
+        // Since we already have presigned URLs in allContents, we can use that data
+        this.featured = selectedIds
+          .map((id: string) =>
+            this.allContents.find((item: any) => item.id === id)
+          )
+          .filter(Boolean);
 
-            return Promise.all([
-              this.featuresService.getFileUrl(content.landscapeImageUrl),
-              this.featuresService.getFileUrl(content.previewVideoUrl),
-            ]).then(([urlLandscape, urlPreviewVideo]) => {
-              return {
-                ...content,
-                landscapeImagePresignedUrl: urlLandscape,
-                previewVideoPresignedUrl: urlPreviewVideo,
-              };
-            });
-          })
-        );
-
-        this.featured = processedContents.filter(Boolean);
         this.banners = this.featured;
       } else {
         // Reset if category doesn't match
         this.featured = [];
-        this.banners = [];
+        this.banners = this.allContents;
       }
     } catch (error) {
       console.error('Error fetching content data:', error);
       this.banners = [];
       this.featured = [];
+      this.allContents = [];
     }
   }
 }
