@@ -28,6 +28,39 @@ export class SharedService {
     this.isLoadingSubject.next({ show: false });
   }
 
+  async getStatistics(): Promise<any> {
+    try {
+      this.showLoader('Fetching content...');
+      const stats = await this.client.queries.statistics({});
+
+      if (stats && stats.data) {
+        this.hideLoader();
+        // Check if data is a string before parsing
+        const parsedData =
+          typeof stats.data === 'string' ? JSON.parse(stats.data) : stats.data;
+
+        if (parsedData.success && parsedData.data) {
+          // Map the viewCount array to the requested format
+          const formattedViewCount = parsedData.data.map((item: any) => ({
+            title: item.title?.S,
+            viewCount: item.viewCount?.N,
+          }));
+
+          return formattedViewCount;
+        }
+        return parsedData;
+      }
+
+      this.hideLoader();
+      return stats;
+    } catch (error) {
+      this.hideLoader();
+      this.handleError(error);
+      console.error('Error fetching current user:', error);
+      throw error;
+    }
+  }
+
   async getFeaturedAll(category: string): Promise<any> {
     try {
       this.showLoader('Fetching content...');
@@ -35,7 +68,7 @@ export class SharedService {
         filter: {
           ...(category && {
             category: {
-              contains: category,
+              eq: category,
             },
           }),
         },
@@ -163,18 +196,54 @@ export class SharedService {
 
   async createContentToUser(data: any) {
     try {
-      const result = await this.client.models.contentToUser.list({
-        filter: { contentId: { eq: data.contentId } },
+      await this.client.mutations.incrementViewCount({
+        contentId: data.contentId,
       });
 
-      if (result.data && result.data.length > 0) {
-        await this.updateContentToUser({ ...data, id: result.data[0].id });
+      const result = await this.getContentToUser(data.contentId, data.userId);
+
+      if (result && result.length > 0) {
+        await this.updateContentToUser({ ...data, id: result[0].id });
         return;
       }
 
       await this.client.models.contentToUser.create(data);
     } catch (error) {
       console.error('Error adding featured content:', error);
+      throw error;
+    }
+  }
+
+  async getContentToUser(contentId: string, userId: string): Promise<any> {
+    try {
+      const { data } = await this.client.models.contentToUser.list({
+        filter: {
+          contentId: { eq: contentId },
+          userId: { eq: userId },
+        },
+      });
+      return data;
+    } catch (error) {
+      console.error('Error fetching content to user relationship:', error);
+      throw error;
+    }
+  }
+
+  async getContinueWatch(userId: string): Promise<any> {
+    try {
+      const { data } = await this.client.models.contentToUser.list({
+        filter: {
+          userId: { eq: userId },
+        },
+      });
+
+      // Sort the data by updatedAt in descending order
+      return data?.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+    } catch (error) {
+      console.error('Error fetching content to user relationship:', error);
       throw error;
     }
   }

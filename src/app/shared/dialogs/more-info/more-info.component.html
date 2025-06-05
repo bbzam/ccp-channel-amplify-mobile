@@ -45,7 +45,10 @@
           <h1>{{ item.title }}</h1>
           <div class="metadata">
             <p class="category">{{ item.category }}</p>
-            @if (item.resolution) {
+            @if (item.yearReleased){
+            <p>•</p>
+            <p>{{ item.yearReleased }}</p>
+            } @if (item.resolution) {
             <p>•</p>
             <p>{{ item.resolution }}</p>
             } @if (item.runtime) {

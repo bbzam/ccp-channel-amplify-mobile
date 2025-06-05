@@ -112,6 +112,10 @@
     font: icon;
   }
 
+  .mdc-linear-progress__bar-inner {
+    border-color: var(--primary);
+  }
+
   .mdc-linear-progress {
     margin-left: 0.6em;
     width: 30%;

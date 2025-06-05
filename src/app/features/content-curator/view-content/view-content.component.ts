@@ -62,6 +62,7 @@ export class ViewContentComponent {
   inputSubCategory!: string;
   inputDirector!: string;
   inputWriter!: string;
+  inputYearReleased!: string;
   inputUserType!: string;
   inputLandscapeImage!: any;
   inputPortraitImage!: any;
@@ -97,6 +98,7 @@ export class ViewContentComponent {
     preview: false,
     full: false,
   };
+  currentYear = new Date().getFullYear();
 
   readonly isEditing = signal(false);
   readonly isPublishing = signal(false);
@@ -117,6 +119,7 @@ export class ViewContentComponent {
   subCategoryErrorMessage = signal('');
   directorErrorMessage = signal('');
   writerErrorMessage = signal('');
+  yearReleasedErrorMessage = signal('');
   userTypeErrorMessage = signal('');
   landscapeErrorMessage = signal('');
   portraitErrorMessage = signal('');
@@ -146,6 +149,7 @@ export class ViewContentComponent {
     this.inputSubCategory = data.subCategory;
     this.inputDirector = data.director;
     this.inputWriter = data.writer;
+    this.inputYearReleased = data.yearReleased;
     this.inputUserType = data.userType;
     this.landscapeFileURL = data.landscapeImageUrl;
     this.portraitFileURL = data.portraitImageUrl;
@@ -166,6 +170,7 @@ export class ViewContentComponent {
       subCategory: data.subCategory,
       director: data.director,
       writer: data.writer,
+      yearReleased: data.yearReleased,
       userType: data.userType,
       landscapeimage: data.landscapeImageUrl,
       portraitimage: data.portraitImageUrl,
@@ -237,6 +242,15 @@ export class ViewContentComponent {
         { value: this.inputWriter, disabled: !this.isEditing() },
         [disallowCharacters()],
       ],
+      yearReleased: [
+        { value: this.inputYearReleased, disabled: !this.isEditing() },
+        [
+          disallowCharacters(),
+          Validators.min(1900),
+          Validators.max(this.currentYear),
+          Validators.pattern('^[0-9]{4}$'),
+        ],
+      ],
       userType: [
         { value: this.inputUserType, disabled: !this.isEditing() },
         [Validators.required, disallowCharacters()],
@@ -268,6 +282,7 @@ export class ViewContentComponent {
       'subCategory',
       'director',
       'writer',
+      'yearReleased',
       'userType',
       'landscapeimage',
       'portraitimage',
@@ -296,6 +311,7 @@ export class ViewContentComponent {
       subCategory: this.subCategoryErrorMessage,
       director: this.directorErrorMessage,
       writer: this.writerErrorMessage,
+      yearReleased: this.yearReleasedErrorMessage,
       userType: this.userTypeErrorMessage,
       landscapeimage: this.landscapeErrorMessage,
       portraitimage: this.portraitErrorMessage,
@@ -329,6 +345,12 @@ export class ViewContentComponent {
       signal.set(errorMessages.PASSWORDMINLENGTH);
     } else if (control.hasError('isNotMatch')) {
       signal.set(errorMessages.PASSWORDNOTMATCH);
+    } else if (control.hasError('min')) {
+      signal.set('Year must be 1900 or later');
+    } else if (control.hasError('max')) {
+      signal.set(`Year cannot be later than ${this.currentYear}`);
+    } else if (control.hasError('pattern')) {
+      signal.set('Please enter a valid 4-digit year');
     } else {
       signal.set('');
     }

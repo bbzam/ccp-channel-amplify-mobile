@@ -1,9 +1,17 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  ViewChild,
+  OnInit,
+} from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { Chart, ChartConfiguration, ChartType } from 'chart.js/auto';
+import { SharedService } from '../../shared.service';
 
 interface VideoData {
   title: string;
@@ -16,9 +24,10 @@ interface VideoData {
   templateUrl: './dashboard-template.component.html',
   styleUrl: './dashboard-template.component.css',
 })
-export class DashboardTemplateComponent implements AfterViewInit {
+export class DashboardTemplateComponent implements OnInit, AfterViewInit {
   @ViewChild('barChart') private barChartRef!: ElementRef;
   @ViewChild('lineChart') private lineChartRef!: ElementRef;
+  readonly sharedService = inject(SharedService);
   private barChart!: Chart;
   private lineChart!: Chart;
   displayedColumns: string[] = ['browser', 'users'];
@@ -39,9 +48,22 @@ export class DashboardTemplateComponent implements AfterViewInit {
     { title: 'Tukso', views: 2500 },
   ];
 
+  ngOnInit(): void {
+    this.getStatistics();
+  }
+
   ngAfterViewInit(): void {
     this.initializeBarChart();
     this.initializeLineChart();
+  }
+
+  async getStatistics() {
+    try {
+      const response = await this.sharedService.getStatistics();
+      console.log(response);
+    } catch (error) {
+      console.error('Error fetching statistics:', error);
+    }
   }
 
   private initializeBarChart(): void {

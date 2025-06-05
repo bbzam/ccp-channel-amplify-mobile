@@ -1,10 +1,12 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
-import { addUser } from './add-user/resource';
-import { listUsers } from './list-users/resource';
-import { editUser } from './edit-user/resource';
-import { disableUser } from './disable-user/resource';
-import { enableUser } from './enable-user/resource';
-import { listUser } from './list-user/resource';
+import { addUser } from './auth/add-user/resource';
+import { listUsers } from './auth/list-users/resource';
+import { editUser } from './auth/edit-user/resource';
+import { disableUser } from './auth/disable-user/resource';
+import { enableUser } from './auth/enable-user/resource';
+import { listUser } from './auth/list-user/resource';
+import { incrementViewcount } from './increment-viewcount/resource';
+import { statistics } from './statistics/resource';
 
 const schema = a.schema({
   Content: a
@@ -12,19 +14,29 @@ const schema = a.schema({
       id: a.id().required(),
       title: a.string().required(),
       description: a.string().required(),
-      category: a.string().required(),
+      category: a.enum([
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
       subCategory: a.string(),
       director: a.string(),
       writer: a.string(),
-      userType: a.string().required(),
+      yearReleased: a.string(),
+      userType: a.enum(['free', 'subscriber']),
       landscapeImageUrl: a.string().required(),
       portraitImageUrl: a.string().required(),
       previewVideoUrl: a.string().required(),
       fullVideoUrl: a.string().required(),
-      runtime: a.float(),
-      resolution: a.string(),
-      status: a.boolean(), //published or scheduled
+      runtime: a.float().required(),
+      resolution: a.string().required(),
+      status: a.boolean().required(), //published or scheduled
       publishDate: a.date(),
+      viewCount: a.integer(),
       contentToUser: a.hasMany('contentToUser', 'contentId'),
     })
     .authorization((allow) => [
@@ -46,6 +58,15 @@ const schema = a.schema({
       allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']).to(['read']),
     ]),
 
+  incrementViewCount: a
+    .mutation()
+    .arguments({
+      contentId: a.string().required(),
+    })
+    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .handler(a.handler.function(incrementViewcount))
+    .returns(a.json()),
+
   Keys: a
     .model({
       id: a.id().required(),
@@ -61,7 +82,16 @@ const schema = a.schema({
   FeaturedAll: a
     .model({
       selectedContent: a.string(),
-      category: a.string(),
+      category: a.enum([
+        'all',
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
     })
     .authorization((allow) => [
       allow.guest().to(['read']),
@@ -87,7 +117,15 @@ const schema = a.schema({
   FeaturedLandingPage: a
     .model({
       selectedContent: a.string(),
-      category: a.string(),
+      category: a.enum([
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
     })
     .authorization((allow) => [
       allow.guest().to(['read']),
@@ -112,10 +150,19 @@ const schema = a.schema({
     .handler(a.handler.function(addUser))
     .returns(a.json()),
 
+  statistics: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(statistics))
+    .returns(a.json()),
+
   listUser: a
     .query()
     .arguments({
-      email: a.string(),
+      email: a.string().required(),
     })
     .authorization((allow) => [
       allow.groups([

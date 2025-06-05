@@ -1,4 +1,4 @@
-import type { Schema } from '../resource';
+import type { Schema } from '../../resource';
 import {
   AdminGetUserCommand,
   CognitoIdentityProviderClient,

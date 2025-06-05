@@ -15,10 +15,11 @@ import { MoreInfoComponent } from '../../dialogs/more-info/more-info.component';
 import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { FeaturesService } from '../../../features/features.service';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-continue-watching',
-  imports: [MatCardModule, MatIcon],
+  imports: [MatCardModule, MatIcon, MatProgressBarModule],
   templateUrl: './continue-watching.component.html',
   styleUrl: './continue-watching.component.css',
 })
@@ -133,6 +134,16 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
       this.startIndex,
       this.startIndex + this.itemsToShow
     );
+  }
+
+  calculateProgress(item: any): number {
+    if (!item.runtime || !item.pauseTime) {
+      return 0;
+    }
+
+    const progress = (Number(item.pauseTime) / Number(item.runtime)) * 100;
+
+    return Math.min(Math.max(progress, 0), 100); // Ensure value is between 0-100
   }
 
   nextPage(): void {

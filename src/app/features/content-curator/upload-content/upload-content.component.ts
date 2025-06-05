@@ -58,6 +58,7 @@ export class UploadContentComponent {
   inputSubCategory!: string;
   inputDirector!: string;
   inputWriter!: string;
+  inputYearReleased!: string;
   inputUserType!: string;
   inputLandscapeImage!: any;
   inputPortraitImage!: any;
@@ -87,6 +88,7 @@ export class UploadContentComponent {
     preview: false,
     full: false,
   };
+  currentYear = new Date().getFullYear();
 
   readonly isLoading = signal(false);
   readonly isScheduling = signal(false);
@@ -104,6 +106,7 @@ export class UploadContentComponent {
   subCategoryErrorMessage = signal('');
   directorErrorMessage = signal('');
   writerErrorMessage = signal('');
+  yearReleasedErrorMessage = signal('');
   userTypeErrorMessage = signal('');
   landscapeErrorMessage = signal('');
   portraitErrorMessage = signal('');
@@ -131,6 +134,15 @@ export class UploadContentComponent {
       subcategory: ['', [disallowCharacters()]],
       director: ['', [disallowCharacters()]],
       writer: ['', [disallowCharacters()]],
+      yearreleased: [
+        '',
+        [
+          disallowCharacters(),
+          Validators.min(1900),
+          Validators.max(this.currentYear),
+          Validators.pattern('^[0-9]{4}$'),
+        ],
+      ],
       usertype: ['', [Validators.required, disallowCharacters()]],
       landscapeimage: ['', [Validators.required, disallowCharacters()]],
       portraitimage: ['', [Validators.required, disallowCharacters()]],
@@ -147,6 +159,7 @@ export class UploadContentComponent {
       'subcategory',
       'director',
       'writer',
+      'yearreleased',
       'usertype',
       'landscapeimage',
       'portraitimage',
@@ -175,6 +188,7 @@ export class UploadContentComponent {
       subcategory: this.subCategoryErrorMessage,
       director: this.directorErrorMessage,
       writer: this.writerErrorMessage,
+      yearreleased: this.yearReleasedErrorMessage,
       usertype: this.userTypeErrorMessage,
       landscapeimage: this.landscapeErrorMessage,
       portraitimage: this.portraitErrorMessage,
@@ -208,6 +222,12 @@ export class UploadContentComponent {
       signal.set(errorMessages.PASSWORDMINLENGTH);
     } else if (control.hasError('isNotMatch')) {
       signal.set(errorMessages.PASSWORDNOTMATCH);
+    } else if (control.hasError('min')) {
+      signal.set('Year must be 1900 or later');
+    } else if (control.hasError('max')) {
+      signal.set(`Year cannot be later than ${this.currentYear}`);
+    } else if (control.hasError('pattern')) {
+      signal.set('Please enter a valid 4-digit year');
     } else {
       signal.set('');
     }
@@ -310,13 +330,14 @@ export class UploadContentComponent {
         subCategory: formData.subcategory,
         director: formData.director,
         writer: formData.writer,
+        yearReleased: formData.yearreleased,
         userType: formData.usertype,
         landscapeImageUrl: this.landscapeImageKey,
         portraitImageUrl: this.portraitImageKey,
         previewVideoUrl: this.previewVideoKey,
         fullVideoUrl: this.fullVideoKey,
-        runtime: this.videoMetadata?.duration,
-        resolution: this.videoMetadata?.quality,
+        runtime: this.videoMetadata?.duration || 0,
+        resolution: this.videoMetadata?.quality || '',
         status: isForPublish,
         publishDate: this.date,
       };

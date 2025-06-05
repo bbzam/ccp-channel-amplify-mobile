@@ -53,6 +53,7 @@ export class HomeComponent implements OnInit {
 
       // Process featured data
       const featuredData = await this.sharedService.getFeaturedAll('all');
+
       if (
         featuredData &&
         featuredData.length > 0 &&
@@ -81,6 +82,64 @@ export class HomeComponent implements OnInit {
 
         this.featured = processedItems.filter(Boolean);
         this.banners = [...this.featured]; // Create a new array to ensure change detection
+      } else {
+        // If no featured content, use first five items
+        this.featured = [];
+
+        // Get presigned URLs only for the first five items
+        const firstFiveItems = data.slice(0, 5);
+        const processedItems = await Promise.all(
+          firstFiveItems.map((content: any) => {
+            return Promise.all([
+              this.featuresService.getFileUrl(content.landscapeImageUrl),
+              this.featuresService.getFileUrl(content.previewVideoUrl),
+            ]).then(([urlLandscape, urlPreviewVideo]) => {
+              return {
+                ...content,
+                landscapeImagePresignedUrl: urlLandscape,
+                previewVideoPresignedUrl: urlPreviewVideo,
+              };
+            });
+          })
+        );
+
+        this.banners = processedItems;
+      }
+
+      // Process continue watching
+      const userId = sessionStorage.getItem('userId');
+      const getContentToUserData = await this.sharedService.getContinueWatch(
+        String(userId)
+      );
+
+      if (getContentToUserData && getContentToUserData.length > 0) {
+        const continueWatchingIds = getContentToUserData.map(
+          (item: any) => item.contentId
+        );
+
+        // Get content items and add presigned URLs
+        const processedItems = await Promise.all(
+          continueWatchingIds.map((id: string) => {
+            const content = data.find((item: any) => item.id === id);
+            if (!content) return null;
+
+            return Promise.all([
+              this.featuresService.getFileUrl(content.landscapeImageUrl),
+              this.featuresService.getFileUrl(content.previewVideoUrl),
+            ]).then(([urlLandscape, urlPreviewVideo]) => {
+              return {
+                ...content,
+                landscapeImagePresignedUrl: urlLandscape,
+                previewVideoPresignedUrl: urlPreviewVideo,
+                pauseTime: getContentToUserData.find(
+                  (item: any) => item.contentId === id
+                ).pauseTime,
+              };
+            });
+          })
+        );
+
+        this.continueWatching = processedItems.filter(Boolean);
       }
     } catch (error) {
       console.error('Error fetching essential content:', error);

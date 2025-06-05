@@ -302,6 +302,7 @@ export class FeaturesService {
         subCategory: contentMetadata.subCategory,
         director: contentMetadata.director,
         writer: contentMetadata.writer,
+        yearReleased: contentMetadata.yearReleased,
         userType: contentMetadata.userType,
         landscapeImageUrl: contentMetadata.landscapeImageUrl,
         portraitImageUrl: contentMetadata.portraitImageUrl,
@@ -408,6 +409,7 @@ export class FeaturesService {
         'subCategory',
         'director',
         'writer',
+        'yearReleased',
         'userType',
         'landscapeImageUrl',
         'portraitImageUrl',
@@ -431,7 +433,7 @@ export class FeaturesService {
                 filter: {
                   ...(category && {
                     category: {
-                      contains: category,
+                      eq: category,
                     },
                   }),
                   ...(status !== undefined &&

@@ -22,6 +22,10 @@
         (click)="moreInfo(item)"
         controls
       ></video>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="calculateProgress(item)"
+      ></mat-progress-bar>
       <div class="actions">
         <label>{{ item.title }}</label>
       </div>
@@ -29,7 +33,7 @@
         <label>{{ item.title }}</label>
         <div class="action-buttons">
           <div>
-            <mat-icon (click)="watchVideo(item.fullVideoPresignedUrl, item.id)"
+            <mat-icon (click)="watchVideo(item.fullVideoUrl, item.id)"
               >play_circle_filled</mat-icon
             >
             <mat-icon (click)="moreInfo(item)">info</mat-icon>

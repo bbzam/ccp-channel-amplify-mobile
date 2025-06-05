@@ -117,6 +117,7 @@ export class SetfeaturedComponent {
     };
 
     try {
+      console.log(this.featuredData)
       if (this.featuredData[0] && this.featuredData.length) {
         data.id = this.featuredData[0]?.id;
         await this.sharedService.updateFeaturedAll(data);

@@ -29,6 +29,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   readonly sharedService = inject(SharedService);
   videoUrl!: string;
   contentId!: string;
+  pauseTime!: number;
 
   isLoading = false;
   errorMessage = '';
@@ -55,14 +56,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
       // Add event listeners for tracking video playback
       videoElement.addEventListener('pause', () => {
         console.log('Paused at', videoElement.currentTime);
-        sessionStorage.setItem(
-          'videoProgress',
-          JSON.stringify({
-            contentId: this.contentId,
-            pauseTime: videoElement.currentTime,
-            userId: String(sessionStorage.getItem('userId')),
-          })
-        );
+        this.pauseTime = videoElement.currentTime;
       });
 
       videoElement.addEventListener('seeked', () => {
@@ -123,13 +117,18 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     this.errorMessage = '';
   }
 
-  onVideoLoaded() {
+  async onVideoLoaded() {
     this.isLoading = false;
-    // const video = this.videoPlayer.nativeElement;
-    // if (video.requestFullscreen) {
-    //   video.requestFullscreen();
-    // }
-    // video.play();
+    const video = this.videoPlayer.nativeElement;
+
+    const userId = sessionStorage.getItem('userId');
+    const getContentToUserData = await this.sharedService.getContentToUser(
+      this.contentId,
+      String(userId)
+    );
+    if (getContentToUserData) {
+      video.currentTime = Number(getContentToUserData[0].pauseTime);
+    }
   }
 
   onError(event: any) {
@@ -144,10 +143,17 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
 
   ngOnDestroy() {
     this.shakaService.destroy();
-    const progressData = JSON.parse(
-      sessionStorage.getItem('videoProgress') || 'null'
-    );
-    console.log(progressData);
-    this.sharedService.createContentToUser(progressData);
+    const userId = sessionStorage.getItem('userId');
+
+    // Get the current time right before saving
+    if (this.videoPlayer?.nativeElement) {
+      this.pauseTime = this.videoPlayer.nativeElement.currentTime;
+    }
+    
+    this.sharedService.createContentToUser({
+      userId: userId,
+      contentId: this.contentId,
+      pauseTime: this.pauseTime,
+    });
   }
 }

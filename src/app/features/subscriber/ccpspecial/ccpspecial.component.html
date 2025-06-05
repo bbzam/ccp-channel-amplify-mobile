@@ -4,6 +4,7 @@ continueWatching.length) {
   <div class="banner">
     <app-banner [banners]="banners" />
   </div>
+  @if(featured.length) {
   <div class="frc">
     <div class="label-wrapper">
       <h1 class="label">Featured</h1>
@@ -14,6 +15,7 @@ continueWatching.length) {
     <app-no-video-available />
     }
   </div>
+  } @if (recommended.length) {
   <div class="frc">
     <div class="label-wrapper">
       <h1 class="label">Recommended</h1>
@@ -24,13 +26,24 @@ continueWatching.length) {
     <app-no-video-available />
     }
   </div>
-  @if (continueWatching.length) {
+  } @if (continueWatching.length) {
   <div class="frc">
     <div class="label-wrapper">
       <h1 class="label">Continue watching</h1>
     </div>
     @if (continueWatching.length) {
     <app-continue-watching [continueWatching]="continueWatching" />
+    } @else {
+    <app-no-video-available />
+    }
+  </div>
+  } @if (allContents.length) {
+  <div class="frc">
+    <div class="label-wrapper">
+      <h1 class="label">CCP Specials</h1>
+    </div>
+    @if (allContents.length) {
+    <app-recommended [recommended]="allContents" />
     } @else {
     <app-no-video-available />
     }

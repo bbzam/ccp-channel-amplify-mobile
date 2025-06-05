@@ -1,17 +1,17 @@
-import type { Schema } from '../resource';
+import type { Schema } from '../../resource';
 import {
-  AdminEnableUserCommand,
+  AdminDisableUserCommand,
   CognitoIdentityProviderClient,
 } from '@aws-sdk/client-cognito-identity-provider';
 
-type Handler = Schema['enableUser']['functionHandler'];
+type Handler = Schema['disableUser']['functionHandler'];
 const client = new CognitoIdentityProviderClient();
 
 export const handler: Handler = async (event) => {
   try {
     const userPoolId = process.env.UserPoolId;
     const body = event.arguments;
-    const command = new AdminEnableUserCommand({
+    const command = new AdminDisableUserCommand({
       Username: body.email,
       UserPoolId: userPoolId,
     });

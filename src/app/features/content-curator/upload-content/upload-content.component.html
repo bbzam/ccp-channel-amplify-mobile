@@ -105,6 +105,24 @@
       >}
     </div>
 
+    <!-- Year Released -->
+    <div class="form-field-container">
+      <label for="yearReleased">Year Released</label>
+      <input
+        matInput
+        type="number"
+        id="yearReleased"
+        name="yearReleased"
+        formControlName="yearreleased"
+        placeholder="Enter year released"
+        min="1900"
+        [max]="currentYear"
+      />
+      @if(yearReleasedErrorMessage()) {
+      <mat-error>{{ yearReleasedErrorMessage() }}</mat-error>
+      }
+    </div>
+
     <!-- User Type -->
     <div class="form-field-container">
       <label for="userType">For which User Type?</label>
