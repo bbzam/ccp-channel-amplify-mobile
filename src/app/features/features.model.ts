@@ -13,13 +13,14 @@ export interface ContentMetadata {
   subCategory: string;
   director: string;
   writer: string;
+  yearReleased: string;
   userType: 'free' | 'subscriber';
   landscapeImageUrl: string;
   portraitImageUrl: string;
   previewVideoUrl: string;
   fullVideoUrl: string;
-  runtime: number | undefined;
-  resolution: string | undefined;
+  runtime: number;
+  resolution: string;
   status: boolean;
   publishDate: string;
 }

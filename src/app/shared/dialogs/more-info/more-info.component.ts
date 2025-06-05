@@ -85,6 +85,7 @@ export class MoreInfoComponent implements AfterViewInit {
   }
 
   watchVideo(videoUrl: string) {
+    this.close();
     this.featuresService.getFileUrl(videoUrl).then((presignedUrl) => {
       this.router.navigate(['subscriber/video-player'], {
         queryParams: { videoUrl: presignedUrl },

@@ -4,6 +4,7 @@ continueWatching.length) {
   <div class="banner">
     <app-banner [banners]="banners" />
   </div>
+  @if(featured.length) {
   <div class="frc">
     <div class="label-wrapper">
       <h1 class="label">Featured</h1>
@@ -14,7 +15,7 @@ continueWatching.length) {
     <app-no-video-available />
     }
   </div>
-  @if (recommended.length) {
+  } @if (recommended.length) {
   <div class="frc">
     <div class="label-wrapper">
       <h1 class="label">Recommended</h1>

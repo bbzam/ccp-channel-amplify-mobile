@@ -35,7 +35,7 @@ export class SharedService {
         filter: {
           ...(category && {
             category: {
-              contains: category,
+              eq: category,
             },
           }),
         },

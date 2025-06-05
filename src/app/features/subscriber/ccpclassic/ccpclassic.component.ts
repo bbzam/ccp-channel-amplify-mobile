@@ -59,7 +59,11 @@ export class CcpclassicComponent implements OnInit {
       const featuredData = await this.sharedService.getFeaturedAll(currentTab);
 
       // Only process data if it matches the current category
-      if (featuredData) {
+      if (
+        featuredData &&
+        featuredData.length > 0 &&
+        featuredData[0].selectedContent
+      ) {
         const selectedIds = featuredData[0].selectedContent.split(',');
 
         // Since we already have presigned URLs in allContents, we can use that data
@@ -73,7 +77,7 @@ export class CcpclassicComponent implements OnInit {
       } else {
         // Reset if category doesn't match
         this.featured = [];
-        this.banners = this.allContents;
+        this.banners = this.allContents.slice(0, 5);
       }
     } catch (error) {
       console.error('Error fetching content data:', error);

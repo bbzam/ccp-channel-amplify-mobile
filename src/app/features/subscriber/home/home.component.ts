@@ -81,6 +81,28 @@ export class HomeComponent implements OnInit {
 
         this.featured = processedItems.filter(Boolean);
         this.banners = [...this.featured]; // Create a new array to ensure change detection
+      } else {
+        // If no featured content, use first five items
+        this.featured = [];
+
+        // Get presigned URLs only for the first five items
+        const firstFiveItems = data.slice(0, 5);
+        const processedItems = await Promise.all(
+          firstFiveItems.map((content: any) => {
+            return Promise.all([
+              this.featuresService.getFileUrl(content.landscapeImageUrl),
+              this.featuresService.getFileUrl(content.previewVideoUrl),
+            ]).then(([urlLandscape, urlPreviewVideo]) => {
+              return {
+                ...content,
+                landscapeImagePresignedUrl: urlLandscape,
+                previewVideoPresignedUrl: urlPreviewVideo,
+              };
+            });
+          })
+        );
+
+        this.banners = processedItems;
       }
     } catch (error) {
       console.error('Error fetching essential content:', error);

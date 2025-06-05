@@ -12,28 +12,27 @@ const schema = a.schema({
       id: a.id().required(),
       title: a.string().required(),
       description: a.string().required(),
-      category: a.string().required(),
-      // category: a.enum([
-      //   'theater',
-      //   'film',
-      //   'music',
-      //   'dance',
-      //   'education',
-      //   'ccpspecials',
-      //   'ccpclassics',
-      // ]),
+      category: a.enum([
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
       subCategory: a.string(),
       director: a.string(),
       writer: a.string(),
-      // userType: a.enum(['free', 'subscriber']),
-      userType: a.string().required(),
+      yearReleased: a.string(),
+      userType: a.enum(['free', 'subscriber']),
       landscapeImageUrl: a.string().required(),
       portraitImageUrl: a.string().required(),
       previewVideoUrl: a.string().required(),
       fullVideoUrl: a.string().required(),
-      runtime: a.float(),
-      resolution: a.string(),
-      status: a.boolean(), //published or scheduled
+      runtime: a.float().required(),
+      resolution: a.string().required(),
+      status: a.boolean().required(), //published or scheduled
       publishDate: a.date(),
     })
     .authorization((allow) => [
@@ -57,17 +56,18 @@ const schema = a.schema({
 
   FeaturedAll: a
     .model({
+      id: a.id().required(),
       selectedContent: a.string(),
-      category: a.string(),
-      // category: a.enum([
-      //   'theater',
-      //   'film',
-      //   'music',
-      //   'dance',
-      //   'education',
-      //   'ccpspecials',
-      //   'ccpclassics',
-      // ]),
+      category: a.enum([
+        'all',
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
     })
     .authorization((allow) => [
       allow.guest().to(['read']),
@@ -93,16 +93,15 @@ const schema = a.schema({
   FeaturedLandingPage: a
     .model({
       selectedContent: a.string(),
-      category: a.string(),
-      // category: a.enum([
-      //   'theater',
-      //   'film',
-      //   'music',
-      //   'dance',
-      //   'education',
-      //   'ccpspecials',
-      //   'ccpclassics',
-      // ]),
+      category: a.enum([
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
     })
     .authorization((allow) => [
       allow.guest().to(['read']),
@@ -130,7 +129,7 @@ const schema = a.schema({
   listUser: a
     .query()
     .arguments({
-      email: a.string(),
+      email: a.string().required(),
     })
     .authorization((allow) => [
       allow.groups([
