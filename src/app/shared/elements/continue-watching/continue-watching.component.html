@@ -5,7 +5,7 @@
       <img
         class="image"
         mat-card-image
-        [src]="item.landscapeImagePresignedUrl"
+        [src]="item.portraitImagePresignedUrl"
         [alt]="item.title"
       />
       <video
@@ -21,6 +21,7 @@
         [muted]="true"
         (click)="moreInfo(item)"
         controls
+        controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
       ></video>
       <mat-progress-bar
         mode="determinate"
@@ -32,14 +33,16 @@
       <div class="actions-hovered">
         <label>{{ item.title }}</label>
         <div class="action-buttons">
-          <div>
-            <mat-icon (click)="watchVideo(item.fullVideoUrl, item.id)"
+          <!-- <div>
+            <mat-icon (click)="watchVideo(item.fullVideoUrl)"
               >play_circle_filled</mat-icon
             >
             <mat-icon (click)="moreInfo(item)">info</mat-icon>
             <mat-icon>add_circle</mat-icon>
-          </div>
-          @if (item.resolution) {
+          </div> -->
+          @if (item.category){
+          <p class="category">{{ item.category }}</p>
+          } @if (item.resolution) {
           <p>•</p>
           <p>{{ item.resolution }}</p>
           } @if (item.runtime) {

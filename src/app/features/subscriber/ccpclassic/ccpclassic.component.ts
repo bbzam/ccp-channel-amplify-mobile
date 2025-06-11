@@ -39,17 +39,17 @@ export class CcpclassicComponent implements OnInit {
       // First get all contents
       const data = await this.featuresService.getAllContents(currentTab, true);
 
-      // Process all content items to add presigned URLs
+      // Process all content items to add presigned URLs for portrait and preview video only
       this.allContents = await Promise.all(
         data.map(async (content: any) => {
-          const [urlLandscape, urlPreviewVideo] = await Promise.all([
-            this.featuresService.getFileUrl(content.landscapeImageUrl),
+          const [urlPortrait, urlPreviewVideo] = await Promise.all([
+            this.featuresService.getFileUrl(content.portraitImageUrl),
             this.featuresService.getFileUrl(content.previewVideoUrl),
           ]);
 
           return {
             ...content,
-            landscapeImagePresignedUrl: urlLandscape,
+            portraitImagePresignedUrl: urlPortrait,
             previewVideoPresignedUrl: urlPreviewVideo,
           };
         })
@@ -66,18 +66,42 @@ export class CcpclassicComponent implements OnInit {
       ) {
         const selectedIds = featuredData[0].selectedContent.split(',');
 
-        // Since we already have presigned URLs in allContents, we can use that data
-        this.featured = selectedIds
-          .map((id: string) =>
-            this.allContents.find((item: any) => item.id === id)
-          )
-          .filter(Boolean);
+        // Get the featured items and add landscape image URLs only for them
+        this.featured = await Promise.all(
+          selectedIds
+            .map((id: string) =>
+              this.allContents.find((item: any) => item.id === id)
+            )
+            .filter(Boolean)
+            .map(async (item: any) => {
+              // Only get landscape image URL for featured items
+              const urlLandscape = await this.featuresService.getFileUrl(
+                item.landscapeImageUrl
+              );
+              return {
+                ...item,
+                landscapeImagePresignedUrl: urlLandscape,
+              };
+            })
+        );
 
         this.banners = this.featured;
       } else {
         // Reset if category doesn't match
         this.featured = [];
-        this.banners = this.allContents.slice(0, 5);
+
+        // For banners, we need to get landscape images for the first 5 items
+        this.banners = await Promise.all(
+          this.allContents.slice(0, 5).map(async (item: any) => {
+            const urlLandscape = await this.featuresService.getFileUrl(
+              item.landscapeImageUrl
+            );
+            return {
+              ...item,
+              landscapeImagePresignedUrl: urlLandscape,
+            };
+          })
+        );
       }
     } catch (error) {
       console.error('Error fetching content data:', error);

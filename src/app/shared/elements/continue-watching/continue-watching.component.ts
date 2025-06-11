@@ -6,6 +6,7 @@ import {
   inject,
   Input,
   OnInit,
+  OnDestroy,
   QueryList,
   ViewChildren,
 } from '@angular/core';
@@ -19,11 +20,13 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-continue-watching',
-  imports: [MatCardModule, MatIcon, MatProgressBarModule],
+  imports: [MatCardModule, MatProgressBarModule],
   templateUrl: './continue-watching.component.html',
   styleUrl: './continue-watching.component.css',
 })
-export class ContinueWatchingComponent implements AfterViewInit, OnInit {
+export class ContinueWatchingComponent
+  implements AfterViewInit, OnInit, OnDestroy
+{
   @ViewChildren('video') videos!: QueryList<ElementRef>;
   @Input() continueWatching!: any[];
   readonly dialog = inject(MatDialog);
@@ -33,6 +36,7 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
   visibleItems: any[] = [];
   startIndex: number = 0;
   itemsToShow: number = 5;
+  private observer: IntersectionObserver | null = null;
 
   ngOnInit(): void {
     this.updateVisibleItems();
@@ -40,7 +44,7 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit(): void {
-    const observer = new IntersectionObserver(
+    this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
@@ -58,8 +62,22 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
 
     // Start observing each video
     this.videos.forEach((videoRef) => {
-      observer.observe(videoRef.nativeElement);
+      this.observer?.observe(videoRef.nativeElement);
     });
+
+    // Handle changes to the videos QueryList
+    this.videos.changes.subscribe((videos: QueryList<ElementRef>) => {
+      videos.forEach((videoRef) => {
+        this.observer?.observe(videoRef.nativeElement);
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
   }
 
   constructor() {}
@@ -69,15 +87,15 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
     if (width <= 480) {
       this.itemsToShow = 1; // Mobile view
     } else if (width >= 481 && width <= 767) {
-      this.itemsToShow = 2; // Small tablets to larger tablets
+      this.itemsToShow = 3; // Small tablets to larger tablets
     } else if (width >= 768 && width <= 1119) {
-      this.itemsToShow = 3; // Small desktop and larger tablets
+      this.itemsToShow = 5; // Small desktop and larger tablets
     } else if (width >= 1120 && width <= 1439) {
-      this.itemsToShow = 4; // Medium desktop
+      this.itemsToShow = 6; // Medium desktop
     } else if (width >= 1440 && width <= 1919) {
-      this.itemsToShow = 5; // Large desktop
+      this.itemsToShow = 7; // Large desktop
     } else if (width >= 1920) {
-      this.itemsToShow = 6; // Ultra-wide desktop
+      this.itemsToShow = 8; // Ultra-wide desktop
     }
     this.updateVisibleItems();
   }
@@ -113,20 +131,20 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
   }
 
   moreInfo(item: any) {
-    // Get presigned URL directly
-    this.featuresService
-      .getFileUrl(item.portraitImageUrl)
-      .then((urlPortrait) => {
-        const updatedItem = {
-          ...item,
-          portraitImagePresignedUrl: urlPortrait,
-        };
+    // // Get presigned URL directly
+    // this.featuresService
+    //   .getFileUrl(item.portraitImageUrl)
+    //   .then((urlPortrait) => {
+    //     const updatedItem = {
+    //       ...item,
+    //       portraitImagePresignedUrl: urlPortrait,
+    //     };
 
-        this.dialog
-          .open(MoreInfoComponent, { data: { data: updatedItem } })
-          .afterClosed()
-          .subscribe((data) => {});
-      });
+    this.dialog
+      .open(MoreInfoComponent, { data: { data: item } })
+      .afterClosed()
+      .subscribe((data) => {});
+    // });
   }
 
   updateVisibleItems(): void {

@@ -6,6 +6,7 @@ import {
   Inject,
   inject,
   Input,
+  OnDestroy,
   QueryList,
   ViewChildren,
 } from '@angular/core';
@@ -14,19 +15,21 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { FeaturesService } from '../../../features/features.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-more-info',
-  imports: [MatIconModule, MatButtonModule],
+  imports: [MatIconModule, MatButtonModule, MatTooltipModule],
   templateUrl: './more-info.component.html',
   styleUrl: './more-info.component.css',
 })
-export class MoreInfoComponent implements AfterViewInit {
+export class MoreInfoComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('video') videos!: QueryList<ElementRef>;
   @Input() item: any;
   readonly dialogRef = inject(MatDialogRef<MoreInfoComponent>);
   readonly router = inject(Router);
   readonly featuresService = inject(FeaturesService);
+  private observer: IntersectionObserver | null = null;
 
   // Disable right-click for more info dialog
   @HostListener('contextmenu', ['$event'])
@@ -36,7 +39,7 @@ export class MoreInfoComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const observer = new IntersectionObserver(
+    this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
@@ -54,8 +57,22 @@ export class MoreInfoComponent implements AfterViewInit {
 
     // Start observing each video
     this.videos.forEach((videoRef) => {
-      observer.observe(videoRef.nativeElement);
+      this.observer?.observe(videoRef.nativeElement);
     });
+
+    // Handle changes to the videos QueryList
+    this.videos.changes.subscribe((videos: QueryList<ElementRef>) => {
+      videos.forEach((videoRef) => {
+        this.observer?.observe(videoRef.nativeElement);
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
   }
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {

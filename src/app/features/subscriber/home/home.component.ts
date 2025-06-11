@@ -53,7 +53,6 @@ export class HomeComponent implements OnInit {
 
       // Process featured data
       const featuredData = await this.sharedService.getFeaturedAll('all');
-
       if (
         featuredData &&
         featuredData.length > 0 &&
@@ -69,11 +68,13 @@ export class HomeComponent implements OnInit {
 
             return Promise.all([
               this.featuresService.getFileUrl(content.landscapeImageUrl),
+              this.featuresService.getFileUrl(content.portraitImageUrl),
               this.featuresService.getFileUrl(content.previewVideoUrl),
-            ]).then(([urlLandscape, urlPreviewVideo]) => {
+            ]).then(([urlLandscape, urlPortrait, urlPreviewVideo]) => {
               return {
                 ...content,
                 landscapeImagePresignedUrl: urlLandscape,
+                portraitImagePresignedUrl: urlPortrait,
                 previewVideoPresignedUrl: urlPreviewVideo,
               };
             });
@@ -124,12 +125,12 @@ export class HomeComponent implements OnInit {
             if (!content) return null;
 
             return Promise.all([
-              this.featuresService.getFileUrl(content.landscapeImageUrl),
+              this.featuresService.getFileUrl(content.portraitImageUrl),
               this.featuresService.getFileUrl(content.previewVideoUrl),
-            ]).then(([urlLandscape, urlPreviewVideo]) => {
+            ]).then(([urlPortrait, urlPreviewVideo]) => {
               return {
                 ...content,
-                landscapeImagePresignedUrl: urlLandscape,
+                portraitImagePresignedUrl: urlPortrait,
                 previewVideoPresignedUrl: urlPreviewVideo,
                 pauseTime: getContentToUserData.find(
                   (item: any) => item.contentId === id
@@ -206,12 +207,12 @@ export class HomeComponent implements OnInit {
                   if (!content) return null;
 
                   return Promise.all([
-                    this.featuresService.getFileUrl(content.landscapeImageUrl),
+                    this.featuresService.getFileUrl(content.portraitImageUrl),
                     this.featuresService.getFileUrl(content.previewVideoUrl),
-                  ]).then(([urlLandscape, urlPreviewVideo]) => {
+                  ]).then(([urlPortrait, urlPreviewVideo]) => {
                     return {
                       ...content,
-                      landscapeImagePresignedUrl: urlLandscape,
+                      portraitImagePresignedUrl: urlPortrait,
                       previewVideoPresignedUrl: urlPreviewVideo,
                     };
                   });
@@ -240,12 +241,12 @@ export class HomeComponent implements OnInit {
     const processedData = await Promise.all(
       data.map((content) => {
         return Promise.all([
-          this.featuresService.getFileUrl(content.landscapeImageUrl),
+          this.featuresService.getFileUrl(content.portraitImageUrl),
           this.featuresService.getFileUrl(content.previewVideoUrl),
-        ]).then(([urlLandscape, urlPreviewVideo]) => {
+        ]).then(([urlPortrait, urlPreviewVideo]) => {
           return {
             ...content,
-            landscapeImagePresignedUrl: urlLandscape,
+            portraitImagePresignedUrl: urlPortrait,
             previewVideoPresignedUrl: urlPreviewVideo,
           };
         });

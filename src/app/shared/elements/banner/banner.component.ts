@@ -6,13 +6,16 @@ import {
   ElementRef,
   Input,
   inject,
+  OnDestroy,
+  HostListener,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MoreInfoComponent } from '../../dialogs/more-info/more-info.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { FeaturesService } from '../../../features/features.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-banner',
@@ -20,8 +23,9 @@ import { FeaturesService } from '../../../features/features.service';
   templateUrl: './banner.component.html',
   styleUrl: './banner.component.css',
 })
-export class BannerComponent implements OnInit, AfterViewInit {
+export class BannerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('video') videoElement!: ElementRef<HTMLVideoElement>;
+  @ViewChild('bannerContainer') bannerContainer!: ElementRef<HTMLDivElement>;
   @Input() banners!: any[];
   readonly featuresService = inject(FeaturesService);
   readonly dialog = inject(MatDialog);
@@ -29,13 +33,102 @@ export class BannerComponent implements OnInit, AfterViewInit {
   currentMediaIndex: number = 0;
   showPhoto: boolean = true;
   teaserDuration!: number;
+  private observer: IntersectionObserver | null = null;
+  private timeoutId: any = null;
+  private isVisible: boolean = true;
+  private isDialogOpen: boolean = false;
+  private dialogSubscription: Subscription | null = null;
 
   ngAfterViewInit(): void {
+    this.setupIntersectionObserver();
+    this.setupDialogListener();
     this.autoPlayMedia();
   }
 
   ngOnInit(): void {}
 
+  ngOnDestroy(): void {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
+
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+
+    if (this.dialogSubscription) {
+      this.dialogSubscription.unsubscribe();
+    }
+  }
+
+  @HostListener('document:visibilitychange')
+  onVisibilityChange(): void {
+    if (document.hidden) {
+      this.pauseMedia();
+    } else if (!this.isDialogOpen) {
+      this.resumeMedia();
+    }
+  }
+
+  setupDialogListener(): void {
+    this.dialogSubscription = this.dialog.afterOpened.subscribe(() => {
+      this.isDialogOpen = true;
+      this.pauseMedia();
+    });
+
+    this.dialog.afterAllClosed.subscribe(() => {
+      this.isDialogOpen = false;
+      if (this.isVisible && !document.hidden) {
+        this.resumeMedia();
+      }
+    });
+  }
+
+  pauseMedia(): void {
+    // Pause video playback
+    if (this.videoElement?.nativeElement && !this.showPhoto) {
+      this.videoElement.nativeElement.pause();
+    }
+    // Pause the autoplay loop
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+    }
+  }
+
+  resumeMedia(): void {
+    // Resume video playback
+    if (this.videoElement?.nativeElement && !this.showPhoto) {
+      this.videoElement.nativeElement.play().catch(() => {});
+    }
+    // Resume the autoplay loop if it was paused
+    if (!this.timeoutId) {
+      this.continueAutoPlayMedia();
+    }
+  }
+
+  setupIntersectionObserver(): void {
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        this.isVisible = entry.isIntersecting;
+
+        if (this.isVisible && !document.hidden && !this.isDialogOpen) {
+          this.resumeMedia();
+        } else {
+          this.pauseMedia();
+        }
+      },
+      { threshold: 0.1 } // Trigger when at least 10% of the element is visible
+    );
+
+    if (this.bannerContainer) {
+      this.observer.observe(this.bannerContainer.nativeElement);
+    }
+  }
+
+  // Rest of the component remains unchanged
   transform(value: number): string {
     if (isNaN(value) || value < 0) return '00:00:00';
 
@@ -102,13 +195,23 @@ export class BannerComponent implements OnInit, AfterViewInit {
       }
     };
 
+    this.continueAutoPlayMedia(preloadNextVideo);
+  }
+
+  continueAutoPlayMedia(preloadNextVideoFn?: (index: number) => void) {
+    if (!this.isVisible || document.hidden || this.isDialogOpen) return;
+
     const updateMedia = () => {
+      if (!this.isVisible || document.hidden || this.isDialogOpen) return;
+
       const currentMedia = this.banners[this.currentMediaIndex];
 
       if (this.showPhoto) {
         this.showPhoto = false;
         // Preload the next banner while showing video
-        preloadNextVideo(this.currentMediaIndex);
+        if (preloadNextVideoFn) {
+          preloadNextVideoFn(this.currentMediaIndex);
+        }
       } else {
         this.showPhoto = true;
         this.currentMediaIndex =
@@ -117,12 +220,25 @@ export class BannerComponent implements OnInit, AfterViewInit {
 
       // Use requestAnimationFrame for better performance
       const timeout = this.showPhoto ? 5000 : this.teaserDuration || 5000;
-      setTimeout(() => requestAnimationFrame(updateMedia), timeout);
+      this.timeoutId = setTimeout(() => {
+        this.timeoutId = null;
+        if (this.isVisible && !document.hidden && !this.isDialogOpen) {
+          requestAnimationFrame(updateMedia);
+        }
+      }, timeout);
     };
 
-    // Start with preloading the first video
-    preloadNextVideo(this.currentMediaIndex);
-    setTimeout(() => requestAnimationFrame(updateMedia), 5000);
+    // Start with preloading the first video if function provided
+    if (preloadNextVideoFn) {
+      preloadNextVideoFn(this.currentMediaIndex);
+    }
+
+    this.timeoutId = setTimeout(() => {
+      this.timeoutId = null;
+      if (this.isVisible && !document.hidden && !this.isDialogOpen) {
+        requestAnimationFrame(updateMedia);
+      }
+    }, 5000);
   }
 
   getVideoDuration(): number {

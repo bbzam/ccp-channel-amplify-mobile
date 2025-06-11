@@ -2,7 +2,12 @@
   <div class="main-div">
     <div class="banner-container">
       <div class="close-button-container">
-        <button class="close-button" mat-icon-button (click)="close()">
+        <button
+          class="close-button"
+          mat-icon-button
+          (click)="close()"
+          matTooltip="close"
+        >
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -56,7 +61,7 @@
             <p>{{ transform(item.runtime) }}</p>
             }
           </div>
-          <div class="metadata">
+          <div class="metadata-director-writer">
             @if (item.director) {
             <p class="director">Directed by {{ item.director }}</p>
             } @if (item.writer) {
@@ -76,8 +81,8 @@
               </button>
             </div>
             <div class="icons">
-              <mat-icon>thumb_up_alt</mat-icon>
-              <mat-icon>add_circle</mat-icon>
+              <!-- <mat-icon>thumb_up_alt</mat-icon> -->
+              <mat-icon matTooltip="add to favourites">add_circle</mat-icon>
             </div>
           </div>
         </div>
