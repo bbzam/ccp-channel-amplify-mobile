@@ -14,10 +14,11 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { FeaturesService } from '../../../features/features.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-more-info',
-  imports: [MatIconModule, MatButtonModule],
+  imports: [MatIconModule, MatButtonModule, MatTooltipModule],
   templateUrl: './more-info.component.html',
   styleUrl: './more-info.component.css',
 })

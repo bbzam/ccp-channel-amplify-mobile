@@ -67,20 +67,20 @@ export class BannerComponent implements OnInit, AfterViewInit {
   }
 
   moreInfo(item: any) {
-    // Get presigned URL directly
-    this.featuresService
-      .getFileUrl(item.portraitImageUrl)
-      .then((urlPortrait) => {
-        const updatedItem = {
-          ...item,
-          portraitImagePresignedUrl: urlPortrait,
-        };
+    // // Get presigned URL directly
+    // this.featuresService
+    //   .getFileUrl(item.portraitImageUrl)
+    //   .then((urlPortrait) => {
+    //     const updatedItem = {
+    //       ...item,
+    //       portraitImagePresignedUrl: urlPortrait,
+    //     };
 
-        this.dialog
-          .open(MoreInfoComponent, { data: { data: updatedItem } })
-          .afterClosed()
-          .subscribe((data) => {});
-      });
+    this.dialog
+      .open(MoreInfoComponent, { data: { data: item } })
+      .afterClosed()
+      .subscribe((data) => {});
+    // });
   }
 
   autoPlayMedia() {

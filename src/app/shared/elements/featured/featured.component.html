@@ -1,11 +1,11 @@
 <div class="supermain-div">
   <div class="main-div" #scrollContainer>
-    @for (item of visibleItems; track item) {
+    @for (item of visibleItems; track item;) {
     <mat-card class="card">
       <img
         class="image"
         mat-card-image
-        [src]="item.landscapeImagePresignedUrl"
+        [src]="item.portraitImagePresignedUrl"
         [alt]="item.title"
       />
       <video
@@ -28,14 +28,16 @@
       <div class="actions-hovered">
         <label>{{ item.title }}</label>
         <div class="action-buttons">
-          <div>
+          <!-- <div>
             <mat-icon (click)="watchVideo(item.fullVideoUrl)"
               >play_circle_filled</mat-icon
             >
             <mat-icon (click)="moreInfo(item)">info</mat-icon>
             <mat-icon>add_circle</mat-icon>
-          </div>
-          @if (item.resolution) {
+          </div> -->
+          @if (item.category){
+          <p class="category">{{ item.category }}</p>
+          } @if (item.resolution) {
           <p>•</p>
           <p>{{ item.resolution }}</p>
           } @if (item.runtime) {

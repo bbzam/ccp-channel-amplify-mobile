@@ -18,7 +18,7 @@ import { FeaturesService } from '../../../features/features.service';
 
 @Component({
   selector: 'app-continue-watching',
-  imports: [MatCardModule, MatIcon],
+  imports: [MatCardModule],
   templateUrl: './continue-watching.component.html',
   styleUrl: './continue-watching.component.css',
 })
@@ -68,15 +68,15 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
     if (width <= 480) {
       this.itemsToShow = 1; // Mobile view
     } else if (width >= 481 && width <= 767) {
-      this.itemsToShow = 2; // Small tablets to larger tablets
+      this.itemsToShow = 3; // Small tablets to larger tablets
     } else if (width >= 768 && width <= 1119) {
-      this.itemsToShow = 3; // Small desktop and larger tablets
+      this.itemsToShow = 5; // Small desktop and larger tablets
     } else if (width >= 1120 && width <= 1439) {
-      this.itemsToShow = 4; // Medium desktop
+      this.itemsToShow = 6; // Medium desktop
     } else if (width >= 1440 && width <= 1919) {
-      this.itemsToShow = 5; // Large desktop
+      this.itemsToShow = 7; // Large desktop
     } else if (width >= 1920) {
-      this.itemsToShow = 6; // Ultra-wide desktop
+      this.itemsToShow = 8; // Ultra-wide desktop
     }
     this.updateVisibleItems();
   }
@@ -112,20 +112,20 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
   }
 
   moreInfo(item: any) {
-    // Get presigned URL directly
-    this.featuresService
-      .getFileUrl(item.portraitImageUrl)
-      .then((urlPortrait) => {
-        const updatedItem = {
-          ...item,
-          portraitImagePresignedUrl: urlPortrait,
-        };
+    // // Get presigned URL directly
+    // this.featuresService
+    //   .getFileUrl(item.portraitImageUrl)
+    //   .then((urlPortrait) => {
+    //     const updatedItem = {
+    //       ...item,
+    //       portraitImagePresignedUrl: urlPortrait,
+    //     };
 
-        this.dialog
-          .open(MoreInfoComponent, { data: { data: updatedItem } })
-          .afterClosed()
-          .subscribe((data) => {});
-      });
+    this.dialog
+      .open(MoreInfoComponent, { data: { data: item } })
+      .afterClosed()
+      .subscribe((data) => {});
+    // });
   }
 
   updateVisibleItems(): void {
