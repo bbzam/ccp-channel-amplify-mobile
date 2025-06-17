@@ -5,6 +5,7 @@ import {
   HostListener,
   inject,
   Input,
+  OnDestroy,
   OnInit,
   QueryList,
   ViewChildren,
@@ -22,7 +23,9 @@ import { FeaturesService } from '../../../features/features.service';
   templateUrl: './continue-watching.component.html',
   styleUrl: './continue-watching.component.css',
 })
-export class ContinueWatchingComponent implements AfterViewInit, OnInit {
+export class ContinueWatchingComponent
+  implements AfterViewInit, OnInit, OnDestroy
+{
   @ViewChildren('video') videos!: QueryList<ElementRef>;
   @Input() continueWatching!: any[];
   readonly dialog = inject(MatDialog);
@@ -31,7 +34,8 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
 
   visibleItems: any[] = [];
   startIndex: number = 0;
-  itemsToShow: number = 5;
+  itemsToShow: number = 8;
+  private observer: IntersectionObserver | null = null;
 
   ngOnInit(): void {
     this.updateVisibleItems();
@@ -39,7 +43,7 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit(): void {
-    const observer = new IntersectionObserver(
+    this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
@@ -57,8 +61,22 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
 
     // Start observing each video
     this.videos.forEach((videoRef) => {
-      observer.observe(videoRef.nativeElement);
+      this.observer?.observe(videoRef.nativeElement);
     });
+
+    // Handle changes to the videos QueryList
+    this.videos.changes.subscribe((videos: QueryList<ElementRef>) => {
+      videos.forEach((videoRef) => {
+        this.observer?.observe(videoRef.nativeElement);
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
   }
 
   constructor() {}
@@ -66,17 +84,17 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
   @HostListener('window:resize') updateItemsToShow(): void {
     const width = window.innerWidth;
     if (width <= 480) {
-      this.itemsToShow = 1; // Mobile view
+      this.itemsToShow = 2; // Mobile view
     } else if (width >= 481 && width <= 767) {
       this.itemsToShow = 3; // Small tablets to larger tablets
     } else if (width >= 768 && width <= 1119) {
       this.itemsToShow = 5; // Small desktop and larger tablets
     } else if (width >= 1120 && width <= 1439) {
-      this.itemsToShow = 6; // Medium desktop
+      this.itemsToShow = 7; // Medium desktop
     } else if (width >= 1440 && width <= 1919) {
-      this.itemsToShow = 7; // Large desktop
+      this.itemsToShow = 8; // Large desktop
     } else if (width >= 1920) {
-      this.itemsToShow = 8; // Ultra-wide desktop
+      this.itemsToShow = 9; // Ultra-wide desktop
     }
     this.updateVisibleItems();
   }
@@ -101,14 +119,6 @@ export class ContinueWatchingComponent implements AfterViewInit, OnInit {
     }
 
     return timeParts.join(' ');
-  }
-
-  watchVideo(videoUrl: string) {
-    this.featuresService.getFileUrl(videoUrl).then((presignedUrl) => {
-      this.router.navigate(['subscriber/video-player'], {
-        queryParams: { videoUrl: presignedUrl },
-      });
-    });
   }
 
   moreInfo(item: any) {
