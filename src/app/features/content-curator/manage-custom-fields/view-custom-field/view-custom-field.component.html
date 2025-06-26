@@ -1,0 +1,66 @@
+<form [formGroup]="editCustomFieldForm">
+  <div class="form-field-container">
+    <div class="header">
+      <h2>Custom Field Details</h2>
+      <div class="buttons">
+        <!-- @if (isEditing()) {
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="deleteCustomField()"
+          matTooltip="Delete Custom Field"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+        } -->
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="toggleEditMode()"
+          matTooltip="{{ isEditing() ? 'Disable Edit' : 'Enable Edit' }}"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-field-container">
+    <!-- Field Name -->
+    <label for="fieldName">Field Name</label>
+    <input
+      id="fieldName"
+      matInput
+      placeholder="Enter field name"
+      formControlName="fieldName"
+      required
+    />
+    @if (fieldNameErrorMessage()) {
+    <mat-error>{{ fieldNameErrorMessage() }}</mat-error>
+    }
+  </div>
+
+
+
+  <div class="action-buttons">
+    <button
+      class="buttonTertiary"
+      mat-button
+      type="button"
+      (click)="cancelButton()"
+    >
+      {{ isEditing() ? "Cancel" : "Close" }}
+    </button>
+    @if (isEditing()) {
+    <button
+      class="buttonSignIn"
+      mat-raised-button
+      type="submit"
+      (click)="updateCustomFieldOnClick()"
+      [disabled]="editCustomFieldForm.invalid || isLoading()"
+    >
+      {{ isLoading() ? "Updating Custom Field..." : "Update Custom Field" }}
+    </button>
+    }
+  </div>
+</form>

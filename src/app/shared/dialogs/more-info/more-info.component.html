@@ -68,6 +68,17 @@
             <p class="writer">Written by {{ item.writer }}</p>
             }
           </div>
+          @if (parsedCustomFields.length) {
+          <div class="custom-fields">
+            @for (field of parsedCustomFields; track $index) { @if
+            (field.value?.toString().trim()) {
+            <div class="custom-field">
+              <span class="field-name">{{ field.name }}:</span>
+              <span class="field-value">{{ field.value }}</span>
+            </div>
+            } }
+          </div>
+          }
           <p class="description">{{ item.description }}</p>
           <div class="actions">
             <div class="watch">
@@ -82,7 +93,18 @@
             </div>
             <div class="icons">
               <!-- <mat-icon>thumb_up_alt</mat-icon> -->
-              <mat-icon matTooltip="add to favourites">add_circle</mat-icon>
+              <button
+                mat-icon-button
+                [matTooltip]="
+                  item.isFavorite
+                    ? 'remove from favourites'
+                    : 'add to favourites'
+                "
+                (click)="toggleFavorite()"
+                [ngClass]="{ isFavorite: item.isFavorite }"
+              >
+                <mat-icon>add_circle</mat-icon>
+              </button>
             </div>
           </div>
         </div>

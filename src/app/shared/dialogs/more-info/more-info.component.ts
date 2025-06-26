@@ -16,10 +16,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { FeaturesService } from '../../../features/features.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { NgClass } from '@angular/common';
+import { SharedService } from '../../shared.service';
 
 @Component({
   selector: 'app-more-info',
-  imports: [MatIconModule, MatButtonModule, MatTooltipModule],
+  imports: [MatIconModule, MatButtonModule, MatTooltipModule, NgClass],
   templateUrl: './more-info.component.html',
   styleUrl: './more-info.component.css',
 })
@@ -29,7 +31,11 @@ export class MoreInfoComponent implements AfterViewInit, OnDestroy {
   readonly dialogRef = inject(MatDialogRef<MoreInfoComponent>);
   readonly router = inject(Router);
   readonly featuresService = inject(FeaturesService);
+  readonly sharedService = inject(SharedService);
   private observer: IntersectionObserver | null = null;
+  isFavorite: boolean = false;
+  customFieldsMap: Map<string, string> = new Map();
+  parsedCustomFields: any[] = [];
 
   // Disable right-click for more info dialog
   @HostListener('contextmenu', ['$event'])
@@ -77,6 +83,45 @@ export class MoreInfoComponent implements AfterViewInit, OnDestroy {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.item = data.data;
+    this.isFavorite = this.item.isFavorite;
+    this.initializeCustomFields();
+  }
+
+  async initializeCustomFields() {
+    await this.loadCustomFields();
+    this.parseCustomFields();
+  }
+
+  async loadCustomFields() {
+    try {
+      const customFields = await this.sharedService.getAllCustomFields();
+      customFields?.forEach((field: any) => {
+        this.customFieldsMap.set(field.id, field.fieldName);
+      });
+    } catch (error) {
+      console.error('Error loading custom fields:', error);
+    }
+  }
+
+  parseCustomFields() {
+    try {
+      if (this.item.customFields) {
+        const parsed =
+          typeof this.item.customFields === 'string'
+            ? JSON.parse(this.item.customFields)
+            : this.item.customFields;
+
+        this.parsedCustomFields = Object.entries(parsed)
+          .map(([fieldId, value]) => ({
+            name: this.customFieldsMap.get(fieldId) || fieldId,
+            value: value,
+          }))
+          .filter((field) => field.value);
+      }
+    } catch (error) {
+      console.error('Error parsing custom fields:', error);
+      this.parsedCustomFields = [];
+    }
   }
 
   transform(value: number): string {
@@ -108,6 +153,18 @@ export class MoreInfoComponent implements AfterViewInit, OnDestroy {
         queryParams: { videoUrl: presignedUrl, id: id },
       });
     });
+  }
+
+  async toggleFavorite() {
+    this.item.isFavorite = !this.item.isFavorite;
+    try {
+      await this.featuresService.toggleFavorite(
+        this.item.id,
+        this.item.isFavorite
+      );
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
   }
 
   close() {

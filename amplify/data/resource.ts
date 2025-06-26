@@ -5,8 +5,12 @@ import { editUser } from './auth/edit-user/resource';
 import { disableUser } from './auth/disable-user/resource';
 import { enableUser } from './auth/enable-user/resource';
 import { listUser } from './auth/list-user/resource';
-import { incrementViewcount } from './increment-viewcount/resource';
-import { statistics } from './statistics/resource';
+import { statistics } from './content/statistics/resource';
+import { getContentToUserFunction } from './content/content-to-user/get-contentToUser/resource';
+import { updateContentToUserFunction } from './content/content-to-user/update-contentToUser/resource';
+import { createContentToUserFunction } from './content/content-to-user/create-contentToUser/resource';
+import { getUserFavoritesFunction } from './content/content-to-user/get-userFavorites/resource';
+import { getContinueWatchFunction } from './content/content-to-user/get-continueWatch/resource';
 
 const schema = a.schema({
   Content: a
@@ -37,6 +41,7 @@ const schema = a.schema({
       status: a.boolean().required(), //published or scheduled
       publishDate: a.date(),
       viewCount: a.integer(),
+      customFields: a.json(),
       contentToUser: a.hasMany('contentToUser', 'contentId'),
     })
     .authorization((allow) => [
@@ -46,10 +51,22 @@ const schema = a.schema({
         .to(['create', 'update', 'delete']),
     ]),
 
+  customFields: a
+    .model({
+      fieldName: a.string().required(),
+    })
+    .authorization((allow) => [
+      allow
+        .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
+        .to(['read', 'create', 'update', 'delete']),
+      allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
+    ]),
+
   contentToUser: a
     .model({
       userId: a.string().required(),
-      pauseTime: a.string().required(),
+      pauseTime: a.string(),
+      isFavorite: a.boolean(),
       contentId: a.id().required(),
       content: a.belongsTo('Content', 'contentId'),
     })
@@ -58,14 +75,57 @@ const schema = a.schema({
       allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']).to(['read']),
     ]),
 
-  incrementViewCount: a
+  createContentToUserFunction: a
     .mutation()
+    .arguments({
+      contentId: a.string().required(),
+      pauseTime: a.string(),
+      isFavorite: a.boolean(),
+    })
+    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .handler(a.handler.function(createContentToUserFunction))
+    .returns(a.json()),
+
+  getContentToUserFunction: a
+    .query()
     .arguments({
       contentId: a.string().required(),
     })
     .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
-    .handler(a.handler.function(incrementViewcount))
+    .handler(a.handler.function(getContentToUserFunction))
     .returns(a.json()),
+
+  getUserFavoritesFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .handler(a.handler.function(getUserFavoritesFunction))
+    .returns(a.json()),
+
+  getContinueWatchFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .handler(a.handler.function(getContinueWatchFunction))
+    .returns(a.json()),
+
+  // updateContentToUser: a
+  //   .mutation()
+  //   .arguments({
+  //     data: a.json().required(),
+  //   })
+  //   .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+  //   .handler(a.handler.function(updateContentToUser))
+  //   .returns(a.json()),
+
+  // incrementViewCount: a
+  //   .mutation()
+  //   .arguments({
+  //     contentId: a.string().required(),
+  //   })
+  //   .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+  //   .handler(a.handler.function(incrementViewcount))
+  //   .returns(a.json()),
 
   Keys: a
     .model({

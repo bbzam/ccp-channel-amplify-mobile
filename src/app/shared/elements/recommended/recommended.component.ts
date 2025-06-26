@@ -32,7 +32,7 @@ export class RecommendedComponent implements AfterViewInit, OnInit, OnDestroy {
 
   visibleItems: any[] = [];
   startIndex: number = 0;
-  itemsToShow: number = 5;
+  itemsToShow: number = 8;
   private observer: IntersectionObserver | null = null;
 
   ngOnInit(): void {
@@ -61,15 +61,15 @@ export class RecommendedComponent implements AfterViewInit, OnInit, OnDestroy {
     this.videos.forEach((videoRef) => {
       this.observer?.observe(videoRef.nativeElement);
     });
-    
+
     // Handle changes to the videos QueryList
     this.videos.changes.subscribe((videos: QueryList<ElementRef>) => {
-      videos.forEach(videoRef => {
+      videos.forEach((videoRef) => {
         this.observer?.observe(videoRef.nativeElement);
       });
     });
   }
-  
+
   ngOnDestroy(): void {
     if (this.observer) {
       this.observer.disconnect();
@@ -88,11 +88,11 @@ export class RecommendedComponent implements AfterViewInit, OnInit, OnDestroy {
     } else if (width >= 768 && width <= 1119) {
       this.itemsToShow = 5; // Small desktop and larger tablets
     } else if (width >= 1120 && width <= 1439) {
-      this.itemsToShow = 6; // Medium desktop
+      this.itemsToShow = 7; // Medium desktop
     } else if (width >= 1440 && width <= 1919) {
-      this.itemsToShow = 7; // Large desktop
+      this.itemsToShow = 8; // Large desktop
     } else if (width >= 1920) {
-      this.itemsToShow = 8; // Ultra-wide desktop
+      this.itemsToShow = 9; // Ultra-wide desktop
     }
     this.updateVisibleItems();
   }
@@ -117,14 +117,6 @@ export class RecommendedComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     return timeParts.join(' ');
-  }
-
-  watchVideo(videoUrl: string, id: string) {
-    this.featuresService.getFileUrl(videoUrl).then((presignedUrl) => {
-      this.router.navigate(['subscriber/video-player'], {
-        queryParams: { videoUrl: presignedUrl, id: id },
-      });
-    });
   }
 
   moreInfo(item: any) {

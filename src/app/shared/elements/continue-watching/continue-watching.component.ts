@@ -35,7 +35,7 @@ export class ContinueWatchingComponent
 
   visibleItems: any[] = [];
   startIndex: number = 0;
-  itemsToShow: number = 5;
+  itemsToShow: number = 8;
   private observer: IntersectionObserver | null = null;
 
   ngOnInit(): void {
@@ -91,11 +91,11 @@ export class ContinueWatchingComponent
     } else if (width >= 768 && width <= 1119) {
       this.itemsToShow = 5; // Small desktop and larger tablets
     } else if (width >= 1120 && width <= 1439) {
-      this.itemsToShow = 6; // Medium desktop
+      this.itemsToShow = 7; // Medium desktop
     } else if (width >= 1440 && width <= 1919) {
-      this.itemsToShow = 7; // Large desktop
+      this.itemsToShow = 8; // Large desktop
     } else if (width >= 1920) {
-      this.itemsToShow = 8; // Ultra-wide desktop
+      this.itemsToShow = 9; // Ultra-wide desktop
     }
     this.updateVisibleItems();
   }
@@ -120,14 +120,6 @@ export class ContinueWatchingComponent
     }
 
     return timeParts.join(' ');
-  }
-
-  watchVideo(videoUrl: string, id: string) {
-    this.featuresService.getFileUrl(videoUrl).then((presignedUrl) => {
-      this.router.navigate(['subscriber/video-player'], {
-        queryParams: { videoUrl: presignedUrl, id: id },
-      });
-    });
   }
 
   moreInfo(item: any) {

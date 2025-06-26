@@ -312,6 +312,7 @@ export class FeaturesService {
         resolution: contentMetadata.resolution,
         status: contentMetadata.status,
         publishDate: contentMetadata.publishDate,
+        customFields: contentMetadata.customFields,
       });
       console.log(data);
 
@@ -421,6 +422,7 @@ export class FeaturesService {
         'publishDate',
         'createdAt',
         'updatedAt',
+        'customFields',
       ];
 
       const { data, nextToken: newNextToken } =
@@ -461,17 +463,82 @@ export class FeaturesService {
               }),
         });
 
+      // Query user favorites function to get isFavorite data
+      const favoritesResult =
+        await this.client.queries.getUserFavoritesFunction({});
+      let favoriteMap = new Map();
+
+      if (favoritesResult.data && typeof favoritesResult.data === 'string') {
+        const parsedFavorites = JSON.parse(favoritesResult.data);
+        if (parsedFavorites.data) {
+          parsedFavorites.data.forEach((content: any) => {
+            favoriteMap.set(content.id, true);
+          });
+        }
+      }
+
+      // Map isFavorite to content data
+      const dataWithFavorites = data?.map((content: any) => ({
+        ...content,
+        isFavorite: favoriteMap.get(content.id) || false,
+      }));
+
       // Cache the results before returning
-      if (data) {
-        this.contentCache.set(cacheKey, data);
+      if (dataWithFavorites) {
+        this.contentCache.set(cacheKey, dataWithFavorites);
       }
 
       this.sharedService.hideLoader();
 
-      return data;
+      console.log('data', dataWithFavorites);
+
+      return dataWithFavorites;
     } catch (error) {
       this.sharedService.hideLoader();
       console.error('Error fetching content metadata:', error);
+      throw error;
+    }
+  }
+
+  async getUserFavorites(): Promise<any> {
+    try {
+      this.sharedService.showLoader('Fetching favorites...');
+      const result = await this.client.queries.getUserFavoritesFunction({});
+      this.sharedService.hideLoader();
+
+      if (result.data && typeof result.data === 'string') {
+        const parsedData = JSON.parse(result.data);
+        return parsedData.data || [];
+      }
+
+      return result.data || [];
+    } catch (error) {
+      this.sharedService.hideLoader();
+      console.error('Error fetching user favorites:', error);
+      throw error;
+    }
+  }
+
+  async toggleFavorite(contentId: string, isFavorite: boolean): Promise<any> {
+    try {
+      const result = await this.client.mutations.createContentToUserFunction({
+        contentId: contentId,
+        isFavorite: isFavorite,
+      });
+
+      if (result.data && typeof result.data === 'string') {
+        const parsedData = JSON.parse(result.data);
+        if (parsedData.success) {
+          console.log(
+            `${isFavorite ? 'Added to favorites!' : 'Removed from favorites!'}`
+          );
+        }
+        return parsedData;
+      }
+
+      return result;
+    } catch (error) {
+      this.handleError('Error updating favorites');
       throw error;
     }
   }

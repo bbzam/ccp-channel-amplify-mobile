@@ -16,6 +16,10 @@
       <button class="new" mat-fab extended (click)="createTag()">
         <mat-icon>add</mat-icon><span>New Tag</span>
       </button>
+      } @else if (lastSegment === 'custom-fields') {
+      <button class="new" mat-fab extended (click)="addCustomFields()">
+        <mat-icon>add</mat-icon><span>New Field</span>
+      </button>
       } @else {
       <button class="new" mat-fab extended (click)="uploadNewContent()">
         <mat-icon>add</mat-icon><span>New Content</span>

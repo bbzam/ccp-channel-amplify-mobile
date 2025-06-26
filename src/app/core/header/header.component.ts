@@ -131,4 +131,8 @@ export class HeaderComponent implements OnInit {
         break;
     }
   }
+
+  favoritesOnClick() {
+    this.router.navigate(['subscriber/favorites']);
+  }
 }

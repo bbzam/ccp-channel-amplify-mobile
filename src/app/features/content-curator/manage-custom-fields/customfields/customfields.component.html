@@ -1,0 +1,11 @@
+<div class="table-container">
+  <app-table
+    [data]="tableData"
+    [columns]="columns"
+    [displayedColumns]="displayedColumns"
+    (refreshClick)="handleRefreshClick()"
+    (getContent)="getAllCustomFields($event)"
+    (rowClick)="handleRowClick($event)"
+  >
+  </app-table>
+</div>

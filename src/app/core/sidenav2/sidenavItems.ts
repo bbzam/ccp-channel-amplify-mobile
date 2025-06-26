@@ -62,17 +62,22 @@ export const curatorNavItems = [
       {
         label: 'Set Featured',
         routeLink: '/content-curator/featured',
-        icon: 'drag_indicator',
+        icon: 'star',
       },
       {
         label: 'Set Tag',
         routeLink: '/content-curator/settag',
-        icon: 'drag_indicator',
+        icon: 'local_offer',
       },
       {
         label: 'Manage Tag',
         routeLink: '/content-curator/tag',
         icon: 'bookmark',
+      },
+      {
+        label: 'Custom Fields',
+        routeLink: '/content-curator/custom-fields',
+        icon: 'tune',
       },
       // {
       //   label: 'Landing Page',

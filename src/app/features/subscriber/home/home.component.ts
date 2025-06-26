@@ -41,9 +41,8 @@ export class HomeComponent implements OnInit {
   readonly dialog = inject(MatDialog);
 
   ngOnInit(): void {
-    this.loadEssentialContent();
-    // Load all categories at once
-    setTimeout(() => this.loadAllCategories(), 1000);
+    setTimeout(() => this.loadEssentialContent(), 1000);
+    setTimeout(() => this.loadAllCategories(), 1500);
   }
 
   async loadEssentialContent() {
@@ -108,10 +107,7 @@ export class HomeComponent implements OnInit {
       }
 
       // Process continue watching
-      const userId = sessionStorage.getItem('userId');
-      const getContentToUserData = await this.sharedService.getContinueWatch(
-        String(userId)
-      );
+      const getContentToUserData = await this.sharedService.getContinueWatch();
 
       if (getContentToUserData && getContentToUserData.length > 0) {
         const continueWatchingIds = getContentToUserData.map(

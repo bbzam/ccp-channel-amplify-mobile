@@ -106,6 +106,11 @@ export class SidenavComponent implements OnInit {
     }
   }
 
+  favoritesOnClick() {
+    this.drawer.close();
+    this.router.navigate(['subscriber/favorites']);
+  }
+
   logout() {
     this.drawer.close();
     this.dialog

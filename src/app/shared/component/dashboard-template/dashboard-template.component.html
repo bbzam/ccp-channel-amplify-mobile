@@ -6,37 +6,76 @@
         <span class="title">Total Users</span>
       </mat-card-header>
       <mat-card-content>
-        <span class="data">765</span>
+        <span class="data">{{ userStats?.totalUsers || 0 }} Users</span>
+        <div class="sub-data">
+          @if(userStats?.groupCounts){
+          <div>Free Users: {{ userStats?.groupCounts?.USER || 0 }}</div>
+          <div>Subscribers: {{ userStats?.groupCounts?.SUBSCRIBER || 0 }}</div>
+          } @if(userStats?.newRegistrations){
+          <div>New today: {{ userStats?.newRegistrations?.daily || 0 }}</div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="card">
+      <mat-card-header>
+        <mat-icon class="trending_up">trending_up</mat-icon>
+        <span class="title">New Registrations</span>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="data"
+          >{{ userStats?.newRegistrations?.daily || 0 }} New</span
+        >
+        <div class="sub-data">
+          <div>
+            Daily: {{ userStats?.newRegistrations?.daily || 0 }} Registers
+          </div>
+          <div>
+            Weekly: {{ userStats?.newRegistrations?.weekly || 0 }} Registers
+          </div>
+          <div>
+            Monthly: {{ userStats?.newRegistrations?.monthly || 0 }} Registers
+          </div>
+        </div>
       </mat-card-content>
     </mat-card>
 
     <mat-card class="card">
       <mat-card-header>
         <mat-icon class="eye">remove_red_eye</mat-icon>
-        <span class="title">Total Views</span>
+        <span class="title">Content Stats</span>
       </mat-card-header>
       <mat-card-content>
-        <span class="data">2,765</span>
+        <span class="data">{{ contentStats?.totalViews || 0 }} Views</span>
+        <div class="sub-data">
+          <div>Average Views: {{ contentStats?.averageViews || 0 }}</div>
+          <div>Total Views: {{ contentStats?.totalViews || 0 }} Views</div>
+          @for (category of getCategories(); track $index) {
+          <div>
+            {{ category }}:
+            {{ contentStats?.contentByCategory[category].views || 0 }} Views
+          </div>
+          }
+        </div>
       </mat-card-content>
     </mat-card>
 
     <mat-card class="card">
       <mat-card-header>
-        <mat-icon class="play">play_circle_filled</mat-icon>
-        <span class="title">Published Contents</span>
+        <mat-icon class="category">category</mat-icon>
+        <span class="title">Content Categories</span>
       </mat-card-header>
       <mat-card-content>
-        <span class="data">102</span>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="card">
-      <mat-card-header>
-        <mat-icon class="user">person_pin</mat-icon>
-        <span class="title">Other</span>
-      </mat-card-header>
-      <mat-card-content>
-        <span class="data">765</span>
+        <span class="data">{{ getCategories().length || 0 }} Categories</span>
+        <div class="sub-data">
+          @for (category of getCategories(); track $index) {
+          <div>
+            {{ category }}:
+            {{ contentStats?.contentByCategory[category].count || 0 }} Titles
+          </div>
+          }
+        </div>
       </mat-card-content>
     </mat-card>
   </mat-grid-tile>
@@ -44,11 +83,11 @@
   <mat-grid-tile colspan="3" rowspan="3">
     <mat-card>
       <mat-card-header>
-        <span class="title">Performance Overview</span>
+        <span class="title">Most Viewed</span>
       </mat-card-header>
       <mat-card-content>
         <div class="chart-container">
-          <canvas #barChart></canvas>
+          <canvas #lineChart></canvas>
         </div>
       </mat-card-content>
     </mat-card>
@@ -81,11 +120,11 @@
   <mat-grid-tile colspan="4" rowspan="3">
     <mat-card>
       <mat-card-header>
-        <span class="title">Most Viewed</span>
+        <span class="title">Performance Overview</span>
       </mat-card-header>
       <mat-card-content>
         <div class="chart-container">
-          <canvas #lineChart></canvas>
+          <canvas #barChart></canvas>
         </div>
       </mat-card-content>
     </mat-card>

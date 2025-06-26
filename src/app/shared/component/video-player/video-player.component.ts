@@ -121,13 +121,13 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     this.isLoading = false;
     const video = this.videoPlayer.nativeElement;
 
-    const userId = sessionStorage.getItem('userId');
+    // const userId = sessionStorage.getItem('userId');
     const getContentToUserData = await this.sharedService.getContentToUser(
-      this.contentId,
-      String(userId)
+      this.contentId
     );
+    console.log(getContentToUserData.data[0].pauseTime);
     if (getContentToUserData) {
-      video.currentTime = Number(getContentToUserData[0].pauseTime);
+      video.currentTime = Number(getContentToUserData.data[0].pauseTime);
     }
   }
 
@@ -143,15 +143,14 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
 
   ngOnDestroy() {
     this.shakaService.destroy();
-    const userId = sessionStorage.getItem('userId');
 
     // Get the current time right before saving
     if (this.videoPlayer?.nativeElement) {
       this.pauseTime = this.videoPlayer.nativeElement.currentTime;
     }
-    
+
     this.sharedService.createContentToUser({
-      userId: userId,
+      isFavorite: undefined,
       contentId: this.contentId,
       pauseTime: this.pauseTime,
     });

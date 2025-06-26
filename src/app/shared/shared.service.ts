@@ -35,19 +35,20 @@ export class SharedService {
 
       if (stats && stats.data) {
         this.hideLoader();
+
         // Check if data is a string before parsing
         const parsedData =
           typeof stats.data === 'string' ? JSON.parse(stats.data) : stats.data;
 
-        if (parsedData.success && parsedData.data) {
-          // Map the viewCount array to the requested format
-          const formattedViewCount = parsedData.data.map((item: any) => ({
-            title: item.title?.S,
-            viewCount: item.viewCount?.N,
-          }));
+        // if (parsedData.success && parsedData.data) {
+        //   // Map the viewCount array to the requested format
+        //   const formattedViewCount = parsedData.data.map((item: any) => ({
+        //     title: item.title?.S,
+        //     viewCount: item.viewCount?.N,
+        //   }));
 
-          return formattedViewCount;
-        }
+        //   return formattedViewCount;
+        // }
         return parsedData;
       }
 
@@ -57,6 +58,23 @@ export class SharedService {
       this.hideLoader();
       this.handleError(error);
       console.error('Error fetching current user:', error);
+      throw error;
+    }
+  }
+
+  async addCustomField(data: any) {
+    try {
+      const result = await this.client.models.customFields.create(data);
+      if (!result.errors) {
+        this.handleSuccess('Custom field added successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while adding a custom field. Please try again'
+        );
+      }
+    } catch (error) {
+      this.handleError(error);
+      console.error('Error adding a custom field:', error);
       throw error;
     }
   }
@@ -151,6 +169,23 @@ export class SharedService {
     }
   }
 
+  async updateCustomField(data: any) {
+    try {
+      const result = await this.client.models.customFields.update(data);
+      if (!result.errors) {
+        this.handleSuccess('Custom field updated successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while updating custom field. Please try again'
+        );
+      }
+    } catch (error) {
+      this.handleError(error);
+      console.error('Error updating custom field:', error);
+      throw error;
+    }
+  }
+
   async deleteTag(id: string) {
     try {
       const result = await this.client.models.tags.delete({ id });
@@ -164,6 +199,47 @@ export class SharedService {
     } catch (error) {
       this.handleError(error);
       console.error('Error deleting tag:', error);
+      throw error;
+    }
+  }
+
+  async getAllCustomFields(keyword?: string): Promise<any> {
+    try {
+      const { data } = await this.client.models.customFields.list({
+        filter: {
+          ...(keyword && {
+            fieldName: {
+              contains: keyword,
+            },
+          }),
+        },
+      });
+      console.log('Custom fields:', data);
+      if (data) {
+        return data;
+      }
+    } catch (error) {
+      this.handleError(error);
+      console.error('Error fetching custom fields:', error);
+      throw error;
+    }
+  }
+
+  async deleteCustomField(id: string) {
+    try {
+      const result = await this.client.models.customFields.delete({
+        id: id,
+      });
+      if (!result.errors) {
+        this.handleSuccess('Custom field deleted successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while deleting the custom field. Please try again'
+        );
+      }
+    } catch (error) {
+      this.handleError(error);
+      console.error('Error deleting custom field:', error);
       throw error;
     }
   }
@@ -196,52 +272,33 @@ export class SharedService {
 
   async createContentToUser(data: any) {
     try {
-      await this.client.mutations.incrementViewCount({
-        contentId: data.contentId,
-      });
+      const result = await this.client.mutations.createContentToUserFunction(
+        data
+      );
 
-      const result = await this.getContentToUser(data.contentId, data.userId);
-
-      if (result && result.length > 0) {
-        await this.updateContentToUser({ ...data, id: result[0].id });
-        return;
+      if (result && result.data) {
+        return result.data;
       }
 
-      await this.client.models.contentToUser.create(data);
+      throw new Error('Failed to create content to user relationship');
     } catch (error) {
-      console.error('Error adding featured content:', error);
+      console.error('Error creating content to user relationship:', error);
       throw error;
     }
   }
 
-  async getContentToUser(contentId: string, userId: string): Promise<any> {
+  async getContentToUser(contentId: string): Promise<any> {
     try {
-      const { data } = await this.client.models.contentToUser.list({
-        filter: {
-          contentId: { eq: contentId },
-          userId: { eq: userId },
-        },
-      });
-      return data;
-    } catch (error) {
-      console.error('Error fetching content to user relationship:', error);
-      throw error;
-    }
-  }
-
-  async getContinueWatch(userId: string): Promise<any> {
-    try {
-      const { data } = await this.client.models.contentToUser.list({
-        filter: {
-          userId: { eq: userId },
-        },
+      const result = await this.client.queries.getContentToUserFunction({
+        contentId: contentId,
       });
 
-      // Sort the data by updatedAt in descending order
-      return data?.sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
+      if (result && result.data) {
+        return typeof result.data === 'string'
+          ? JSON.parse(result.data)
+          : result.data;
+      }
+      return [];
     } catch (error) {
       console.error('Error fetching content to user relationship:', error);
       throw error;
@@ -250,9 +307,32 @@ export class SharedService {
 
   async updateContentToUser(data: any) {
     try {
-      await this.client.models.contentToUser.update(data);
+      // const result = await this.client.mutations.updateContentToUser({
+      //   data: data,
+      // });
+      // if (!result || !result.data) {
+      //   throw new Error('Failed to update content to user relationship');
+      // }
+      // return result.data;
     } catch (error) {
-      console.error('Error adding featured content:', error);
+      console.error('Error updating content to user relationship:', error);
+      throw error;
+    }
+  }
+
+  async getContinueWatch(): Promise<any> {
+    try {
+      const result = await this.client.queries.getContinueWatchFunction({});
+      if (result?.data) {
+        const parsedData =
+          typeof result.data === 'string'
+            ? JSON.parse(result.data)
+            : result.data;
+        return parsedData.success ? parsedData.data : [];
+      }
+      return [];
+    } catch (error) {
+      console.error('Error fetching continue watching:', error);
       throw error;
     }
   }

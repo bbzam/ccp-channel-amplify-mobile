@@ -19,7 +19,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { UploadContentComponent } from '../../features/content-curator/upload-content/upload-content.component';
+import { UploadContentComponent } from '../../features/content-curator/manage-content/upload-content/upload-content.component';
 import { AddUserComponent } from '../../features/IT-admin/manage-user/add-user/add-user.component';
 import { AddKeyComponent } from '../../beta-test/add-key/add-key.component';
 import { SharedService } from '../../shared/shared.service';
@@ -117,6 +117,30 @@ export class Sidenav2Component implements OnInit {
       .subscribe((data) => {});
   }
 
+  async addCustomFields(): Promise<void> {
+    const content = {
+      inputType: 'text',
+      title: 'Add Custom Field',
+      subtitle: '',
+      label: 'Field Name',
+      placeholder: 'Enter the field name',
+      buttonText: 'Create',
+      buttonTextLoading: 'Creating...',
+    };
+    this.dialog
+      .open(InputComponent, { data: content })
+      .afterClosed()
+      .subscribe(async (data) => {
+        if (data) {
+          const customFieldData = {
+            fieldName: data,
+          };
+
+          await this.sharedService.addCustomField(customFieldData);
+        }
+      });
+  }
+
   async createTag(): Promise<void> {
     const content = {
       inputType: 'text',
@@ -124,8 +148,8 @@ export class Sidenav2Component implements OnInit {
       subtitle: '',
       label: 'Tag Name',
       placeholder: 'Enter the tag name',
-      buttonText: 'Submit',
-      buttonTextLoading: 'Submitting...',
+      buttonText: 'Create',
+      buttonTextLoading: 'Creating...',
     };
     this.dialog
       .open(InputComponent, { data: content })
