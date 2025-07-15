@@ -38,6 +38,9 @@
           </div> -->
           @if (item.category){
           <p class="category">{{ item.category }}</p>
+          } @if (item.yearReleased){
+          <p>•</p>
+          <p>{{ item.yearReleased }}</p>
           } @if (item.resolution) {
           <p>•</p>
           <p>{{ item.resolution }}</p>
