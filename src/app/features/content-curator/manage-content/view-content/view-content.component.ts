@@ -234,9 +234,18 @@ export class ViewContentComponent {
     });
 
     // Check file changes
-    if (this.landscapeImageKey)
-      changes.landscapeImageUrl = this.landscapeImageKey;
-    if (this.portraitImageKey) changes.portraitImageUrl = this.portraitImageKey;
+    if (this.landscapeImageKey) {
+      const landscapeKey = this.landscapeImageKey.includes('flattened-')
+        ? this.landscapeImageKey
+        : `flattened-${this.landscapeImageKey}`;
+      changes.landscapeImageUrl = landscapeKey;
+    }
+    if (this.portraitImageKey) {
+      const portraitKey = this.portraitImageKey.includes('flattened-')
+        ? this.portraitImageKey
+        : `flattened-${this.portraitImageKey}`;
+      changes.portraitImageUrl = portraitKey;
+    }
     if (this.previewVideoKey) changes.previewVideoUrl = this.previewVideoKey;
     if (this.fullVideoKey) {
       changes.fullVideoUrl = this.fullVideoKey;
