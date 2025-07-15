@@ -57,7 +57,6 @@ export class SharedService {
     } catch (error) {
       this.hideLoader();
       this.handleError(error);
-      console.error('Error fetching current user:', error);
       throw error;
     }
   }
@@ -74,7 +73,6 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error adding a custom field:', error);
       throw error;
     }
   }
@@ -98,7 +96,6 @@ export class SharedService {
     } catch (error) {
       this.handleError(error);
       this.hideLoader();
-      console.error('Error fetching featured content:', error);
       throw error;
     }
   }
@@ -115,7 +112,6 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error adding featured content:', error);
       throw error;
     }
   }
@@ -132,7 +128,6 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error updating featured content:', error);
       throw error;
     }
   }
@@ -149,7 +144,6 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error adding a tag:', error);
       throw error;
     }
   }
@@ -164,7 +158,6 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error updating:', error);
       throw error;
     }
   }
@@ -181,7 +174,6 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error updating custom field:', error);
       throw error;
     }
   }
@@ -198,7 +190,6 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error deleting tag:', error);
       throw error;
     }
   }
@@ -214,13 +205,11 @@ export class SharedService {
           }),
         },
       });
-      console.log('Custom fields:', data);
       if (data) {
         return data;
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error fetching custom fields:', error);
       throw error;
     }
   }
@@ -239,7 +228,6 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error deleting custom field:', error);
       throw error;
     }
   }
@@ -265,7 +253,6 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error fetching tags:', error);
       throw error;
     }
   }
@@ -282,7 +269,6 @@ export class SharedService {
 
       throw new Error('Failed to create content to user relationship');
     } catch (error) {
-      console.error('Error creating content to user relationship:', error);
       throw error;
     }
   }
@@ -300,7 +286,6 @@ export class SharedService {
       }
       return [];
     } catch (error) {
-      console.error('Error fetching content to user relationship:', error);
       throw error;
     }
   }
@@ -315,7 +300,6 @@ export class SharedService {
       // }
       // return result.data;
     } catch (error) {
-      console.error('Error updating content to user relationship:', error);
       throw error;
     }
   }
@@ -332,13 +316,11 @@ export class SharedService {
       }
       return [];
     } catch (error) {
-      console.error('Error fetching continue watching:', error);
       throw error;
     }
   }
 
   public handleError(error: any) {
-    console.error(error);
     return this.dialog
       .open(ErrorMessageDialogComponent, {
         data: { message: String(error) },

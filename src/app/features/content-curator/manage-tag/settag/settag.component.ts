@@ -42,7 +42,6 @@ export class SettagComponent implements OnInit {
       // await this.getAllContents();
       this.tagData = await this.sharedService.getAllTags();
     } catch (error) {
-      console.error('Error loading tags:', error);
       this.tagData = [];
     }
   }
@@ -85,7 +84,6 @@ export class SettagComponent implements OnInit {
         this.tag = [];
       }
     } catch (error) {
-      console.error('Error fetching tag data:', error);
       this.tag = [];
     }
   }
@@ -107,8 +105,6 @@ export class SettagComponent implements OnInit {
     try {
       await this.sharedService.updateTag(data);
       this.hasChanges = false;
-    } catch (error) {
-      console.error('Error saving tag content:', error);
-    }
+    } catch (error) {}
   }
 }

@@ -1,42 +1,64 @@
 import { defineStorage } from '@aws-amplify/backend';
-import { onUpload } from './onUpload/resource';
+import { onImageUpload } from './onUpload/onImageUpload/resource';
+import { onPreviewVideoUpload } from './onUpload/onPreviewVideoUpload/resource';
+import { onFullVideoUpload } from './onUpload/onFullVideoUpload/resource';
 
 export const storage = defineStorage({
   name: 'mystorage',
-  triggers: {
-    onUpload,
-  },
+  // triggers: {
+  //   onUpload,
+  // },
   access: (allow) => ({
     // Landscape Images folder
     'landscape-images/*': [
-      // allow.authenticated.to(['read']),
-      allow.groups(['SUBSCRIBER', 'USER']).to(['read']),
-      allow.groups(['CONTENT_CREATOR', 'SUPER_ADMIN']).to(['read', 'write', 'delete']),
-      allow.resource(onUpload).to(['read', 'delete', 'write']),
+      allow
+        .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
+        .to(['read', 'write', 'delete']),
+      allow.resource(onImageUpload).to(['read', 'delete', 'write']),
     ],
 
     // Portrait Images folder
     'portrait-images/*': [
-      // allow.authenticated.to(['read']),
-      allow.groups(['SUBSCRIBER', 'USER']).to(['read']),
-      allow.groups(['CONTENT_CREATOR', 'SUPER_ADMIN']).to(['read', 'write', 'delete']),
-      allow.resource(onUpload).to(['read', 'delete', 'write']),
+      allow
+        .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
+        .to(['read', 'write', 'delete']),
+      allow.resource(onImageUpload).to(['read', 'delete', 'write']),
     ],
 
     // Preview Videos folder
     'preview-videos/*': [
-      // allow.authenticated.to(['read']),
       allow.groups(['SUBSCRIBER', 'USER']).to(['read']),
-      allow.groups(['CONTENT_CREATOR', 'SUPER_ADMIN']).to(['read', 'write', 'delete']),
-      allow.resource(onUpload).to(['read', 'delete', 'write']),
+      allow
+        .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
+        .to(['read', 'write', 'delete']),
+      allow.resource(onPreviewVideoUpload).to(['read', 'delete', 'write']),
     ],
 
     // Full Videos folder
     'full-videos/*': [
-      // allow.authenticated.to(['read']),
       allow.groups(['SUBSCRIBER', 'USER']).to(['read']),
-      allow.groups(['CONTENT_CREATOR', 'SUPER_ADMIN']).to(['read', 'write', 'delete']),
-      allow.resource(onUpload).to(['read', 'delete', 'write']),
+      allow
+        .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
+        .to(['read', 'write', 'delete']),
+      allow.resource(onFullVideoUpload).to(['read', 'delete', 'write']),
+    ],
+
+    // Flattened Landscape Images folder
+    'flattened-landscape-images/*': [
+      allow.groups(['SUBSCRIBER', 'USER']).to(['read']),
+      allow
+        .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
+        .to(['read', 'write', 'delete']),
+      allow.resource(onImageUpload).to(['read', 'delete', 'write']),
+    ],
+
+    // Flattened Portrait Images folder
+    'flattened-portrait-images/*': [
+      allow.groups(['SUBSCRIBER', 'USER']).to(['read']),
+      allow
+        .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
+        .to(['read', 'write', 'delete']),
+      allow.resource(onImageUpload).to(['read', 'delete', 'write']),
     ],
   }),
 });

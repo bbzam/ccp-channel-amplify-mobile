@@ -46,6 +46,8 @@ mat-grid-list {
           color: var(--secondary);
           font-size: large;
           font-weight: bolder;
+          display: flex;
+          flex-direction: column;
         }
 
         .sub-data {

@@ -245,15 +245,6 @@ export const routes: Routes = [
           ).then((m) => m.AddUserComponent),
       },
       {
-        path: 'manage-keys',
-        resolve: { loading: loaderResolver },
-        data: { loadingMessage: 'Loading Page...' },
-        loadComponent: () =>
-          import('./beta-test/manage-keys/manage-keys.component').then(
-            (m) => m.ManageKeysComponent
-          ),
-      },
-      {
         path: 'account-settings',
         loadComponent: () =>
           import(

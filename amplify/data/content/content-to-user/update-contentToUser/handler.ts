@@ -34,8 +34,6 @@ export const handler = async (event: any) => {
 
     const { Attributes } = await docClient.send(command);
 
-    console.log(Attributes);
-
     return {
       success: true,
       data: Attributes,

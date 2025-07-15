@@ -137,7 +137,6 @@ export class ViewTagComponent implements OnInit {
       const isSuccess = await this.sharedService.updateTag(data);
       this.dialogRef.close(true);
     } catch (error) {
-      console.error('Update tag failed:', error);
     } finally {
       this.isLoading.set(false);
     }
@@ -149,7 +148,6 @@ export class ViewTagComponent implements OnInit {
       const isSuccess = await this.sharedService.deleteTag(this.data.id);
       this.dialogRef.close(true);
     } catch (error) {
-      console.error('Delete tag failed:', error);
     } finally {
       this.isLoading.set(false);
     }

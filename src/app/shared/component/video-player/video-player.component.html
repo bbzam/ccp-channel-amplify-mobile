@@ -1,4 +1,4 @@
-<div class="video-container">
+<!-- <div class="video-container">
   @if (isLoading) {
   <div class="loading-state">
     <mat-spinner></mat-spinner>
@@ -21,5 +21,37 @@
   ></video>
   <button class="back-button" (click)="goBack()">
     <i class="fas fa-arrow-left"></i> Back
+  </button>
+</div> -->
+
+<div #videoContainer class="video-container">
+  @if (isLoading) {
+  <div class="loading-state">
+    <mat-spinner></mat-spinner>
+    <p>Loading video...</p>
+  </div>
+  } @if (errorMessage) {
+  <div class="error-state">
+    <p>{{ errorMessage }}</p>
+    <button mat-button (click)="goBack()">Go Back</button>
+  </div>
+  }
+  <video
+    #videoPlayer
+    [controls]="controls"
+    [attr.controlsList]="controlsList"
+    class="fullscreen-video"
+    (loadstart)="onLoadStart()"
+    (loadedmetadata)="onVideoLoaded()"
+    (error)="onError($event)"
+  ></video>
+
+  <div #thumbnailContainer class="thumbnail-container" style="display: none">
+    <img #thumbnailImg class="thumbnail-image" />
+    <div #timeDisplay class="time-display"></div>
+  </div>
+
+  <button class="back-button" (click)="goBack()">
+    <span>Back</span>
   </button>
 </div>

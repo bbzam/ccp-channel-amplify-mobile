@@ -158,15 +158,18 @@ body {
     .label-wrapper {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: space-between;
 
       .see-more {
+        display: flex;
+        align-items: center;
+        margin-right: 2em;
         cursor: pointer;
-        opacity: 0;
-        color: var(--accent);
+        /* opacity: 0; */
+        color: var(--gray);
         font-size: 1em;
-        transition: opacity 0.4s ease-in-out;
-        visibility: hidden;
+        /* transition: opacity 0.4s ease-in-out; */
+        /* visibility: hidden; */
       }
 
       .label {
@@ -182,8 +185,9 @@ body {
     }
 
     .label-wrapper:hover .see-more {
-      opacity: 1;
-      visibility: visible;
+      color: var(--accent);
+      /* opacity: 1;
+      visibility: visible; */
     }
   }
 }

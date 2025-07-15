@@ -132,7 +132,6 @@ export class ViewCustomFieldComponent implements OnInit {
       const isSuccess = await this.sharedService.updateCustomField(data);
       this.dialogRef.close(true);
     } catch (error) {
-      console.error('Update custom field failed:', error);
     } finally {
       this.isLoading.set(false);
     }
@@ -146,7 +145,6 @@ export class ViewCustomFieldComponent implements OnInit {
   //     );
   //     this.dialogRef.close(true);
   //   } catch (error) {
-  //     console.error('Delete custom field failed:', error);
   //   } finally {
   //     this.isLoading.set(false);
   //   }

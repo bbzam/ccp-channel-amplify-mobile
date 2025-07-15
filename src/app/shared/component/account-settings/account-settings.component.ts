@@ -168,7 +168,6 @@ export class AccountSettingsComponent implements OnDestroy {
     try {
       const email = String(sessionStorage.getItem('email'));
       const user = await this.featuresService.getCurrentUser(email);
-      console.log('Current user:', user);
 
       if (user) {
         // Set the user data from the API response
@@ -176,9 +175,7 @@ export class AccountSettingsComponent implements OnDestroy {
         // Reinitialize the form with the new data
         this.initializeForm();
       }
-    } catch (error) {
-      console.error('Error getting current user:', error);
-    }
+    } catch (error) {}
   }
 
   updatePasswordOnClick() {
@@ -264,7 +261,6 @@ export class AccountSettingsComponent implements OnDestroy {
   //     // await this.uploadMedia(file, profileImageKey, 'profile');
   //   } catch (error) {
   //     this.profilePicErrorMessage.set('Error processing image');
-  //     console.error('Error uploading image:', error);
   //   }
   // }
 

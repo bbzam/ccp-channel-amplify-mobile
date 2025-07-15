@@ -21,7 +21,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { UploadContentComponent } from '../../features/content-curator/manage-content/upload-content/upload-content.component';
 import { AddUserComponent } from '../../features/IT-admin/manage-user/add-user/add-user.component';
-import { AddKeyComponent } from '../../beta-test/add-key/add-key.component';
 import { SharedService } from '../../shared/shared.service';
 import { InputComponent } from '../../shared/component/input/input.component';
 
@@ -106,13 +105,6 @@ export class Sidenav2Component implements OnInit {
   addNewUser() {
     this.dialog
       .open(AddUserComponent, { disableClose: true, panelClass: 'dialog2' })
-      .afterClosed()
-      .subscribe((data) => {});
-  }
-
-  addNewKey() {
-    this.dialog
-      .open(AddKeyComponent, { disableClose: true, panelClass: 'dialog2' })
       .afterClosed()
       .subscribe((data) => {});
   }

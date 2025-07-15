@@ -7,10 +7,12 @@ import { enableUser } from './auth/enable-user/resource';
 import { listUser } from './auth/list-user/resource';
 import { statistics } from './content/statistics/resource';
 import { getContentToUserFunction } from './content/content-to-user/get-contentToUser/resource';
-import { updateContentToUserFunction } from './content/content-to-user/update-contentToUser/resource';
 import { createContentToUserFunction } from './content/content-to-user/create-contentToUser/resource';
 import { getUserFavoritesFunction } from './content/content-to-user/get-userFavorites/resource';
 import { getContinueWatchFunction } from './content/content-to-user/get-continueWatch/resource';
+import { createContentFunction } from './content/content/create-content/resource';
+import { updateContentFunction } from './content/content/update-content/resource';
+import { getContentFunction } from './content/content/get-content/resource';
 
 const schema = a.schema({
   Content: a
@@ -50,6 +52,97 @@ const schema = a.schema({
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['create', 'update', 'delete']),
     ]),
+
+  getContentFunction: a
+    .query()
+    .arguments({
+      category: a.string(),
+      status: a.boolean(),
+      keyword: a.string(),
+      fields: a.string().array(),
+    })
+    .returns(a.string())
+    .handler(a.handler.function(getContentFunction))
+    .authorization((allow) => [
+      allow.groups([
+        'USER',
+        'SUBSCRIBER',
+        'CONTENT_CREATOR',
+        'IT_ADMIN',
+        'SUPER_ADMIN',
+      ]),
+    ]),
+
+  createContentFunction: a
+    .mutation()
+    .arguments({
+      title: a.string().required(),
+      description: a.string().required(),
+      category: a.enum([
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
+      subCategory: a.string(),
+      director: a.string(),
+      writer: a.string(),
+      yearReleased: a.string(),
+      userType: a.enum(['free', 'subscriber']),
+      landscapeImageUrl: a.string().required(),
+      portraitImageUrl: a.string().required(),
+      previewVideoUrl: a.string().required(),
+      fullVideoUrl: a.string().required(),
+      runtime: a.float().required(),
+      resolution: a.string().required(),
+      status: a.boolean().required(),
+      publishDate: a.date(),
+      customFields: a.json(),
+    })
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(createContentFunction))
+    .returns(a.json()),
+
+  updateContentFunction: a
+    .mutation()
+    .arguments({
+      id: a.id().required(),
+      title: a.string(),
+      description: a.string(),
+      category: a.enum([
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
+      subCategory: a.string(),
+      director: a.string(),
+      writer: a.string(),
+      yearReleased: a.string(),
+      userType: a.enum(['free', 'subscriber']),
+      landscapeImageUrl: a.string(),
+      portraitImageUrl: a.string(),
+      previewVideoUrl: a.string(),
+      fullVideoUrl: a.string(),
+      runtime: a.float(),
+      resolution: a.string(),
+      status: a.boolean(),
+      publishDate: a.date(),
+      customFields: a.json(),
+    })
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(updateContentFunction))
+    .returns(a.json()),
 
   customFields: a
     .model({
@@ -126,18 +219,6 @@ const schema = a.schema({
   //   .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
   //   .handler(a.handler.function(incrementViewcount))
   //   .returns(a.json()),
-
-  Keys: a
-    .model({
-      id: a.id().required(),
-      isUsed: a.boolean().required(),
-    })
-    .authorization((allow) => [
-      allow.guest().to(['update', 'read']),
-      allow
-        .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
-        .to(['create', 'read', 'update', 'delete']),
-    ]),
 
   FeaturedAll: a
     .model({

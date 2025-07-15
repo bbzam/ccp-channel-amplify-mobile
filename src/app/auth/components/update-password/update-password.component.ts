@@ -174,10 +174,8 @@ export class UpdatePasswordComponent implements OnInit {
       this.dialogRef.close();
 
       if (!isSuccess) {
-        console.log('requires further confirmation.');
       }
     } catch (error) {
-      console.error('failed:', error);
     } finally {
       this.isLoading.set(false);
     }

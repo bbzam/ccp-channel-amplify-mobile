@@ -305,9 +305,7 @@ export class UploadContentComponent {
   async loadCustomFields() {
     try {
       this.customFields = await this.sharedService.getAllCustomFields();
-    } catch (error) {
-      console.error('Error loading custom fields:', error);
-    }
+    } catch (error) {}
   }
 
   addCustomField() {
@@ -374,8 +372,8 @@ export class UploadContentComponent {
         writer: formData.writer,
         yearReleased: formData.yearreleased,
         userType: formData.usertype,
-        landscapeImageUrl: this.landscapeImageKey,
-        portraitImageUrl: this.portraitImageKey,
+        landscapeImageUrl: `flattened-${this.landscapeImageKey}`,
+        portraitImageUrl: `flattened-${this.portraitImageKey}`,
         previewVideoUrl: this.previewVideoKey,
         fullVideoUrl: this.fullVideoKey,
         runtime: this.videoMetadata?.duration || 0,
@@ -395,12 +393,8 @@ export class UploadContentComponent {
         ),
       };
 
-      console.log(contentMetadata);
-
       await this.featureService.createContent(contentMetadata).then(
         async (result) => {
-          console.log(result.data);
-
           result.data
             ? (this.featureService.handleSuccess(
                 isForPublish
@@ -423,7 +417,6 @@ export class UploadContentComponent {
       );
     } catch (error) {
       this.uploadForm.enable();
-      console.error('Error publishing content:', error);
     } finally {
       this.uploadForm.enable();
       isForPublish ? this.isLoading.set(false) : this.isScheduling.set(false);
@@ -433,64 +426,42 @@ export class UploadContentComponent {
 
   async removeMedia(path: string) {
     try {
-      console.log('Removing...', path);
+      const finalPath =
+        path.includes('landscape') || path.includes('portrait')
+          ? `flattened-${path}`
+          : path;
+
       const result = await remove({
-        path: path,
+        path: finalPath,
       });
-      if (result) {
-        console.log('File Removed...', result);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 
   async pauseUpload(mediaKey: string, dictionary: string) {
-    console.log(
-      `[Upload Pause] Dictionary: ${dictionary}, MediaKey: ${mediaKey}`
-    );
     const task = this.uploadTasks[dictionary];
     if (!task) {
-      console.log(
-        `[Upload Pause] No active upload task found for ${dictionary}`
-      );
       return;
     }
 
     try {
       await task.pause();
       this.isPaused[dictionary] = true;
-      console.log(`[Upload Paused Successfully] Dictionary: ${dictionary}`);
-    } catch (error) {
-      console.error(`[Upload Pause Failed] Dictionary: ${dictionary}`, error);
-    }
+    } catch (error) {}
   }
 
   async resumeUpload(mediaKey: string, dictionary: string) {
-    console.log(
-      `[Upload Resume] Dictionary: ${dictionary}, MediaKey: ${mediaKey}`
-    );
     const task = this.uploadTasks[dictionary];
     if (!task) {
-      console.log(
-        `[Upload Resume] No active upload task found for ${dictionary}`
-      );
       return;
     }
 
     try {
       await task.resume();
       this.isPaused[dictionary] = false;
-      console.log(`[Upload Resumed Successfully] Dictionary: ${dictionary}`);
-    } catch (error) {
-      console.error(`[Upload Resume Failed] Dictionary: ${dictionary}`, error);
-    }
+    } catch (error) {}
   }
 
   async cancelUpload(mediaKey: string, dictionary: string) {
-    console.log(
-      `[Upload Cancel] Dictionary: ${dictionary}, MediaKey: ${mediaKey}`
-    );
     if (this.uploadTasks[dictionary]) {
       try {
         await this.uploadTasks[dictionary].cancel();
@@ -500,41 +471,28 @@ export class UploadContentComponent {
         // Reset the form control and file URL based on dictionary
         switch (dictionary) {
           case 'landscape':
-            console.log('[Reset Landscape] Clearing landscape image data');
             this.landscapeFileURL = '';
             this.landscapeImageKey = '';
             this.uploadForm.get('landscapeimage')?.reset();
             break;
           case 'portrait':
-            console.log('[Reset Portrait] Clearing portrait image data');
             this.portraitFileURL = '';
             this.portraitImageKey = '';
             this.uploadForm.get('portraitimage')?.reset();
             break;
           case 'preview':
-            console.log('[Reset Preview] Clearing preview video data');
             this.previewFileURL = '';
             this.previewVideoKey = '';
             this.uploadForm.get('previewvideo')?.reset();
             break;
           case 'full':
-            console.log('[Reset Full] Clearing full video data');
             this.fullFileURL = '';
             this.fullVideoKey = '';
             this.uploadForm.get('fullvideo')?.reset();
             break;
         }
-        console.log(
-          `[Upload Cancelled Successfully] Dictionary: ${dictionary}`
-        );
-      } catch (error) {
-        console.error(
-          `[Upload Cancel Failed] Dictionary: ${dictionary}`,
-          error
-        );
-      }
+      } catch (error) {}
     } else {
-      console.log(`[Upload Cancel] No upload task found for ${dictionary}`);
     }
   }
 
@@ -563,9 +521,7 @@ export class UploadContentComponent {
             (this as any)[variableKey] = '';
           }
         });
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 
   async uploadMedia(
@@ -574,8 +530,6 @@ export class UploadContentComponent {
     dictionary: string
   ): Promise<void> {
     try {
-      console.log('trying to upload...', file);
-
       // Clear any existing task for this dictionary
       if (this.uploadTasks[dictionary]) {
         delete this.uploadTasks[dictionary];
@@ -602,14 +556,11 @@ export class UploadContentComponent {
 
         try {
           await result.result; // Wait for upload to complete
-          console.log('File Uploaded...', result);
           this.uploadProgress[dictionary] = 100;
         } catch (error) {
           if (isCancelError(error)) {
-            console.log('Upload was cancelled');
             this.uploadProgress[dictionary] = 0;
           } else {
-            console.error('Upload error:', error);
             this.uploadProgress[dictionary] = 0;
           }
         } finally {
@@ -618,7 +569,6 @@ export class UploadContentComponent {
         }
       }
     } catch (e) {
-      console.log('error', e);
       this.uploadProgress[mediaKey] = 0;
     }
   }
@@ -667,7 +617,6 @@ export class UploadContentComponent {
         await this.uploadMedia(file, landscapeImageKey, 'landscape');
       } catch (error) {
         this.landscapeErrorMessage.set('Error processing image');
-        console.error(error);
       }
     }
   }
@@ -715,7 +664,6 @@ export class UploadContentComponent {
         this.uploadMedia(file, portraitImageKey, 'portrait');
       } catch (error) {
         this.portraitErrorMessage.set('Error processing image');
-        console.error(error);
       }
     }
   }
@@ -763,7 +711,6 @@ export class UploadContentComponent {
         this.uploadMedia(file, previewVideoKey, 'preview');
       } catch (error) {
         this.previewErrorMessage.set('Error processing video');
-        console.error(error);
       }
     }
   }
@@ -832,7 +779,6 @@ export class UploadContentComponent {
       this.uploadMedia(file, fullVideoKey, 'full');
     } catch (error) {
       this.fullErrorMessage.set('Error processing video');
-      console.error(error);
     }
   }
 

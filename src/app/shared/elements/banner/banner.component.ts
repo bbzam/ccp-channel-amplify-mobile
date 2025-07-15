@@ -182,7 +182,7 @@ export class BannerComponent implements OnInit, AfterViewInit, OnDestroy {
       const nextIndex = (index + 1) % this.banners.length;
       const videoUrl = this.banners[nextIndex].previewVideoPresignedUrl;
 
-      if (videoUrl) {
+      if (videoUrl && videoUrl !== 'undefined' && videoUrl.trim() !== '') {
         const preloadVideo = document.createElement('video');
         preloadVideo.preload = 'metadata';
         preloadVideo.src = videoUrl;

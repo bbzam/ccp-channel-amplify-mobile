@@ -167,14 +167,12 @@ export class DashboardTemplateComponent implements OnInit, AfterViewInit {
   async getStatistics() {
     try {
       const response = await this.sharedService.getStatistics();
-      console.log('Response data:', response);
 
       // Store the statistics data
       this.contentStats = response.contentStats;
       this.userStats = response.userStats;
 
       this.videoData = response.contentStats.topViewedContent;
-      console.log('Video data:', this.videoData);
 
       // Update bar chart with monthly stats
       if (response.contentStats.monthlyStats) {
@@ -188,7 +186,6 @@ export class DashboardTemplateComponent implements OnInit, AfterViewInit {
         this.initializeLineChart();
       }
     } catch (error) {
-      console.error('Error fetching statistics:', error);
       // Initialize with empty data if there's an error
       this.videoData = [];
       this.contentStats = null;
@@ -297,6 +294,10 @@ export class DashboardTemplateComponent implements OnInit, AfterViewInit {
         scales: {
           y: {
             beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Total Views',
+            },
           },
         },
         plugins: {
@@ -402,14 +403,14 @@ export class DashboardTemplateComponent implements OnInit, AfterViewInit {
           y: {
             beginAtZero: true,
             title: {
-              display: false,
+              display: true,
               text: 'Number of Views',
             },
           },
         },
         plugins: {
           legend: {
-            display: false,
+            display: true,
             position: 'top',
           },
           title: {

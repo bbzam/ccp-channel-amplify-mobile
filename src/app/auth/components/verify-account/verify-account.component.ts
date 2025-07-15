@@ -137,13 +137,11 @@ export class VerifyAccountComponent implements OnInit {
         this.username,
         code
       );
-      console.log(isSuccess);
 
       if (isSuccess) {
         this.dialogRef.close(true);
       }
     } catch (error) {
-      console.error('Confirmation failed:', error);
     } finally {
       this.isLoading.set(false);
     }
@@ -154,7 +152,6 @@ export class VerifyAccountComponent implements OnInit {
     try {
       await this.authService.resendSignUpCode(this.username);
     } catch (error) {
-      console.error('Resend code failed:', error);
     } finally {
       this.isLoading.set(false);
     }

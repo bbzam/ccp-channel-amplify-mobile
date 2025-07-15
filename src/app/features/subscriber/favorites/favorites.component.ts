@@ -51,7 +51,6 @@ export class FavoritesComponent implements OnInit {
         })
       );
     } catch (error) {
-      console.error('Failed to load favorites:', error);
       this.favorites = [];
       this.banners = [];
     }

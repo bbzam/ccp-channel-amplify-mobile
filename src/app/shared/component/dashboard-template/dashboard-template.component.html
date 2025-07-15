@@ -67,7 +67,10 @@
         <span class="title">Content Categories</span>
       </mat-card-header>
       <mat-card-content>
-        <span class="data">{{ getCategories().length || 0 }} Categories</span>
+        <div class="data">
+          <span>{{ getCategories().length || 0 }} Categories</span>
+          <span>{{ contentStats?.totalContent || 0 }} Contents</span>
+        </div>
         <div class="sub-data">
           @for (category of getCategories(); track $index) {
           <div>

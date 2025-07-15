@@ -98,9 +98,7 @@ export class MoreInfoComponent implements AfterViewInit, OnDestroy {
       customFields?.forEach((field: any) => {
         this.customFieldsMap.set(field.id, field.fieldName);
       });
-    } catch (error) {
-      console.error('Error loading custom fields:', error);
-    }
+    } catch (error) {}
   }
 
   parseCustomFields() {
@@ -111,15 +109,15 @@ export class MoreInfoComponent implements AfterViewInit, OnDestroy {
             ? JSON.parse(this.item.customFields)
             : this.item.customFields;
 
-        this.parsedCustomFields = Object.entries(parsed)
-          .map(([fieldId, value]) => ({
+        this.parsedCustomFields = Array.from(this.customFieldsMap.keys())
+          .filter((fieldId) => parsed[fieldId])
+          .map((fieldId) => ({
             name: this.customFieldsMap.get(fieldId) || fieldId,
-            value: value,
+            value: parsed[fieldId],
           }))
           .filter((field) => field.value);
       }
     } catch (error) {
-      console.error('Error parsing custom fields:', error);
       this.parsedCustomFields = [];
     }
   }
@@ -162,9 +160,7 @@ export class MoreInfoComponent implements AfterViewInit, OnDestroy {
         this.item.id,
         this.item.isFavorite
       );
-    } catch (error) {
-      console.error('Error toggling favorite:', error);
-    }
+    } catch (error) {}
   }
 
   close() {

@@ -77,7 +77,6 @@ export class TableComponent {
   applyFilter(event: Event) {
     const target = event.target as HTMLInputElement;
     const value = target.value;
-    console.log(value);
 
     // Clear any existing timeout
     if (this.searchTimeout) {
@@ -93,7 +92,6 @@ export class TableComponent {
   // applyFilter(event: Event) {
   //   const target = event.target as HTMLInputElement;
   //   const value = target.value;
-  //   console.log(value);
   //   this.getContent.emit(value);
   // }
 

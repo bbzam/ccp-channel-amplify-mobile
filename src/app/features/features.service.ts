@@ -8,7 +8,6 @@ import { SuccessMessageDialogComponent } from '../shared/dialogs/success-message
 import { Schema } from '../../../amplify/data/resource';
 import { getUrl } from 'aws-amplify/storage';
 import { SharedService } from '../shared/shared.service';
-import { accessKeys } from '../beta-test/access-keys';
 
 @Injectable({
   providedIn: 'root',
@@ -21,88 +20,6 @@ export class FeaturesService {
   private contentCache: Map<string, any[]> = new Map();
 
   constructor() {}
-
-  async uploadKeys(keys: any): Promise<boolean> {
-    try {
-      await Promise.all(
-        keys.map((key: any) =>
-          this.client.models.Keys.create({
-            id: key.code,
-            isUsed: false,
-          })
-        )
-      );
-      this.handleSuccess('Keys uploaded successfully!');
-      return true;
-    } catch (error) {
-      this.handleError(
-        'An error occurred while uploading keys. Please try again'
-      );
-      console.error('Failed to upload keys: ' + error);
-      return false;
-    }
-  }
-
-  async getAllKeys(keyword?: string): Promise<any> {
-    try {
-      this.sharedService.showLoader('Fetching content...');
-      const { data } = await this.client.models.Keys.list({
-        limit: 5000,
-        filter: {
-          id: {
-            contains: keyword,
-          },
-        },
-      });
-      if (data) {
-        this.sharedService.hideLoader();
-        return data;
-      }
-    } catch (error) {
-      console.error('Error fetching keys:', error);
-      throw error;
-    }
-  }
-
-  async updateKeys(code: string) {
-    try {
-      // First check if the key is already used
-      const existingKey = await this.client.models.Keys.get(
-        { id: code },
-        {
-          authMode: 'iam',
-          selectionSet: ['isUsed'],
-        }
-      );
-
-      if (existingKey.data?.isUsed) {
-        this.handleError('This key has already been used');
-        throw new Error('This key has already been used');
-      }
-
-      // If not used, proceed with the update
-      const result = await this.client.models.Keys.update(
-        {
-          id: code,
-          isUsed: true,
-        },
-        {
-          authMode: 'iam',
-          selectionSet: ['isUsed'],
-        }
-      );
-
-      return result;
-    } catch (error) {
-      console.error('Error updating keys:', error);
-      // You can customize the error message based on the error type
-      const errorMessage =
-        error === 'This key has already been used'
-          ? error
-          : 'An error occurred while updating the key';
-      throw new Error(errorMessage);
-    }
-  }
 
   async getCurrentUser(email: string): Promise<any> {
     try {
@@ -162,16 +79,13 @@ export class FeaturesService {
     } catch (error) {
       this.sharedService.hideLoader();
       this.handleError(error);
-      console.error('Error fetching current user:', error);
       throw error;
     }
   }
 
   async createUser(data: any): Promise<any> {
     try {
-      console.log('data', data);
       const result = await this.client.mutations.addUser(data);
-      console.log('result', result);
       if (!result.errors) {
         this.handleSuccess('User created successfully!');
       } else {
@@ -181,16 +95,13 @@ export class FeaturesService {
       }
       return result;
     } catch (error) {
-      console.error('Error creating user:', error);
       throw error;
     }
   }
 
   async updateUser(data: any): Promise<any> {
     try {
-      console.log('data', data);
       const result = await this.client.mutations.editUser(data);
-      console.log('result', result);
       if (!result.errors) {
         this.handleSuccess('User updated successfully!');
       } else {
@@ -200,7 +111,6 @@ export class FeaturesService {
       }
       return result;
     } catch (error) {
-      console.error('Error updating user:', error);
       throw error;
     }
   }
@@ -217,7 +127,6 @@ export class FeaturesService {
       }
       return result;
     } catch (error) {
-      console.error('Error disabling user:', error);
       throw error;
     }
   }
@@ -234,7 +143,6 @@ export class FeaturesService {
       }
       return result;
     } catch (error) {
-      console.error('Error enabling user:', error);
       throw error;
     }
   }
@@ -246,7 +154,6 @@ export class FeaturesService {
   ): Promise<any> {
     try {
       this.sharedService.showLoader('Fetching content...');
-      console.log(keyword);
 
       const result = await this.client.queries.listUsers({
         role: role,
@@ -287,7 +194,6 @@ export class FeaturesService {
 
       return result;
     } catch (error) {
-      console.error('Error fetching users:', error);
       throw error;
     }
   }
@@ -295,37 +201,56 @@ export class FeaturesService {
   async createContent(contentMetadata: ContentMetadata): Promise<any> {
     try {
       this.sharedService.showLoader('Uploading content...');
-      const data = await this.client.models.Content.create({
-        title: contentMetadata.title,
-        description: contentMetadata.description,
-        category: contentMetadata.category,
-        subCategory: contentMetadata.subCategory,
-        director: contentMetadata.director,
-        writer: contentMetadata.writer,
-        yearReleased: contentMetadata.yearReleased,
-        userType: contentMetadata.userType,
-        landscapeImageUrl: contentMetadata.landscapeImageUrl,
-        portraitImageUrl: contentMetadata.portraitImageUrl,
-        previewVideoUrl: contentMetadata.previewVideoUrl,
-        fullVideoUrl: contentMetadata.fullVideoUrl,
-        runtime: contentMetadata.runtime,
-        resolution: contentMetadata.resolution,
-        status: contentMetadata.status,
-        publishDate: contentMetadata.publishDate,
-        customFields: contentMetadata.customFields,
-      });
-      console.log(data);
 
-      if (data) {
+      const result = await this.client.mutations.createContentFunction(
+        contentMetadata
+      );
+
+      // Parse the result if it's a string
+      const parsedResult =
+        typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+
+      if (parsedResult?.success) {
         this.clearContentCache();
         this.sharedService.hideLoader();
+        return parsedResult;
+      } else {
+        const errorMessage =
+          parsedResult?.errors?.join(', ') || 'Content creation failed';
+        this.handleError(errorMessage);
+        throw new Error(errorMessage);
       }
-
-      return data;
     } catch (error) {
       this.sharedService.hideLoader();
-      console.error('Error saving content metadata:', error);
-      throw error; // Re-throw to handle in the component
+      this.handleError(
+        'An error occurred while creating content. Please try again'
+      );
+      throw error;
+    }
+  }
+
+  async updateContent(id: string, contentData: ContentMetadata) {
+    try {
+      const result = await this.client.mutations.updateContentFunction({
+        id: id,
+        ...contentData,
+      });
+
+      // Parse the result if it's a string
+      const parsedResult =
+        typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
+
+      if (parsedResult?.success) {
+        this.clearContentCache();
+        this.sharedService.hideLoader();
+        return parsedResult;
+      } else {
+        const errorMessage =
+          parsedResult?.errors?.join(', ') || 'Content update failed';
+        throw new Error(errorMessage);
+      }
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -344,22 +269,6 @@ export class FeaturesService {
       this.clearContentCache();
       return result;
     } catch (error) {
-      console.error('Error updating contents:', error);
-      throw error;
-    }
-  }
-
-  async updateContent(id: string, contentData: ContentMetadata) {
-    try {
-      const result = await this.client.models.Content.update({
-        id: id,
-        ...contentData,
-      });
-
-      this.clearContentCache();
-      return result;
-    } catch (error) {
-      console.error('Error updating contents:', error);
       throw error;
     }
   }
@@ -389,113 +298,36 @@ export class FeaturesService {
     category: string,
     status: boolean,
     fields?: any[],
-    keyword?: string,
-    nextToken?: string
+    keyword?: string
   ): Promise<any> {
-    // Create a cache key based on parameters
     const cacheKey = `${category}-${status}-${keyword || ''}`;
 
-    // Check if we have cached data
     if (this.contentCache.has(cacheKey)) {
       return this.contentCache.get(cacheKey);
     }
+
     try {
       this.sharedService.showLoader('Fetching content...');
 
-      const defaultFields = [
-        'id',
-        'title',
-        'description',
-        'category',
-        'subCategory',
-        'director',
-        'writer',
-        'yearReleased',
-        'userType',
-        'landscapeImageUrl',
-        'portraitImageUrl',
-        'previewVideoUrl',
-        'fullVideoUrl',
-        'runtime',
-        'resolution',
-        'status',
-        'publishDate',
-        'createdAt',
-        'updatedAt',
-        'customFields',
-      ];
+      const result = await this.client.queries.getContentFunction({
+        category,
+        status,
+        keyword,
+        fields,
+      });
 
-      const { data, nextToken: newNextToken } =
-        await this.client.models.Content.list({
-          ...(category || status || keyword
-            ? {
-                selectionSet: fields?.length ? fields : defaultFields,
-                limit: 5000,
-                nextToken,
-                filter: {
-                  ...(category && {
-                    category: {
-                      eq: category,
-                    },
-                  }),
-                  ...(status !== undefined &&
-                    status !== null && {
-                      status: {
-                        eq: status,
-                      },
-                    }),
-                  ...(keyword && {
-                    or: [
-                      { title: { contains: keyword } },
-                      { description: { contains: keyword } },
-                      { category: { contains: keyword } },
-                      { subCategory: { contains: keyword } },
-                      { director: { contains: keyword } },
-                      { writer: { contains: keyword } },
-                    ],
-                  }),
-                },
-              }
-            : {
-                selectionSet: fields?.length ? fields : defaultFields,
-                limit: 5000,
-                nextToken,
-              }),
-        });
-
-      // Query user favorites function to get isFavorite data
-      const favoritesResult =
-        await this.client.queries.getUserFavoritesFunction({});
-      let favoriteMap = new Map();
-
-      if (favoritesResult.data && typeof favoritesResult.data === 'string') {
-        const parsedFavorites = JSON.parse(favoritesResult.data);
-        if (parsedFavorites.data) {
-          parsedFavorites.data.forEach((content: any) => {
-            favoriteMap.set(content.id, true);
-          });
-        }
-      }
-
-      // Map isFavorite to content data
-      const dataWithFavorites = data?.map((content: any) => ({
-        ...content,
-        isFavorite: favoriteMap.get(content.id) || false,
-      }));
-
-      // Cache the results before returning
-      if (dataWithFavorites) {
-        this.contentCache.set(cacheKey, dataWithFavorites);
+      if (result.data && typeof result.data === 'string') {
+        const parsedData = JSON.parse(result.data);
+        this.contentCache.set(cacheKey, parsedData);
+        this.sharedService.hideLoader();
+        return parsedData;
       }
 
       this.sharedService.hideLoader();
 
-      console.log('data', dataWithFavorites);
-
-      return dataWithFavorites;
+      return result.data;
     } catch (error) {
       this.sharedService.hideLoader();
-      console.error('Error fetching content metadata:', error);
       throw error;
     }
   }
@@ -514,7 +346,6 @@ export class FeaturesService {
       return result.data || [];
     } catch (error) {
       this.sharedService.hideLoader();
-      console.error('Error fetching user favorites:', error);
       throw error;
     }
   }
@@ -528,11 +359,7 @@ export class FeaturesService {
 
       if (result.data && typeof result.data === 'string') {
         const parsedData = JSON.parse(result.data);
-        if (parsedData.success) {
-          console.log(
-            `${isFavorite ? 'Added to favorites!' : 'Removed from favorites!'}`
-          );
-        }
+
         return parsedData;
       }
 
@@ -552,7 +379,6 @@ export class FeaturesService {
   }
 
   public handleError(error: any) {
-    console.error(error);
     return this.dialog
       .open(ErrorMessageDialogComponent, {
         data: { message: String(error) },

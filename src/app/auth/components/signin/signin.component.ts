@@ -20,7 +20,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { SignupComponent } from '../signup/signup.component';
 import { Router } from '@angular/router';
 import { AuthServiceService } from '../../auth-service.service';
-import { BetaAccessComponent } from '../../../beta-test/beta-access/beta-access.component';
 import { ResetPasswordComponent } from '../reset-password/reset-password.component';
 import { InputComponent } from '../../../shared/component/input/input.component';
 
@@ -105,10 +104,8 @@ export class SigninComponent implements OnInit {
         this.dialogRef.close(true);
       } else {
         this.dialogRef.close(false);
-        console.log('Sign-in requires further confirmation.');
       }
     } catch (error) {
-      console.error('Sign-in failed:', error);
     } finally {
       this.signingIn = false;
     }
@@ -149,7 +146,6 @@ export class SigninComponent implements OnInit {
           });
       }
     } catch (error) {
-      console.error('Failed to initiate password reset');
       this.authService.handleError(error);
     }
   }
@@ -169,23 +165,13 @@ export class SigninComponent implements OnInit {
         this.authService.handleSuccess('Password reset successful!');
       }
     } catch (error) {
-      console.error('Failed to confirm password reset');
       this.authService.handleError(error);
     }
   }
 
   signUpOnClick(): void {
     this.dialogRef.close();
-    // this.dialog
-    //   .open(BetaAccessComponent)
-    //   .afterClosed()
-    //   .subscribe((data) => {
-    //     if (data) {
-          this.dialog
-            .open(SignupComponent, { disableClose: true })
-            .afterClosed();
-      //   }
-      // });
+    this.dialog.open(SignupComponent, { disableClose: true }).afterClosed();
   }
 
   togglePasswordVisibility(): void {

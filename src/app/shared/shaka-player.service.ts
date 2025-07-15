@@ -32,9 +32,7 @@ export class ShakaPlayerService {
               ...request.headers,
               Authorization: `Bearer ${token}`,
             };
-          } catch (error) {
-            console.error('Auth error:', error);
-          }
+          } catch (error) {}
         });
 
       this.player.configure({
@@ -60,7 +58,6 @@ export class ShakaPlayerService {
 
       return this.player;
     } catch (error) {
-      console.error('Shaka Player initialization failed:', error);
       throw error;
     }
   }
@@ -80,13 +77,11 @@ export class ShakaPlayerService {
         try {
           await this.videoElement.play();
         } catch (error) {
-          console.warn('Autoplay failed, trying muted:', error);
           this.videoElement.muted = true;
           await this.videoElement.play();
         }
       }
     } catch (error) {
-      console.error('Error loading video:', error);
       throw error;
     }
   }
@@ -102,7 +97,6 @@ export class ShakaPlayerService {
 
       return url.toString();
     } catch (error) {
-      console.error('Error getting secure URL:', error);
       throw error;
     }
   }

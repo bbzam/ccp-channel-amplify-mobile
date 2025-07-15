@@ -8,7 +8,8 @@
           [src]="banners[currentMediaIndex].landscapeImageUrl"
           [alt]="banners[currentMediaIndex].title"
         />
-        } @if (!showPhoto && banners[currentMediaIndex].previewVideoUrl) {
+        } @if (!showPhoto && banners[currentMediaIndex].previewVideoUrl &&
+        banners[currentMediaIndex].previewVideoUrl !== 'undefined') {
         <video
           playsinline
           webkit-playsinline

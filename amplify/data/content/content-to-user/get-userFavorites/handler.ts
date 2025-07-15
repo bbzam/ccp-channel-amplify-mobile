@@ -47,7 +47,7 @@ export const handler = async (event: any) => {
 
     return {
       success: true,
-      data: contents,
+      data: contents.map((content) => ({ ...content, isFavorite: true })),
     };
   } catch (error) {
     console.error('Error listing user favorites:', error);

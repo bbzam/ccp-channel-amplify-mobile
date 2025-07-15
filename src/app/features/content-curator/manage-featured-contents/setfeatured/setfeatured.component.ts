@@ -25,8 +25,8 @@ export interface ContentItem {
 export class SetfeaturedComponent {
   readonly featuresService = inject(FeaturesService);
   readonly sharedService = inject(SharedService);
-  optionName: string = "List of Contents";
-  selectedName: string = "Featured Content/s";
+  optionName: string = 'List of Contents';
+  selectedName: string = 'Featured Content/s';
   hasChanges: boolean = false;
   contents: ContentItem[] = [];
   featured: ContentItem[] = [];
@@ -87,14 +87,12 @@ export class SetfeaturedComponent {
             title: matchingContent?.title || '',
           };
         });
-        console.log(this.featured);
       } else {
         // Reset if category doesn't match
         this.featured = [];
         this.featuredData = [];
       }
     } catch (error) {
-      console.error('Error fetching featured data:', error);
       this.featured = [];
       this.featuredData = [];
     }
@@ -117,7 +115,6 @@ export class SetfeaturedComponent {
     };
 
     try {
-      console.log(this.featuredData)
       if (this.featuredData[0] && this.featuredData.length) {
         data.id = this.featuredData[0]?.id;
         await this.sharedService.updateFeaturedAll(data);
@@ -126,8 +123,6 @@ export class SetfeaturedComponent {
       }
 
       this.hasChanges = false;
-    } catch (error) {
-      console.error('Error saving featured content:', error);
-    }
+    } catch (error) {}
   }
 }

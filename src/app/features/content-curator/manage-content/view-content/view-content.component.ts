@@ -140,7 +140,6 @@ export class ViewContentComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.content = data;
     this.setDefaultValue(data);
-    console.log(this.content);
     this.createForm();
     this.setupValidationSubscriptions();
     this.loadCustomFields();
@@ -177,9 +176,7 @@ export class ViewContentComponent {
             value: value as string,
           })
         );
-      } catch (error) {
-        console.error('Error parsing custom fields:', error);
-      }
+      } catch (error) {}
     }
 
     // Store original values
@@ -273,9 +270,7 @@ export class ViewContentComponent {
     try {
       this.customFields = await this.sharedService.getAllCustomFields();
       this.initializeCustomFieldsFormArray();
-    } catch (error) {
-      console.error('Error loading custom fields:', error);
-    }
+    } catch (error) {}
   }
 
   private initializeCustomFieldsFormArray() {
@@ -563,8 +558,6 @@ export class ViewContentComponent {
         .publishAndScheduleContent(this.id, isForPublish)
         .then(
           async (result) => {
-            console.log(result.data);
-
             result.data
               ? (this.featureService.handleSuccess(
                   isForPublish
@@ -586,7 +579,6 @@ export class ViewContentComponent {
           }
         );
     } catch (error) {
-      console.error('Error publishing content:', error);
       this.uploadForm.enable();
     } finally {
       isForPublish
@@ -623,15 +615,8 @@ export class ViewContentComponent {
       this.isUpdating.set(true);
       this.uploadForm.disable();
 
-      console.log({
-        id: this.content.id,
-        ...changes,
-      });
-
       await this.featureService.updateContent(this.content.id, changes).then(
         async (result) => {
-          console.log(result.data);
-
           result.data
             ? (this.featureService.handleSuccess(
                 'Content Updated Successfully!'
@@ -649,7 +634,6 @@ export class ViewContentComponent {
         }
       );
     } catch (error) {
-      console.error('Error publishing content:', error);
       this.uploadForm.enable();
     } finally {
       this.isUpdating.set(false);
@@ -659,66 +643,41 @@ export class ViewContentComponent {
 
   async removeMedia(path: string) {
     try {
-      console.log('Removing...', path);
       this.buttonDisabled.set(true);
       const result = await remove({
         path: path,
       });
       if (result) {
-        console.log('File Removed...', result);
         this.buttonDisabled.set(false);
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 
   async pauseUpload(mediaKey: string, dictionary: string) {
-    console.log(
-      `[Upload Pause] Dictionary: ${dictionary}, MediaKey: ${mediaKey}`
-    );
     const task = this.uploadTasks[dictionary];
     if (!task) {
-      console.log(
-        `[Upload Pause] No active upload task found for ${dictionary}`
-      );
       return;
     }
 
     try {
       await task.pause();
       this.isPaused[dictionary] = true;
-      console.log(`[Upload Paused Successfully] Dictionary: ${dictionary}`);
-    } catch (error) {
-      console.error(`[Upload Pause Failed] Dictionary: ${dictionary}`, error);
-    }
+    } catch (error) {}
   }
 
   async resumeUpload(mediaKey: string, dictionary: string) {
-    console.log(
-      `[Upload Resume] Dictionary: ${dictionary}, MediaKey: ${mediaKey}`
-    );
     const task = this.uploadTasks[dictionary];
     if (!task) {
-      console.log(
-        `[Upload Resume] No active upload task found for ${dictionary}`
-      );
       return;
     }
 
     try {
       await task.resume();
       this.isPaused[dictionary] = false;
-      console.log(`[Upload Resumed Successfully] Dictionary: ${dictionary}`);
-    } catch (error) {
-      console.error(`[Upload Resume Failed] Dictionary: ${dictionary}`, error);
-    }
+    } catch (error) {}
   }
 
   async cancelUpload(mediaKey: string, dictionary: string) {
-    console.log(
-      `[Upload Cancel] Dictionary: ${dictionary}, MediaKey: ${mediaKey}`
-    );
     if (this.uploadTasks[dictionary]) {
       try {
         await this.uploadTasks[dictionary].cancel();
@@ -728,41 +687,28 @@ export class ViewContentComponent {
         // Reset the form control and file URL based on dictionary
         switch (dictionary) {
           case 'landscape':
-            console.log('[Reset Landscape] Clearing landscape image data');
             this.landscapeFileURL = '';
             this.landscapeImageKey = '';
             this.uploadForm.get('landscapeimage')?.reset();
             break;
           case 'portrait':
-            console.log('[Reset Portrait] Clearing portrait image data');
             this.portraitFileURL = '';
             this.portraitImageKey = '';
             this.uploadForm.get('portraitimage')?.reset();
             break;
           case 'preview':
-            console.log('[Reset Preview] Clearing preview video data');
             this.previewFileURL = '';
             this.previewVideoKey = '';
             this.uploadForm.get('previewvideo')?.reset();
             break;
           case 'full':
-            console.log('[Reset Full] Clearing full video data');
             this.fullFileURL = '';
             this.fullVideoKey = '';
             this.uploadForm.get('fullvideo')?.reset();
             break;
         }
-        console.log(
-          `[Upload Cancelled Successfully] Dictionary: ${dictionary}`
-        );
-      } catch (error) {
-        console.error(
-          `[Upload Cancel Failed] Dictionary: ${dictionary}`,
-          error
-        );
-      }
+      } catch (error) {}
     } else {
-      console.log(`[Upload Cancel] No upload task found for ${dictionary}`);
     }
   }
 
@@ -791,9 +737,7 @@ export class ViewContentComponent {
             (this as any)[presignedVariable] = null;
           }
         });
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 
   async uploadMedia(
@@ -802,8 +746,6 @@ export class ViewContentComponent {
     dictionary: string
   ): Promise<void> {
     try {
-      console.log('trying to upload...', file);
-
       // Clear any existing task for this dictionary
       if (this.uploadTasks[dictionary]) {
         delete this.uploadTasks[dictionary];
@@ -830,14 +772,11 @@ export class ViewContentComponent {
 
         try {
           await result.result; // Wait for upload to complete
-          console.log('File Uploaded...', result);
           this.uploadProgress[dictionary] = 100;
         } catch (error) {
           if (isCancelError(error)) {
-            console.log('Upload was cancelled');
             this.uploadProgress[dictionary] = 0;
           } else {
-            console.error('Upload error:', error);
             this.uploadProgress[dictionary] = 0;
           }
         } finally {
@@ -846,7 +785,6 @@ export class ViewContentComponent {
         }
       }
     } catch (e) {
-      console.log('error', e);
       this.uploadProgress[mediaKey] = 0;
     }
   }
@@ -895,7 +833,6 @@ export class ViewContentComponent {
         await this.uploadMedia(file, landscapeImageKey, 'landscape');
       } catch (error) {
         this.landscapeErrorMessage.set('Error processing image');
-        console.error(error);
       }
     }
   }
@@ -943,7 +880,6 @@ export class ViewContentComponent {
         this.uploadMedia(file, portraitImageKey, 'portrait');
       } catch (error) {
         this.portraitErrorMessage.set('Error processing image');
-        console.error(error);
       }
     }
   }
@@ -991,7 +927,6 @@ export class ViewContentComponent {
         this.uploadMedia(file, previewVideoKey, 'preview');
       } catch (error) {
         this.previewErrorMessage.set('Error processing video');
-        console.error(error);
       }
     }
   }
@@ -1069,7 +1004,6 @@ export class ViewContentComponent {
         this.uploadMedia(file, fullVideoKey, 'full');
       } catch (error) {
         this.fullErrorMessage.set('Error processing video');
-        console.error(error);
       }
     }
   }

@@ -168,7 +168,6 @@ export class ResetPasswordComponent implements OnInit {
       const formData = this.resetPassForm.value;
       this.dialogRef.close(formData);
     } catch (error) {
-      console.error('failed:', error);
     } finally {
       this.isLoading.set(false);
     }

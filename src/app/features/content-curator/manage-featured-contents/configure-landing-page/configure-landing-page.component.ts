@@ -79,14 +79,12 @@ export class ConfigureLandingPageComponent {
             title: matchingContent?.title || '',
           };
         });
-        console.log(this.featured);
       } else {
         // Reset if category doesn't match
         this.featured = [];
         this.featuredData = [];
       }
     } catch (error) {
-      console.error('Error fetching featured data:', error);
       this.featured = [];
       this.featuredData = [];
     }
@@ -117,8 +115,6 @@ export class ConfigureLandingPageComponent {
       }
 
       this.hasChanges = false;
-    } catch (error) {
-      console.error('Error saving featured content:', error);
-    }
+    } catch (error) {}
   }
 }
