@@ -16,7 +16,6 @@ export class FileValidator {
         const error = `Invalid file extension: ${
           fileExtension || 'unknown'
         }. Allowed extensions are: ${allowedExtensions.join(', ')}`;
-        console.error(error);
         resolve({ valid: false, error });
         return;
       }
@@ -26,7 +25,6 @@ export class FileValidator {
       reader.onloadend = (event) => {
         if (!event.target?.result) {
           const error = 'Failed to read file content';
-          console.error(error);
           resolve({ valid: false, error });
           return;
         }
@@ -60,7 +58,6 @@ export class FileValidator {
 
         if (!isValidType) {
           const error = `File content does not match the extension: ${fileExtension}. The file may be corrupted or renamed.`;
-          console.error(error);
           resolve({ valid: false, error });
           return;
         }
@@ -70,7 +67,6 @@ export class FileValidator {
           const error = `File size (${(file.size / (1024 * 1024)).toFixed(
             2
           )} MB) exceeds the limit of ${maxSizeMB.toFixed(2)} MB`;
-          console.error(error);
           resolve({ valid: false, error });
           return;
         }
@@ -84,13 +80,9 @@ export class FileValidator {
             img.height > maxHeight
           ) {
             const error = `Invalid image dimensions: ${img.width}x${img.height}. Required dimensions: width between ${minWidth} and ${maxWidth}px, height between ${minHeight} and ${maxHeight}px`;
-            console.error(error);
             resolve({ valid: false, error });
             return;
           } else {
-            console.info(
-              `Valid image: ${img.width}x${img.height}, ${file.size} bytes`
-            );
             resolve({ valid: true });
             return;
           }
@@ -98,7 +90,6 @@ export class FileValidator {
         img.onerror = () => {
           const error =
             'Error loading image: The file may be corrupted or not a valid image';
-          console.error(error);
           resolve({ valid: false, error });
           return;
         };
@@ -123,7 +114,6 @@ export class FileValidator {
         const error = `Invalid file extension: ${
           fileExtension || 'unknown'
         }. Allowed extensions are: ${allowedExtensions.join(', ')}`;
-        console.error(error);
         resolve({ valid: false, error });
         return;
       }
@@ -133,7 +123,6 @@ export class FileValidator {
         const error = `File size (${(file.size / (1024 * 1024 * 1024)).toFixed(
           2
         )} GB) exceeds the limit of ${maxSizeGB.toFixed(2)} GB`;
-        console.error(error);
         resolve({ valid: false, error });
         return;
       }
@@ -150,7 +139,6 @@ export class FileValidator {
         const error = `Invalid file type: ${
           file.type
         }. Allowed types are: ${allowedMimeTypes.join(', ')}`;
-        console.error(error);
         resolve({ valid: false, error });
         return;
       }
@@ -221,7 +209,6 @@ export class FileValidator {
 
         if (!isValidSignature) {
           const error = `Invalid video file signature for ${fileExtension} format. The file may be corrupted or renamed.`;
-          console.error(error);
           resolve({ valid: false, error });
           return;
         }
@@ -241,7 +228,6 @@ export class FileValidator {
             if (!video.duration || video.duration === 0) {
               const error =
                 'Unable to determine video duration. The file may be corrupted or in an unsupported format';
-              console.error(error);
               resolve({ valid: false, error });
               return;
             }
@@ -249,7 +235,6 @@ export class FileValidator {
             const error = `Video duration (${Math.round(
               video.duration
             )} seconds) exceeds the limit of ${maxDurationSeconds} seconds`;
-            console.error(error);
             resolve({ valid: false, error });
             return;
           }
@@ -257,21 +242,16 @@ export class FileValidator {
           if (video.videoWidth === 0 || video.videoHeight === 0) {
             const error =
               'Invalid video dimensions: The video has zero width or height';
-            console.error(error);
             resolve({ valid: false, error });
             return;
           }
 
-          console.info(
-            `Valid video: ${video.videoWidth}x${video.videoHeight}, ${file.size} bytes, ${video.duration}s`
-          );
           resolve({ valid: true });
         };
 
         video.onerror = () => {
           const error =
             'Error loading video: The file may be corrupted or not a valid video format';
-          console.error(error);
           resolve({ valid: false, error });
         };
 
@@ -281,7 +261,6 @@ export class FileValidator {
       reader.onerror = () => {
         const error =
           'Error reading file: The file may be inaccessible or corrupted';
-        console.error(error);
         resolve({ valid: false, error });
       };
 

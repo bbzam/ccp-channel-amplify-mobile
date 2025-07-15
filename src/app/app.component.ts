@@ -63,7 +63,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.handleRoleBasedRedirection();
-    this.detectScreenRecording();
+    // this.detectScreenRecording();
   }
 
   constructor() {

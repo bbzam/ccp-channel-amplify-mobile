@@ -119,14 +119,12 @@ export class SetFeaturedComponent implements OnInit, OnChanges {
   // applyFilter(event: Event) {
   //   const target = event.target as HTMLInputElement;
   //   const value = target.value;
-  //   console.log(value);
   //   this.getFeaturedContent.emit(value);
   // }
 
   applyFilter(event: Event) {
     const target = event.target as HTMLInputElement;
     const value = target.value;
-    console.log(value);
 
     // Clear any existing timeout
     if (this.searchTimeout) {

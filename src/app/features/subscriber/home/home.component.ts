@@ -7,7 +7,9 @@ import { NoVideoAvailableComponent } from '../../../shared/elements/no-video-ava
 import { FeaturesService } from '../../features.service';
 import { SharedService } from '../../../shared/shared.service';
 import { MatDialog } from '@angular/material/dialog';
-import { SeeMoreComponent } from '../../../shared/dialogs/see-more/see-more.component';
+import { MatIcon } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -17,6 +19,8 @@ import { SeeMoreComponent } from '../../../shared/dialogs/see-more/see-more.comp
     RecommendedComponent,
     ContinueWatchingComponent,
     NoVideoAvailableComponent,
+    MatIcon,
+    MatButtonModule,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -39,11 +43,11 @@ export class HomeComponent implements OnInit {
   readonly featuresService = inject(FeaturesService);
   readonly sharedService = inject(SharedService);
   readonly dialog = inject(MatDialog);
+  readonly router = inject(Router);
 
   ngOnInit(): void {
-    this.loadEssentialContent();
-    // Load all categories at once
-    setTimeout(() => this.loadAllCategories(), 1000);
+    setTimeout(() => this.loadEssentialContent(), 1000);
+    setTimeout(() => this.loadAllCategories(), 1500);
   }
 
   async loadEssentialContent() {
@@ -106,8 +110,40 @@ export class HomeComponent implements OnInit {
 
         this.banners = processedItems;
       }
+
+      // Process continue watching
+      const getContentToUserData = await this.sharedService.getContinueWatch();
+
+      if (getContentToUserData && getContentToUserData.length > 0) {
+        const continueWatchingIds = getContentToUserData.map(
+          (item: any) => item.contentId
+        );
+
+        // Get content items and add presigned URLs
+        const processedItems = await Promise.all(
+          continueWatchingIds.map((id: string) => {
+            const content = data.find((item: any) => item.id === id);
+            if (!content) return null;
+
+            return Promise.all([
+              this.featuresService.getFileUrl(content.portraitImageUrl),
+              this.featuresService.getFileUrl(content.previewVideoUrl),
+            ]).then(([urlPortrait, urlPreviewVideo]) => {
+              return {
+                ...content,
+                portraitImagePresignedUrl: urlPortrait,
+                previewVideoPresignedUrl: urlPreviewVideo,
+                pauseTime: getContentToUserData.find(
+                  (item: any) => item.contentId === id
+                ).pauseTime,
+              };
+            });
+          })
+        );
+
+        this.continueWatching = processedItems.filter(Boolean);
+      }
     } catch (error) {
-      console.error('Error fetching essential content:', error);
       this.banners = [];
       this.featured = [];
     }
@@ -143,9 +179,7 @@ export class HomeComponent implements OnInit {
       });
 
       await this.loadCustomTagCategories(allData);
-    } catch (error) {
-      console.error('Error loading categories:', error);
-    }
+    } catch (error) {}
   }
 
   async loadCustomTagCategories(allData: any[]) {
@@ -194,7 +228,6 @@ export class HomeComponent implements OnInit {
         this.customTags = processedTags.filter((tag) => tag.content.length > 0);
       }
     } catch (error) {
-      console.error('Error loading custom tag categories:', error);
       this.customTags = [];
     }
   }
@@ -220,36 +253,30 @@ export class HomeComponent implements OnInit {
     // Update the appropriate category array
     switch (category) {
       case 'theater':
-        this.theater = [...processedData];
+        this.theater = [...processedData.slice(0, 10)];
         break;
       case 'film':
-        this.film = [...processedData];
+        this.film = [...processedData.slice(0, 10)];
         break;
       case 'music':
-        this.music = [...processedData];
+        this.music = [...processedData.slice(0, 10)];
         break;
       case 'dance':
-        this.dance = [...processedData];
+        this.dance = [...processedData.slice(0, 10)];
         break;
       case 'education':
-        this.education = [...processedData];
+        this.education = [...processedData.slice(0, 10)];
         break;
       case 'ccpspecials':
-        this.ccpspecials = [...processedData];
+        this.ccpspecials = [...processedData.slice(0, 10)];
         break;
       case 'ccpclassics':
-        this.ccpclassics = [...processedData];
+        this.ccpclassics = [...processedData.slice(0, 10)];
         break;
     }
   }
 
-  seeMoreOnClick(data: any, title: string) {
-    this.dialog
-      .open(SeeMoreComponent, {
-        data: { data, title },
-        panelClass: 'seemore-dialog',
-        disableClose: true,
-      })
-      .afterClosed();
+  seeMoreOnClick(category: any) {
+    this.router.navigate([`/subscriber/${category}`]);
   }
 }

@@ -78,6 +78,7 @@ export class AuthServiceService {
   }
 
   private setSessionData(idToken: any) {
+    sessionStorage.setItem('userId', String(idToken?.payload['sub']));
     sessionStorage.setItem('auth', String(idToken));
     sessionStorage.setItem(
       'username',
@@ -111,7 +112,6 @@ export class AuthServiceService {
         username: username,
         password: password,
       });
-      console.log(nextStep);
 
       if (nextStep.signInStep === 'DONE') {
         this.currentSession();
@@ -166,7 +166,6 @@ export class AuthServiceService {
       this.handleError('Something went wrong. Please try again.');
       return false;
     } catch (error) {
-      console.error('Error changing password:', error);
       this.handleError(
         'An error occurred while changing your password. Please try again'
       );
@@ -217,7 +216,6 @@ export class AuthServiceService {
       });
 
       if (confirmSignUpNextStep.signUpStep === 'DONE') {
-        console.log(`SignUp Complete`);
         this.dialog
           .open(SuccessMessageDialogComponent, {
             data: { message: 'SignUp Completed!' },
@@ -248,7 +246,6 @@ export class AuthServiceService {
     } catch (error) {
       this.sharedService.hideLoader();
       this.handleError(error);
-      console.error('Error initiating password reset:', error);
       throw error;
     } finally {
       this.sharedService.hideLoader();
@@ -274,7 +271,6 @@ export class AuthServiceService {
     } catch (error) {
       this.sharedService.hideLoader();
       this.handleError(error);
-      console.error('Error confirming password reset:', error);
       throw error;
     } finally {
       this.sharedService.hideLoader();
@@ -303,7 +299,6 @@ export class AuthServiceService {
         });
       return true;
     } catch (error) {
-      console.error('Error updating password:', error);
       this.handleError(error);
       return false;
     }
@@ -342,13 +337,11 @@ export class AuthServiceService {
       const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
       return !!accessToken && !!idToken;
     } catch (err) {
-      console.error(err);
       return false;
     }
   }
 
   public handleError(error: any) {
-    console.error(error);
     this.sharedService.hideLoader();
     return this.dialog
       .open(ErrorMessageDialogComponent, {
@@ -358,7 +351,6 @@ export class AuthServiceService {
   }
 
   public handleSuccess(success: any) {
-    console.log(success);
     this.sharedService.hideLoader();
     return this.dialog
       .open(SuccessMessageDialogComponent, {

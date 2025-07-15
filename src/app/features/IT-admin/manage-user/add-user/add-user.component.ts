@@ -16,7 +16,7 @@ import { errorMessages } from '../../../../shared/utils/errorMessages';
 import {
   allowMax100,
   disallowCharacters,
-  emailValidator
+  emailValidator,
 } from '../../../../shared/utils/validators';
 import { MatDividerModule } from '@angular/material/divider';
 import { FeaturesService } from '../../../features.service';
@@ -31,7 +31,7 @@ import { MatButtonModule } from '@angular/material/button';
     ReactiveFormsModule,
     MatIconModule,
     MatDividerModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   templateUrl: './add-user.component.html',
   styleUrl: './add-user.component.css',
@@ -142,8 +142,6 @@ export class AddUserComponent implements OnInit {
   }
 
   async createUserOnClick(): Promise<void> {
-    console.log(this.createUserForm);
-
     if (this.createUserForm.invalid) return;
 
     this.isLoading.set(true);
@@ -161,10 +159,8 @@ export class AddUserComponent implements OnInit {
       this.dialogRef.close();
 
       if (!isSuccess) {
-        console.log('');
       }
     } catch (error) {
-      console.error('create user failed:', error);
     } finally {
       this.isLoading.set(false);
     }

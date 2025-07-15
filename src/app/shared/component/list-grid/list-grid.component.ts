@@ -80,10 +80,10 @@ export class ListGridComponent implements AfterViewInit, OnInit {
     return timeParts.join(' ');
   }
 
-  watchVideo(videoUrl: string) {
+  watchVideo(videoUrl: string, id: string) {
     this.featuresService.getFileUrl(videoUrl).then((presignedUrl) => {
       this.router.navigate(['subscriber/video-player'], {
-        queryParams: { videoUrl: presignedUrl },
+        queryParams: { videoUrl: presignedUrl, id: id },
       });
     });
   }

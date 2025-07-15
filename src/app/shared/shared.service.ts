@@ -28,6 +28,55 @@ export class SharedService {
     this.isLoadingSubject.next({ show: false });
   }
 
+  async getStatistics(): Promise<any> {
+    try {
+      this.showLoader('Fetching content...');
+      const stats = await this.client.queries.statistics({});
+
+      if (stats && stats.data) {
+        this.hideLoader();
+
+        // Check if data is a string before parsing
+        const parsedData =
+          typeof stats.data === 'string' ? JSON.parse(stats.data) : stats.data;
+
+        // if (parsedData.success && parsedData.data) {
+        //   // Map the viewCount array to the requested format
+        //   const formattedViewCount = parsedData.data.map((item: any) => ({
+        //     title: item.title?.S,
+        //     viewCount: item.viewCount?.N,
+        //   }));
+
+        //   return formattedViewCount;
+        // }
+        return parsedData;
+      }
+
+      this.hideLoader();
+      return stats;
+    } catch (error) {
+      this.hideLoader();
+      this.handleError(error);
+      throw error;
+    }
+  }
+
+  async addCustomField(data: any) {
+    try {
+      const result = await this.client.models.customFields.create(data);
+      if (!result.errors) {
+        this.handleSuccess('Custom field added successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while adding a custom field. Please try again'
+        );
+      }
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+
   async getFeaturedAll(category: string): Promise<any> {
     try {
       this.showLoader('Fetching content...');
@@ -47,7 +96,6 @@ export class SharedService {
     } catch (error) {
       this.handleError(error);
       this.hideLoader();
-      console.error('Error fetching featured content:', error);
       throw error;
     }
   }
@@ -64,7 +112,6 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error adding featured content:', error);
       throw error;
     }
   }
@@ -81,7 +128,6 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error updating featured content:', error);
       throw error;
     }
   }
@@ -98,7 +144,6 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error adding a tag:', error);
       throw error;
     }
   }
@@ -113,7 +158,22 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error updating:', error);
+      throw error;
+    }
+  }
+
+  async updateCustomField(data: any) {
+    try {
+      const result = await this.client.models.customFields.update(data);
+      if (!result.errors) {
+        this.handleSuccess('Custom field updated successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while updating custom field. Please try again'
+        );
+      }
+    } catch (error) {
+      this.handleError(error);
       throw error;
     }
   }
@@ -130,7 +190,44 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error deleting tag:', error);
+      throw error;
+    }
+  }
+
+  async getAllCustomFields(keyword?: string): Promise<any> {
+    try {
+      const { data } = await this.client.models.customFields.list({
+        filter: {
+          ...(keyword && {
+            fieldName: {
+              contains: keyword,
+            },
+          }),
+        },
+      });
+      if (data) {
+        return data;
+      }
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+
+  async deleteCustomField(id: string) {
+    try {
+      const result = await this.client.models.customFields.delete({
+        id: id,
+      });
+      if (!result.errors) {
+        this.handleSuccess('Custom field deleted successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while deleting the custom field. Please try again'
+        );
+      }
+    } catch (error) {
+      this.handleError(error);
       throw error;
     }
   }
@@ -156,13 +253,74 @@ export class SharedService {
       }
     } catch (error) {
       this.handleError(error);
-      console.error('Error fetching tags:', error);
+      throw error;
+    }
+  }
+
+  async createContentToUser(data: any) {
+    try {
+      const result = await this.client.mutations.createContentToUserFunction(
+        data
+      );
+
+      if (result && result.data) {
+        return result.data;
+      }
+
+      throw new Error('Failed to create content to user relationship');
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getContentToUser(contentId: string): Promise<any> {
+    try {
+      const result = await this.client.queries.getContentToUserFunction({
+        contentId: contentId,
+      });
+
+      if (result && result.data) {
+        return typeof result.data === 'string'
+          ? JSON.parse(result.data)
+          : result.data;
+      }
+      return [];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateContentToUser(data: any) {
+    try {
+      // const result = await this.client.mutations.updateContentToUser({
+      //   data: data,
+      // });
+      // if (!result || !result.data) {
+      //   throw new Error('Failed to update content to user relationship');
+      // }
+      // return result.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getContinueWatch(): Promise<any> {
+    try {
+      const result = await this.client.queries.getContinueWatchFunction({});
+      if (result?.data) {
+        const parsedData =
+          typeof result.data === 'string'
+            ? JSON.parse(result.data)
+            : result.data;
+        return parsedData.success ? parsedData.data : [];
+      }
+      return [];
+    } catch (error) {
       throw error;
     }
   }
 
   public handleError(error: any) {
-    console.error(error);
     return this.dialog
       .open(ErrorMessageDialogComponent, {
         data: { message: String(error) },

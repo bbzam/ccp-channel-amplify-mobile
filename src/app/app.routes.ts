@@ -107,6 +107,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'favorites',
+        loadComponent: () =>
+          import('./features/subscriber/favorites/favorites.component').then(
+            (m) => m.FavoritesComponent
+          ),
+      },
+      {
         path: 'video-player',
         loadComponent: () =>
           import('./shared/component/video-player/video-player.component').then(
@@ -162,7 +169,7 @@ export const routes: Routes = [
         data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
           import(
-            './features/content-curator/published/published.component'
+            './features/content-curator/manage-content/published/published.component'
           ).then((m) => m.PublishedComponent),
       },
       {
@@ -171,7 +178,7 @@ export const routes: Routes = [
         data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
           import(
-            './features/content-curator/scheduled/scheduled.component'
+            './features/content-curator/manage-content/scheduled/scheduled.component'
           ).then((m) => m.ScheduledComponent),
       },
       {
@@ -180,7 +187,7 @@ export const routes: Routes = [
         data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
           import(
-            './features/content-curator/setfeatured/setfeatured.component'
+            './features/content-curator/manage-featured-contents/setfeatured/setfeatured.component'
           ).then((m) => m.SetfeaturedComponent),
       },
       {
@@ -188,7 +195,7 @@ export const routes: Routes = [
         resolve: { loading: loaderResolver },
         data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
-          import('./features/content-curator/settag/settag.component').then(
+          import('./features/content-curator/manage-tag/settag/settag.component').then(
             (m) => m.SettagComponent
           ),
       },
@@ -197,9 +204,18 @@ export const routes: Routes = [
         resolve: { loading: loaderResolver },
         data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
-          import('./features/content-curator/tag/tag.component').then(
+          import('./features/content-curator/manage-tag/tag/tag.component').then(
             (m) => m.TagComponent
           ),
+      },
+      {
+        path: 'custom-fields',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import(
+            './features/content-curator/manage-custom-fields/customfields/customfields.component'
+          ).then((m) => m.CustomfieldsComponent),
       },
       {
         path: 'configure-landing-page',
@@ -207,7 +223,7 @@ export const routes: Routes = [
         data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
           import(
-            './features/content-curator/configure-landing-page/configure-landing-page.component'
+            './features/content-curator/manage-featured-contents/configure-landing-page/configure-landing-page.component'
           ).then((m) => m.ConfigureLandingPageComponent),
       },
       {
@@ -227,15 +243,6 @@ export const routes: Routes = [
           import(
             './features/IT-admin/manage-user/add-user/add-user.component'
           ).then((m) => m.AddUserComponent),
-      },
-      {
-        path: 'manage-keys',
-        resolve: { loading: loaderResolver },
-        data: { loadingMessage: 'Loading Page...' },
-        loadComponent: () =>
-          import('./beta-test/manage-keys/manage-keys.component').then(
-            (m) => m.ManageKeysComponent
-          ),
       },
       {
         path: 'account-settings',
@@ -315,14 +322,14 @@ export const routes: Routes = [
         path: 'published',
         loadComponent: () =>
           import(
-            './features/content-curator/published/published.component'
+            './features/content-curator/manage-content/published/published.component'
           ).then((m) => m.PublishedComponent),
       },
       {
         path: 'scheduled',
         loadComponent: () =>
           import(
-            './features/content-curator/scheduled/scheduled.component'
+            './features/content-curator/manage-content/scheduled/scheduled.component'
           ).then((m) => m.ScheduledComponent),
       },
       {

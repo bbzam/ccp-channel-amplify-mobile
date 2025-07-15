@@ -13,7 +13,6 @@ import { allFeatured } from '../../../shared/mock-data';
 import { MoreInfoComponent } from '../../../shared/dialogs/more-info/more-info.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NgClass } from '@angular/common';
-import { BetaAccessComponent } from '../../../beta-test/beta-access/beta-access.component';
 import { SignupComponent } from '../../../auth/components/signup/signup.component';
 
 @Component({
@@ -58,29 +57,23 @@ export class BannerComponent implements OnInit, AfterViewInit {
 
   getVideoDuration(): number {
     const videoElement = document.createElement('video');
-    videoElement.src = this.banners[this.currentMediaIndex].teaser;
 
-    // Listen for the loadedmetadata event to ensure duration is available
-    if (this.banners[this.currentMediaIndex].teaser) {
+    // Add URL validation here
+    const videoUrl = this.banners[this.currentMediaIndex].teaser;
+    if (videoUrl && videoUrl !== 'undefined' && videoUrl.trim() !== '') {
+      videoElement.src = videoUrl;
+
       videoElement.addEventListener('loadedmetadata', () => {
-        this.teaserDuration = videoElement.duration * 1000; // Duration in milliseconds
+        this.teaserDuration = videoElement.duration * 1000;
       });
     } else {
-      this.teaserDuration = 0;
+      this.teaserDuration = 5000; // Default duration
     }
 
     return this.teaserDuration;
   }
 
   register(): void {
-    // this.dialog.open(SignupComponent).afterClosed().subscribe();
-    this.dialog
-      .open(BetaAccessComponent)
-      .afterClosed()
-      .subscribe((data) => {
-        if (data) {
-          this.dialog.open(SignupComponent, {disableClose: true}).afterClosed();
-        }
-      });
+    this.dialog.open(SignupComponent, { disableClose: true }).afterClosed();
   }
 }

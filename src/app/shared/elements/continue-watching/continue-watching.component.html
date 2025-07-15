@@ -23,6 +23,10 @@
         controls
         controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
       ></video>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="calculateProgress(item)"
+      ></mat-progress-bar>
       <div class="actions">
         <label>{{ item.title }}</label>
       </div>

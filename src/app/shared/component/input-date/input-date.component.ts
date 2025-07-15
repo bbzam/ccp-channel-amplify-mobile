@@ -90,7 +90,6 @@ export class InputDateComponent implements OnInit {
       this.dialogRef.close(date);
       this.isLoading.set(false);
     } catch (error) {
-      console.error('Confirmation failed:', error);
     } finally {
       this.isLoading.set(false);
     }

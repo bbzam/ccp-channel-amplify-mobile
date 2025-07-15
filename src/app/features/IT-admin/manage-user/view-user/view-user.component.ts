@@ -188,8 +188,6 @@ export class ViewUserComponent implements OnInit {
   }
 
   async updateUserOnClick(): Promise<void> {
-    console.log(this.editUserForm);
-
     if (this.editUserForm.invalid) return;
 
     this.isLoading.set(true);
@@ -205,7 +203,6 @@ export class ViewUserComponent implements OnInit {
       const isSuccess = await this.featuresService.updateUser(data);
       this.dialogRef.close(true);
     } catch (error) {
-      console.error('create user failed:', error);
     } finally {
       this.isLoading.set(false);
     }
@@ -219,7 +216,6 @@ export class ViewUserComponent implements OnInit {
       const isSuccess = await this.featuresService.disableUser(data);
       this.dialogRef.close(true);
     } catch (error) {
-      console.error('create user failed:', error);
     } finally {
       this.isLoading.set(false);
     }
@@ -233,7 +229,6 @@ export class ViewUserComponent implements OnInit {
       const isSuccess = await this.featuresService.enableUser(data);
       this.dialogRef.close(true);
     } catch (error) {
-      console.error('create user failed:', error);
     } finally {
       this.isLoading.set(false);
     }

@@ -1,10 +1,18 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
-import { addUser } from './add-user/resource';
-import { listUsers } from './list-users/resource';
-import { editUser } from './edit-user/resource';
-import { disableUser } from './disable-user/resource';
-import { enableUser } from './enable-user/resource';
-import { listUser } from './list-user/resource';
+import { addUser } from './auth/add-user/resource';
+import { listUsers } from './auth/list-users/resource';
+import { editUser } from './auth/edit-user/resource';
+import { disableUser } from './auth/disable-user/resource';
+import { enableUser } from './auth/enable-user/resource';
+import { listUser } from './auth/list-user/resource';
+import { statistics } from './content/statistics/resource';
+import { getContentToUserFunction } from './content/content-to-user/get-contentToUser/resource';
+import { createContentToUserFunction } from './content/content-to-user/create-contentToUser/resource';
+import { getUserFavoritesFunction } from './content/content-to-user/get-userFavorites/resource';
+import { getContinueWatchFunction } from './content/content-to-user/get-continueWatch/resource';
+import { createContentFunction } from './content/content/create-content/resource';
+import { updateContentFunction } from './content/content/update-content/resource';
+import { getContentFunction } from './content/content/get-content/resource';
 
 const schema = a.schema({
   Content: a
@@ -34,6 +42,9 @@ const schema = a.schema({
       resolution: a.string().required(),
       status: a.boolean().required(), //published or scheduled
       publishDate: a.date(),
+      viewCount: a.integer(),
+      customFields: a.json(),
+      contentToUser: a.hasMany('contentToUser', 'contentId'),
     })
     .authorization((allow) => [
       allow.authenticated().to(['read']),
@@ -42,17 +53,172 @@ const schema = a.schema({
         .to(['create', 'update', 'delete']),
     ]),
 
-  Keys: a
-    .model({
-      id: a.id().required(),
-      isUsed: a.boolean().required(),
+  getContentFunction: a
+    .query()
+    .arguments({
+      category: a.string(),
+      status: a.boolean(),
+      keyword: a.string(),
+      fields: a.string().array(),
+    })
+    .returns(a.string())
+    .handler(a.handler.function(getContentFunction))
+    .authorization((allow) => [
+      allow.groups([
+        'USER',
+        'SUBSCRIBER',
+        'CONTENT_CREATOR',
+        'IT_ADMIN',
+        'SUPER_ADMIN',
+      ]),
+    ]),
+
+  createContentFunction: a
+    .mutation()
+    .arguments({
+      title: a.string().required(),
+      description: a.string().required(),
+      category: a.enum([
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
+      subCategory: a.string(),
+      director: a.string(),
+      writer: a.string(),
+      yearReleased: a.string(),
+      userType: a.enum(['free', 'subscriber']),
+      landscapeImageUrl: a.string().required(),
+      portraitImageUrl: a.string().required(),
+      previewVideoUrl: a.string().required(),
+      fullVideoUrl: a.string().required(),
+      runtime: a.float().required(),
+      resolution: a.string().required(),
+      status: a.boolean().required(),
+      publishDate: a.date(),
+      customFields: a.json(),
     })
     .authorization((allow) => [
-      allow.guest().to(['update', 'read']),
+      allow.groups(['CONTENT_CREATOR', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(createContentFunction))
+    .returns(a.json()),
+
+  updateContentFunction: a
+    .mutation()
+    .arguments({
+      id: a.id().required(),
+      title: a.string(),
+      description: a.string(),
+      category: a.enum([
+        'theater',
+        'film',
+        'music',
+        'dance',
+        'education',
+        'ccpspecials',
+        'ccpclassics',
+      ]),
+      subCategory: a.string(),
+      director: a.string(),
+      writer: a.string(),
+      yearReleased: a.string(),
+      userType: a.enum(['free', 'subscriber']),
+      landscapeImageUrl: a.string(),
+      portraitImageUrl: a.string(),
+      previewVideoUrl: a.string(),
+      fullVideoUrl: a.string(),
+      runtime: a.float(),
+      resolution: a.string(),
+      status: a.boolean(),
+      publishDate: a.date(),
+      customFields: a.json(),
+    })
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(updateContentFunction))
+    .returns(a.json()),
+
+  customFields: a
+    .model({
+      fieldName: a.string().required(),
+    })
+    .authorization((allow) => [
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
-        .to(['create', 'read', 'update', 'delete']),
+        .to(['read', 'create', 'update', 'delete']),
+      allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
     ]),
+
+  contentToUser: a
+    .model({
+      userId: a.string().required(),
+      pauseTime: a.string(),
+      isFavorite: a.boolean(),
+      contentId: a.id().required(),
+      content: a.belongsTo('Content', 'contentId'),
+    })
+    .authorization((allow) => [
+      allow.groups(['USER', 'SUBSCRIBER']).to(['create', 'update', 'read']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']).to(['read']),
+    ]),
+
+  createContentToUserFunction: a
+    .mutation()
+    .arguments({
+      contentId: a.string().required(),
+      pauseTime: a.string(),
+      isFavorite: a.boolean(),
+    })
+    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .handler(a.handler.function(createContentToUserFunction))
+    .returns(a.json()),
+
+  getContentToUserFunction: a
+    .query()
+    .arguments({
+      contentId: a.string().required(),
+    })
+    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .handler(a.handler.function(getContentToUserFunction))
+    .returns(a.json()),
+
+  getUserFavoritesFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .handler(a.handler.function(getUserFavoritesFunction))
+    .returns(a.json()),
+
+  getContinueWatchFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .handler(a.handler.function(getContinueWatchFunction))
+    .returns(a.json()),
+
+  // updateContentToUser: a
+  //   .mutation()
+  //   .arguments({
+  //     data: a.json().required(),
+  //   })
+  //   .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+  //   .handler(a.handler.function(updateContentToUser))
+  //   .returns(a.json()),
+
+  // incrementViewCount: a
+  //   .mutation()
+  //   .arguments({
+  //     contentId: a.string().required(),
+  //   })
+  //   .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+  //   .handler(a.handler.function(incrementViewcount))
+  //   .returns(a.json()),
 
   FeaturedAll: a
     .model({
@@ -124,6 +290,15 @@ const schema = a.schema({
       allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(addUser))
+    .returns(a.json()),
+
+  statistics: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(statistics))
     .returns(a.json()),
 
   listUser: a

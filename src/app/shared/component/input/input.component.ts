@@ -98,7 +98,6 @@ export class InputComponent implements OnInit {
       const input = this.inputForm.get('input')?.value;
       this.dialogRef.close(input);
     } catch (error) {
-      console.error('Submit failed:', error);
     } finally {
       this.isLoading.set(false);
     }

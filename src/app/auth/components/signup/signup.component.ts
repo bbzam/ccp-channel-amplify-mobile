@@ -38,7 +38,7 @@ import { MatButtonModule } from '@angular/material/button';
     ReactiveFormsModule,
     MatIconModule,
     MatDividerModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css',
@@ -188,8 +188,6 @@ export class SignupComponent implements OnInit {
   }
 
   async signUpOnClick(): Promise<void> {
-    console.log(this.signupForm);
-
     if (this.signupForm.invalid) return;
 
     this.isLoading.set(true);
@@ -207,10 +205,8 @@ export class SignupComponent implements OnInit {
       this.dialogRef.close();
 
       if (!isSuccess) {
-        console.log('Sign-in requires further confirmation.');
       }
     } catch (error) {
-      console.error('Sign-up failed:', error);
     } finally {
       this.isLoading.set(false);
     }

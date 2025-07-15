@@ -2,7 +2,9 @@
   <form [formGroup]="inputForm" (ngSubmit)="submit()">
     <div class="form-field-container">
       <h2>{{ content.title }}</h2>
+      @if(content.subtitle) {
       <p>{{ content.subtitle }}</p>
+      }
     </div>
     <div class="form-field-container">
       <label for="input">{{ content.label }}</label>

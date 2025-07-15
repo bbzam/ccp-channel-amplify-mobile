@@ -1,12 +1,13 @@
 import { defineAuth } from '@aws-amplify/backend';
 import { postConfirmation } from './post-confirmation/resource';
-import { addUser } from '../data/add-user/resource';
+import { addUser } from '../data/auth/add-user/resource';
 import { customMessage } from '../auth/custom-message/resource';
-import { listUsers } from '../data/list-users/resource';
-import { editUser } from '../data/edit-user/resource';
-import { disableUser } from '../data/disable-user/resource';
-import { enableUser } from '../data/enable-user/resource';
-import { listUser } from '../data/list-user/resource';
+import { listUsers } from '../data/auth/list-users/resource';
+import { editUser } from '../data/auth/edit-user/resource';
+import { disableUser } from '../data/auth/disable-user/resource';
+import { enableUser } from '../data/auth/enable-user/resource';
+import { listUser } from '../data/auth/list-user/resource';
+import { statistics } from '../data/content/statistics/resource';
 
 /**
  * Define and configure your auth resource
@@ -149,5 +150,6 @@ export const auth = defineAuth({
     allow.resource(disableUser).to(['disableUser']),
     allow.resource(enableUser).to(['enableUser']),
     allow.resource(listUser).to(['getUser']),
+    allow.resource(statistics).to(['listUsersInGroup']),
   ],
 });

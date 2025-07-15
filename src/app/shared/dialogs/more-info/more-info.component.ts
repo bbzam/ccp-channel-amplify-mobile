@@ -6,6 +6,7 @@ import {
   Inject,
   inject,
   Input,
+  OnDestroy,
   QueryList,
   ViewChildren,
 } from '@angular/core';
@@ -15,19 +16,26 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { FeaturesService } from '../../../features/features.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { NgClass } from '@angular/common';
+import { SharedService } from '../../shared.service';
 
 @Component({
   selector: 'app-more-info',
-  imports: [MatIconModule, MatButtonModule, MatTooltipModule],
+  imports: [MatIconModule, MatButtonModule, MatTooltipModule, NgClass],
   templateUrl: './more-info.component.html',
   styleUrl: './more-info.component.css',
 })
-export class MoreInfoComponent implements AfterViewInit {
+export class MoreInfoComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('video') videos!: QueryList<ElementRef>;
   @Input() item: any;
   readonly dialogRef = inject(MatDialogRef<MoreInfoComponent>);
   readonly router = inject(Router);
   readonly featuresService = inject(FeaturesService);
+  readonly sharedService = inject(SharedService);
+  private observer: IntersectionObserver | null = null;
+  isFavorite: boolean = false;
+  customFieldsMap: Map<string, string> = new Map();
+  parsedCustomFields: any[] = [];
 
   // Disable right-click for more info dialog
   @HostListener('contextmenu', ['$event'])
@@ -37,7 +45,7 @@ export class MoreInfoComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const observer = new IntersectionObserver(
+    this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
@@ -55,12 +63,63 @@ export class MoreInfoComponent implements AfterViewInit {
 
     // Start observing each video
     this.videos.forEach((videoRef) => {
-      observer.observe(videoRef.nativeElement);
+      this.observer?.observe(videoRef.nativeElement);
     });
+
+    // Handle changes to the videos QueryList
+    this.videos.changes.subscribe((videos: QueryList<ElementRef>) => {
+      videos.forEach((videoRef) => {
+        this.observer?.observe(videoRef.nativeElement);
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
   }
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.item = data.data;
+    this.isFavorite = this.item.isFavorite;
+    this.initializeCustomFields();
+  }
+
+  async initializeCustomFields() {
+    await this.loadCustomFields();
+    this.parseCustomFields();
+  }
+
+  async loadCustomFields() {
+    try {
+      const customFields = await this.sharedService.getAllCustomFields();
+      customFields?.forEach((field: any) => {
+        this.customFieldsMap.set(field.id, field.fieldName);
+      });
+    } catch (error) {}
+  }
+
+  parseCustomFields() {
+    try {
+      if (this.item.customFields) {
+        const parsed =
+          typeof this.item.customFields === 'string'
+            ? JSON.parse(this.item.customFields)
+            : this.item.customFields;
+
+        this.parsedCustomFields = Array.from(this.customFieldsMap.keys())
+          .filter((fieldId) => parsed[fieldId])
+          .map((fieldId) => ({
+            name: this.customFieldsMap.get(fieldId) || fieldId,
+            value: parsed[fieldId],
+          }))
+          .filter((field) => field.value);
+      }
+    } catch (error) {
+      this.parsedCustomFields = [];
+    }
   }
 
   transform(value: number): string {
@@ -85,13 +144,23 @@ export class MoreInfoComponent implements AfterViewInit {
     return timeParts.join(' ');
   }
 
-  watchVideo(videoUrl: string) {
+  watchVideo(videoUrl: string, id: string) {
     this.close();
     this.featuresService.getFileUrl(videoUrl).then((presignedUrl) => {
       this.router.navigate(['subscriber/video-player'], {
-        queryParams: { videoUrl: presignedUrl },
+        queryParams: { videoUrl: presignedUrl, id: id },
       });
     });
+  }
+
+  async toggleFavorite() {
+    this.item.isFavorite = !this.item.isFavorite;
+    try {
+      await this.featuresService.toggleFavorite(
+        this.item.id,
+        this.item.isFavorite
+      );
+    } catch (error) {}
   }
 
   close() {

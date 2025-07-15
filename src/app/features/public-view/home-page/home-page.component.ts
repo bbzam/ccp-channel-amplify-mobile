@@ -4,7 +4,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { BannerComponent } from '../public-banner/banner.component';
 import { allFeatured } from '../../../shared/mock-data';
 import { MatDialog } from '@angular/material/dialog';
-import { BetaAccessComponent } from '../../../beta-test/beta-access/beta-access.component';
 import { SignupComponent } from '../../../auth/components/signup/signup.component';
 
 @Component({
@@ -22,14 +21,6 @@ export class HomePageComponent implements OnInit {
   ngOnInit(): void {}
 
   register(): void {
-    // this.dialog.open(SignupComponent).afterClosed().subscribe();
-    this.dialog
-      .open(BetaAccessComponent)
-      .afterClosed()
-      .subscribe((data) => {
-        if (data) {
-          this.dialog.open(SignupComponent, {disableClose: true}).afterClosed();
-        }
-      });
+    this.dialog.open(SignupComponent, { disableClose: true }).afterClosed();
   }
 }

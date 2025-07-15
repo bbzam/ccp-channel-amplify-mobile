@@ -35,4 +35,44 @@
   border-radius: 4px;
   cursor: pointer;
   z-index: 1001;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.thumbnail-container {
+  position: absolute;
+  width: 12em;
+  height: 8em;
+  background: #000;
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 100;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.thumbnail-container.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.time-display {
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+  font-size: 0.8em;
+  text-align: center;
+  line-height: 2em;
+  font-weight: bold;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }

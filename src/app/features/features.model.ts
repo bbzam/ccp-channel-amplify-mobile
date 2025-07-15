@@ -23,4 +23,5 @@ export interface ContentMetadata {
   resolution: string;
   status: boolean;
   publishDate: string;
+  customFields: any;
 }

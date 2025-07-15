@@ -1,0 +1,17 @@
+@if (favorites.length) {
+<div class="home-div">
+  <div class="banner">
+    <app-banner [banners]="banners" />
+  </div>
+  <div class="frc">
+    <div class="label-wrapper">
+      <h1 class="label">My Favorites</h1>
+    </div>
+    <app-recommended [recommended]="favorites" />
+  </div>
+</div>
+} @else {
+<div class="noData">
+  <h1>No Favorite Videos Available.</h1>
+</div>
+}

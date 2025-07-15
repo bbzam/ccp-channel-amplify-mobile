@@ -80,6 +80,7 @@ export class FeaturedComponent implements AfterViewInit, OnInit, OnDestroy {
 
   constructor() {}
 
+  // Rest of the component code remains unchanged
   @HostListener('window:resize') updateItemsToShow(): void {
     const width = window.innerWidth;
     if (width <= 480) {
@@ -121,20 +122,10 @@ export class FeaturedComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   moreInfo(item: any) {
-    // // Get presigned URL directly
-    // this.featuresService
-    //   .getFileUrl(item.portraitImageUrl)
-    //   .then((urlPortrait) => {
-    //     const updatedItem = {
-    //       ...item,
-    //       portraitImagePresignedUrl: urlPortrait,
-    //     };
-
     this.dialog
       .open(MoreInfoComponent, { data: { data: item } })
       .afterClosed()
       .subscribe((data) => {});
-    // });
   }
 
   updateVisibleItems(): void {

@@ -2,7 +2,7 @@
   position: relative;
   width: auto;
   overflow: hidden; /* Ensures content does not overflow outside this div */
-  /* display: flex; */
+  /* display: flex;k */
   align-items: center;
   /* justify-content: center; */
   padding: 0 20px;
@@ -148,7 +148,7 @@
 
 .card:last-child:hover {
   transform-origin: right center !important;
-  margin-left: -7em;
+  margin-left: -1.1em;
 }
 
 .card:first-child:hover {

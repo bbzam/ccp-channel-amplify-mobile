@@ -180,6 +180,12 @@
   background: rgba(0, 0, 0, 0.8);
 }
 
+.mdc-linear-progress {
+  margin-left: 0;
+  width: 100%;
+  border-radius: 0;
+}
+
 /* Mobile view */
 @media (max-width: 480px) {
   .main-div {

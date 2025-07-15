@@ -63,7 +63,6 @@ export class ManageUsersComponent {
 
   handleRowClick(row: any): void {
     row.role = this.role;
-    console.log(row.role);
     this.dialog
       .open(ViewUserComponent, {
         data: row,
