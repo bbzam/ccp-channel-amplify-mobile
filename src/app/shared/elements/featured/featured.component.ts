@@ -5,8 +5,8 @@ import {
   HostListener,
   inject,
   Input,
-  OnDestroy,
   OnInit,
+  OnDestroy,
   QueryList,
   ViewChildren,
 } from '@angular/core';
@@ -84,17 +84,17 @@ export class FeaturedComponent implements AfterViewInit, OnInit, OnDestroy {
   @HostListener('window:resize') updateItemsToShow(): void {
     const width = window.innerWidth;
     if (width <= 480) {
-      this.itemsToShow = 2; // Mobile view
+      this.itemsToShow = 1; // Mobile view
     } else if (width >= 481 && width <= 767) {
-      this.itemsToShow = 3; // Small tablets to larger tablets
+      this.itemsToShow = 2; // Small tablets to larger tablets
     } else if (width >= 768 && width <= 1119) {
-      this.itemsToShow = 5; // Small desktop and larger tablets
+      this.itemsToShow = 3; // Small desktop and larger tablets
     } else if (width >= 1120 && width <= 1439) {
-      this.itemsToShow = 7; // Medium desktop
+      this.itemsToShow = 4; // Medium desktop
     } else if (width >= 1440 && width <= 1919) {
-      this.itemsToShow = 8; // Large desktop
+      this.itemsToShow = 5; // Large desktop
     } else if (width >= 1920) {
-      this.itemsToShow = 9; // Ultra-wide desktop
+      this.itemsToShow = 6; // Ultra-wide desktop
     }
     this.updateVisibleItems();
   }
