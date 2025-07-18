@@ -38,9 +38,12 @@ const schema = a.schema({
       portraitImageUrl: a.string().required(),
       previewVideoUrl: a.string().required(),
       fullVideoUrl: a.string().required(),
+      vttUrl: a.string(),
       runtime: a.float().required(),
       resolution: a.string().required(),
-      status: a.boolean().required(), //published or scheduled
+      status: a.boolean().required(), //queued/on process or scheduled (false), published (true)
+      isVtt: a.boolean(),
+      isMedCon: a.boolean(),
       publishDate: a.date(),
       viewCount: a.integer(),
       customFields: a.json(),

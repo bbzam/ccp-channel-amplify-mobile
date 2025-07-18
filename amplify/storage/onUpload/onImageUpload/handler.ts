@@ -130,8 +130,8 @@ export const handler: S3Handler = async (event): Promise<any> => {
             .toBuffer();
 
           const processedKey = key.includes('landscape-images/')
-            ? key.replace('landscape-images/', 'flattened-landscape-images/')
-            : key.replace('portrait-images/', 'flattened-portrait-images/');
+            ? key.replace('landscape-images/', 'processed-landscape-images/')
+            : key.replace('portrait-images/', 'processed-portrait-images/');
 
           console.info(
             `[IMAGE HANDLER] Uploading processed image to: ${processedKey}`

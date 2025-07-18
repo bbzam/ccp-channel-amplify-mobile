@@ -192,6 +192,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   readonly sharedService = inject(SharedService);
 
   videoUrl!: string;
+  thumbnailUrl!: string;
   contentId!: string;
   pauseTime!: number;
   private player: any;
@@ -207,18 +208,11 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.videoUrl = params['videoUrl'];
+      this.thumbnailUrl = params['thumbnailUrl'];
       this.contentId = params['id'];
 
-      // Check after assignment
-      if (
-        this.videoUrl &&
-        this.videoUrl.includes(
-          'full-videos/1739279206199-2007 - Cinemalaya_Tukso'
-        )
-      ) {
-        this.videoUrl =
-          'https://benjie-ccp-backup.s3.ap-southeast-1.amazonaws.com/videos-forpublic/1739279206199-2007+-+Cinemalaya_Tukso+720x480+FOR+CCP+CH-012/1739279206199-2007+-+Cinemalaya_Tukso+720x480+FOR+CCP+CH-012.m3u8';
-      }
+      console.log('videoUrl:', this.videoUrl);
+      console.log('thumbnailUrl:', this.thumbnailUrl);
 
       // Set controls based on URL type BEFORE template renders
       this.controls = !this.isStreamingUrl(this.videoUrl);
@@ -253,7 +247,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
       this.isLoading = false;
     } catch (error) {
       this.isLoading = false;
-      this.errorMessage = 'Failed to load video';
     }
   }
 
@@ -267,9 +260,13 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     const container = this.videoContainer.nativeElement;
 
     this.player = new shaka.Player(video);
+
+    // Create UI factory
     const ui = new shaka.ui.Overlay(this.player, container, video);
 
-    ui.configure({
+    // Configure UI
+    const uiConfig = {
+      addSeekBar: true,
       controlPanelElements: [
         'play_pause',
         'time_and_duration',
@@ -279,7 +276,29 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
         'quality',
         'fullscreen',
       ],
-      addSeekBar: true,
+      overflowMenuButtons: [
+        'quality',
+        'captions',
+        'picture_in_picture',
+        'cast',
+      ],
+      enableTooltips: true,
+    };
+
+    ui.configure(uiConfig);
+
+    // Enable automatic adaptation between different quality levels
+    this.player.configure({
+      streaming: {
+        rebufferingGoal: 2,
+        bufferingGoal: 10,
+        bufferBehind: 30,
+        // Enable ABR (Adaptive Bitrate)
+        abr: {
+          enabled: true,
+          defaultBandwidthEstimate: 1000000, // 1Mbps initial estimate
+        },
+      },
     });
   }
 
@@ -289,16 +308,12 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
         this.videoContainer.nativeElement.querySelector('.shaka-seek-bar');
       if (!seekBar) return;
 
-      // Hardcode VTT for Tukso videos
-      const thumbnailUrl = this.videoUrl.includes('Tukso')
-        ? 'https://benjie-ccp-backup.s3.ap-southeast-1.amazonaws.com/videos-forpublic/Testing1739279206199-2007+-+Cinemalaya_Tukso+720x480+FOR+CCP+CH-012/thumbs.vtt'
-        : this.videoUrl.replace('.m3u8', '/thumbs.vtt');
-      const baseUrl = thumbnailUrl.substring(
+      const baseUrl = this.thumbnailUrl.substring(
         0,
-        thumbnailUrl.lastIndexOf('/') + 1
+        this.thumbnailUrl.lastIndexOf('/') + 1
       );
 
-      fetch(thumbnailUrl)
+      fetch(this.thumbnailUrl)
         .then((response) => response.text())
         .then((vttContent) => {
           const cues = this.parseVTT(vttContent);
@@ -405,7 +420,10 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   }
 
   private isStreamingUrl(url: string): boolean {
-    return url.endsWith('.mpd') || url.endsWith('.m3u8');
+    // Extract the path part of the URL (before query parameters)
+    const urlPath = url.split('?')[0];
+    // Check if the path ends with streaming extensions
+    return urlPath.endsWith('.mpd') || urlPath.endsWith('.m3u8');
   }
 
   async requestFullscreen() {

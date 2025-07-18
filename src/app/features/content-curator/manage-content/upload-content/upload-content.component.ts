@@ -320,6 +320,18 @@ export class UploadContentComponent {
     this.customFieldsFormArray.removeAt(index);
   }
 
+  getAvailableFields(currentIndex: number) {
+    const selectedFieldIds = this.customFieldsFormArray.controls
+      .map((control, index) =>
+        index !== currentIndex ? control.get('fieldId')?.value : null
+      )
+      .filter((id) => id);
+
+    return this.customFields.filter(
+      (field) => !selectedFieldIds.includes(field.id)
+    );
+  }
+
   async publishContent(isForPublish: boolean) {
     try {
       // Check all possible uploads
@@ -372,8 +384,8 @@ export class UploadContentComponent {
         writer: formData.writer,
         yearReleased: formData.yearreleased,
         userType: formData.usertype,
-        landscapeImageUrl: `flattened-${this.landscapeImageKey}`,
-        portraitImageUrl: `flattened-${this.portraitImageKey}`,
+        landscapeImageUrl: `processed-${this.landscapeImageKey}`,
+        portraitImageUrl: `processed-${this.portraitImageKey}`,
         previewVideoUrl: this.previewVideoKey,
         fullVideoUrl: this.fullVideoKey,
         runtime: this.videoMetadata?.duration || 0,
@@ -428,7 +440,7 @@ export class UploadContentComponent {
     try {
       const finalPath =
         path.includes('landscape') || path.includes('portrait')
-          ? `flattened-${path}`
+          ? `processed-${path}`
           : path;
 
       const result = await remove({
