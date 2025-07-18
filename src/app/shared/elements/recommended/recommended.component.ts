@@ -7,7 +7,6 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  OnDestroy,
   QueryList,
   ViewChildren,
 } from '@angular/core';
