@@ -156,7 +156,7 @@
           <div class="field">
             <select formControlName="fieldId" style="flex: 1">
               <option value="" disabled selected>Select a field name</option>
-              @for (field of customFields; track field.id) {
+              @for (field of getAvailableFields($index); track field.id) {
               <option [value]="field.id">{{ field.fieldName }}</option>
               }
             </select>

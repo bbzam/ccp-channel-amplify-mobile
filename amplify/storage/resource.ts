@@ -44,7 +44,7 @@ export const storage = defineStorage({
     ],
 
     // Flattened Landscape Images folder
-    'flattened-landscape-images/*': [
+    'processed-landscape-images/*': [
       allow.groups(['SUBSCRIBER', 'USER']).to(['read']),
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
@@ -53,12 +53,21 @@ export const storage = defineStorage({
     ],
 
     // Flattened Portrait Images folder
-    'flattened-portrait-images/*': [
+    'processed-portrait-images/*': [
       allow.groups(['SUBSCRIBER', 'USER']).to(['read']),
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['read', 'write', 'delete']),
       allow.resource(onImageUpload).to(['read', 'delete', 'write']),
+    ],
+
+    // Processed Full Videos folder
+    'processed-full-videos/*': [
+      allow.groups(['SUBSCRIBER', 'USER']).to(['read']),
+      allow
+        .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
+        .to(['read', 'write', 'delete']),
+      allow.resource(onFullVideoUpload).to(['read', 'delete', 'write']),
     ],
   }),
 });

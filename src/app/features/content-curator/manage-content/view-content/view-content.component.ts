@@ -169,14 +169,21 @@ export class ViewContentComponent {
     // Parse custom fields if they exist
     if (data.customFields) {
       try {
-        const parsedCustomFields = JSON.parse(data.customFields);
+        // Handle both string and object formats
+        const parsedCustomFields =
+          typeof data.customFields === 'string'
+            ? JSON.parse(data.customFields)
+            : data.customFields;
+
         this.selectedCustomFields = Object.entries(parsedCustomFields).map(
           ([fieldId, value]) => ({
             fieldId,
             value: value as string,
           })
         );
-      } catch (error) {}
+      } catch (error) {
+        this.selectedCustomFields = [];
+      }
     }
 
     // Store original values
@@ -195,6 +202,8 @@ export class ViewContentComponent {
       fullvideo: data.fullVideoUrl,
       customFields: data.customFields || '{}',
     };
+
+    console.log('Original Values:', this.originalValues);
   }
 
   getAvailableFields(currentIndex: number) {
@@ -234,9 +243,18 @@ export class ViewContentComponent {
     });
 
     // Check file changes
-    if (this.landscapeImageKey)
-      changes.landscapeImageUrl = this.landscapeImageKey;
-    if (this.portraitImageKey) changes.portraitImageUrl = this.portraitImageKey;
+    if (this.landscapeImageKey) {
+      const landscapeKey = this.landscapeImageKey.includes('processed-')
+        ? this.landscapeImageKey
+        : `processed-${this.landscapeImageKey}`;
+      changes.landscapeImageUrl = landscapeKey;
+    }
+    if (this.portraitImageKey) {
+      const portraitKey = this.portraitImageKey.includes('processed-')
+        ? this.portraitImageKey
+        : `processed-${this.portraitImageKey}`;
+      changes.portraitImageUrl = portraitKey;
+    }
     if (this.previewVideoKey) changes.previewVideoUrl = this.previewVideoKey;
     if (this.fullVideoKey) {
       changes.fullVideoUrl = this.fullVideoKey;
@@ -246,16 +264,24 @@ export class ViewContentComponent {
 
     // Check custom fields changes
     const customFieldsArray = this.uploadForm.get('customFields')?.value || [];
-    const customFieldsJson = JSON.stringify(
-      customFieldsArray.reduce((acc: Record<string, string>, field: any) => {
-        if (field.fieldId && field.value) {
-          acc[field.fieldId] = field.value;
-        }
-        return acc;
-      }, {})
-    );
+    const customFieldsObj: Record<string, string> = {};
 
-    if (customFieldsJson !== (this.originalValues.customFields || '{}')) {
+    // Preserve the order by iterating through the form array
+    customFieldsArray.forEach((field: any) => {
+      if (field.fieldId && field.value) {
+        customFieldsObj[field.fieldId] = field.value;
+      }
+    });
+
+    const customFieldsJson = JSON.stringify(customFieldsObj);
+
+    // Normalize original custom fields for comparison
+    const originalCustomFields =
+      typeof this.originalValues.customFields === 'string'
+        ? this.originalValues.customFields
+        : JSON.stringify(this.originalValues.customFields || {});
+
+    if (customFieldsJson !== originalCustomFields) {
       changes.customFields = customFieldsJson;
     }
 

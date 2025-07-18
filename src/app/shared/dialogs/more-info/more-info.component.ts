@@ -144,14 +144,37 @@ export class MoreInfoComponent implements AfterViewInit, OnDestroy {
     return timeParts.join(' ');
   }
 
-  watchVideo(videoUrl: string, id: string) {
+  watchVideo(videoUrl: string, thumbnailUrl: string, id: string) {
     this.close();
-    this.featuresService.getFileUrl(videoUrl).then((presignedUrl) => {
-      this.router.navigate(['subscriber/video-player'], {
-        queryParams: { videoUrl: presignedUrl, id: id },
-      });
-    });
+    console.log('watchVideo', videoUrl, thumbnailUrl, id);
+    Promise.all([this.featuresService.getFileUrl(videoUrl)]).then(
+      ([videoPresignedUrl]) => {
+        this.router.navigate(['subscriber/video-player'], {
+          queryParams: {
+            videoUrl: videoPresignedUrl,
+            id: id,
+          },
+        });
+      }
+    );
   }
+
+  // watchVideo(videoUrl: string, thumbnailUrl: string, id: string) {
+  //   this.close();
+  //   console.log('watchVideo', videoUrl, thumbnailUrl, id);
+  //   Promise.all([
+  //     this.featuresService.getFileUrl(videoUrl),
+  //     this.featuresService.getFileUrl(thumbnailUrl),
+  //   ]).then(([videoPresignedUrl, thumbnailPresignedUrl]) => {
+  //     this.router.navigate(['subscriber/video-player'], {
+  //       queryParams: {
+  //         videoUrl: videoPresignedUrl,
+  //         thumbnailUrl: thumbnailPresignedUrl,
+  //         id: id,
+  //       },
+  //     });
+  //   });
+  // }
 
   async toggleFavorite() {
     this.item.isFavorite = !this.item.isFavorite;
