@@ -239,7 +239,10 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
       .getNetworkingEngine()
       .registerRequestFilter(async (type: any, request: any) => {
         // Only process segment requests (not manifest requests)
-        if (type === shaka.net.NetworkingEngine.RequestType.SEGMENT) {
+        if (
+          type === shaka.net.NetworkingEngine.RequestType.SEGMENT ||
+          type === shaka.net.NetworkingEngine.RequestType.MANIFEST
+        ) {
           try {
             // Extract the segment URL from the request
             const originalUrl = request.uris[0];
@@ -249,8 +252,12 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
               originalUrl.endsWith('.mp4') ||
               originalUrl.includes('.mp4?') ||
               originalUrl.endsWith('.ts') ||
-              originalUrl.includes('.ts?')
+              originalUrl.includes('.ts?') ||
+              originalUrl.includes('.m3u8') ||
+              originalUrl.includes('.m3u8?')
             ) {
+              console.log('MP4 segment (for DASH) or TS segment (for HLS)');
+
               // Get the full path without query parameters
               const urlWithoutQuery = decodeURIComponent(
                 originalUrl.split('?')[0]
@@ -385,12 +392,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
 
         await this.setupThumbnails();
       } else {
-        // For direct video files, get presigned URL
-        const presignedUrl = await this.featuresService.getFileUrl(
-          this.videoUrl
-        );
-        console.log('presignedUrl', presignedUrl);
-        videoElement.src = presignedUrl;
+        videoElement.src = this.videoUrl;
       }
 
       await videoElement.play();
