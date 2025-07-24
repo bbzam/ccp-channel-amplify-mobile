@@ -168,6 +168,7 @@ import { ShakaPlayerService } from '../../shaka-player.service';
 import { SharedService } from '../../shared.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { FeaturesService } from '../../../features/features.service';
 
 declare const shaka: any;
 
@@ -190,9 +191,11 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   readonly location = inject(Location);
   readonly shakaService = inject(ShakaPlayerService);
   readonly sharedService = inject(SharedService);
+  readonly featuresService = inject(FeaturesService);
 
   videoUrl!: string;
   thumbnailUrl!: string;
+  vttUrl!: string;
   contentId!: string;
   pauseTime!: number;
   private player: any;
@@ -209,6 +212,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     this.route.queryParams.subscribe((params) => {
       this.videoUrl = params['videoUrl'];
       this.thumbnailUrl = params['thumbnailUrl'];
+      this.vttUrl = params['vttUrl'];
       this.contentId = params['id'];
 
       console.log('videoUrl:', this.videoUrl);
@@ -217,37 +221,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
       // Set controls based on URL type BEFORE template renders
       this.controls = !this.isStreamingUrl(this.videoUrl);
     });
-  }
-
-  async ngAfterViewInit() {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    try {
-      if (!this.videoUrl) {
-        throw new Error('No video URL provided');
-      }
-
-      this.isLoading = true;
-      const videoElement = this.videoPlayer.nativeElement;
-
-      // Add event listeners
-      videoElement.addEventListener('pause', () => {
-        this.pauseTime = videoElement.currentTime;
-      });
-
-      if (this.isStreamingUrl(this.videoUrl)) {
-        await this.initShakaPlayer();
-        await this.player.load(this.videoUrl);
-        await this.setupThumbnails();
-      } else {
-        videoElement.src = this.videoUrl;
-      }
-
-      await videoElement.play();
-      this.isLoading = false;
-    } catch (error) {
-      this.isLoading = false;
-    }
   }
 
   private async initShakaPlayer() {
@@ -260,6 +233,63 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     const container = this.videoContainer.nativeElement;
 
     this.player = new shaka.Player(video);
+
+    // Register a request filter to modify segment requests
+    this.player
+      .getNetworkingEngine()
+      .registerRequestFilter(async (type: any, request: any) => {
+        // Only process segment requests (not manifest requests)
+        if (type === shaka.net.NetworkingEngine.RequestType.SEGMENT) {
+          try {
+            // Extract the segment URL from the request
+            const originalUrl = request.uris[0];
+
+            // Check if this is an MP4 segment (for DASH) or TS segment (for HLS)
+            if (
+              originalUrl.endsWith('.mp4') ||
+              originalUrl.includes('.mp4?') ||
+              originalUrl.endsWith('.ts') ||
+              originalUrl.includes('.ts?')
+            ) {
+              // Get the full path without query parameters
+              const urlWithoutQuery = decodeURIComponent(
+                originalUrl.split('?')[0]
+              );
+
+              console.log('urlWithoutQuery', urlWithoutQuery);
+
+              // Get just the filename with extension
+              const filename = urlWithoutQuery.substring(
+                urlWithoutQuery.lastIndexOf('/') + 1
+              );
+
+              // Get the directory path
+              const dirPath = urlWithoutQuery.substring(
+                0,
+                urlWithoutQuery.lastIndexOf('/') + 1
+              );
+
+              // Find the folder name (last part of the directory path)
+              const folderName = dirPath.split('/').filter(Boolean).pop();
+
+              // Construct the path for getFileUrl
+              const filePath = `processed-full-videos/${folderName}/${filename}`;
+
+              console.log('Getting presigned URL for:', filePath);
+
+              // Get presigned URL for the segment
+              const presignedUrl = await this.featuresService.getFileUrl(
+                filePath
+              );
+
+              // Replace the original URL with the presigned URL
+              request.uris[0] = presignedUrl;
+            }
+          } catch (error) {
+            console.error('Error getting presigned URL:', error);
+          }
+        }
+      });
 
     // Create UI factory
     const ui = new shaka.ui.Overlay(this.player, container, video);
@@ -293,13 +323,83 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
         rebufferingGoal: 2,
         bufferingGoal: 10,
         bufferBehind: 30,
-        // Enable ABR (Adaptive Bitrate)
-        abr: {
-          enabled: true,
-          defaultBandwidthEstimate: 1000000, // 1Mbps initial estimate
-        },
+      },
+      abr: {
+        enabled: true,
+        defaultBandwidthEstimate: 1000000, // 1Mbps initial estimate
       },
     });
+  }
+
+  async ngAfterViewInit() {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    try {
+      if (!this.videoUrl) {
+        throw new Error('No video URL provided');
+      }
+
+      this.isLoading = true;
+      const videoElement = this.videoPlayer.nativeElement;
+
+      // Add event listeners
+      videoElement.addEventListener('pause', () => {
+        this.pauseTime = videoElement.currentTime;
+      });
+
+      if (this.isStreamingUrl(this.videoUrl)) {
+        await this.initShakaPlayer();
+
+        // For streaming files, get presigned URL for the manifest
+        if (this.videoUrl.endsWith('.mpd') || this.videoUrl.endsWith('.m3u8')) {
+          // Get the full path without query parameters
+          const urlWithoutQuery = this.videoUrl.split('?')[0];
+
+          // Get just the filename with extension
+          const filename = urlWithoutQuery.substring(
+            urlWithoutQuery.lastIndexOf('/') + 1
+          );
+
+          // Get the directory path
+          const dirPath = urlWithoutQuery.substring(
+            0,
+            urlWithoutQuery.lastIndexOf('/') + 1
+          );
+
+          // Find the folder name (last part of the directory path)
+          const folderName = dirPath.split('/').filter(Boolean).pop();
+
+          // Construct the path for getFileUrl
+          const filePath = `processed-full-videos/${folderName}/${filename}`;
+
+          console.log('Getting presigned URL for manifest:', filePath);
+
+          const presignedManifestUrl = await this.featuresService.getFileUrl(
+            filePath
+          );
+          console.log('presignedManifestUrl', presignedManifestUrl);
+          await this.player.load(presignedManifestUrl);
+        } else {
+          await this.player.load(this.videoUrl);
+        }
+
+        await this.setupThumbnails();
+      } else {
+        // For direct video files, get presigned URL
+        const presignedUrl = await this.featuresService.getFileUrl(
+          this.videoUrl
+        );
+        console.log('presignedUrl', presignedUrl);
+        videoElement.src = presignedUrl;
+      }
+
+      await videoElement.play();
+      this.isLoading = false;
+    } catch (error) {
+      this.isLoading = false;
+      console.error('Video player error:', error);
+      this.errorMessage = 'Error loading video. Please try again.';
+    }
   }
 
   private setupThumbnails() {
@@ -311,6 +411,11 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
       const baseUrl = this.thumbnailUrl.substring(
         0,
         this.thumbnailUrl.lastIndexOf('/') + 1
+      );
+
+      const vttBaseUrl = this.vttUrl.substring(
+        0,
+        this.vttUrl.lastIndexOf('/') + 1
       );
 
       fetch(this.thumbnailUrl)
@@ -341,9 +446,18 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
             clearTimeout(this.debounceTimer);
             this.debounceTimer = setTimeout(() => {
               const cue = this.findCueForTime(cues, time);
-              if (cue) {
-                this.thumbnailImg.nativeElement.src = baseUrl + cue.imageUrl;
-              }
+              console.log(baseUrl);
+              console.log(cue.imageUrl);
+
+              this.featuresService
+                .getFileUrl(vttBaseUrl + decodeURIComponent(cue.imageUrl))
+                .then((thumbnailImgPresignedUrl: string) => {
+                  this.thumbnailImg.nativeElement.src =
+                    thumbnailImgPresignedUrl;
+                })
+                .catch((error) => {
+                  console.error('Failed to get presigned URL:', error);
+                });
             }, 50);
           });
 
