@@ -18,6 +18,7 @@ import { FeaturesService } from '../../../features/features.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgClass } from '@angular/common';
 import { SharedService } from '../../shared.service';
+import { VideoPlayerService } from '../../component/video-player/video-player.service';
 
 @Component({
   selector: 'app-more-info',
@@ -32,6 +33,7 @@ export class MoreInfoComponent implements AfterViewInit, OnDestroy {
   readonly router = inject(Router);
   readonly featuresService = inject(FeaturesService);
   readonly sharedService = inject(SharedService);
+  readonly videoPlayerService = inject(VideoPlayerService);
   private observer: IntersectionObserver | null = null;
   isFavorite: boolean = false;
   customFieldsMap: Map<string, string> = new Map();
@@ -144,24 +146,8 @@ export class MoreInfoComponent implements AfterViewInit, OnDestroy {
     return timeParts.join(' ');
   }
 
-  // watchVideo(videoUrl: string, thumbnailUrl: string, id: string) {
-  //   this.close();
-  //   console.log('watchVideo', videoUrl, thumbnailUrl, id);
-  //   Promise.all([this.featuresService.getFileUrl(videoUrl)]).then(
-  //     ([videoPresignedUrl]) => {
-  //       this.router.navigate(['subscriber/video-player'], {
-  //         queryParams: {
-  //           videoUrl: videoPresignedUrl,
-  //           id: id,
-  //         },
-  //       });
-  //     }
-  //   );
-  // }
-
   watchVideo(videoUrl: string, thumbnailUrl: string, id: string) {
     this.close();
-    console.log('watchVideo', videoUrl, thumbnailUrl, id);
 
     const promises = [this.featuresService.getFileUrl(videoUrl)];
     if (thumbnailUrl) {
@@ -170,14 +156,16 @@ export class MoreInfoComponent implements AfterViewInit, OnDestroy {
 
     Promise.all(promises).then((results) => {
       const [videoPresignedUrl, thumbnailPresignedUrl] = results;
-      this.router.navigate(['subscriber/video-player'], {
-        queryParams: {
-          videoUrl: videoPresignedUrl,
-          ...(thumbnailUrl && { thumbnailUrl: thumbnailPresignedUrl }),
-          vttUrl: thumbnailUrl,
-          id: id,
-        },
+
+      // Store data in service
+      this.videoPlayerService.setVideoData({
+        videoUrl: videoPresignedUrl,
+        ...(thumbnailUrl && { thumbnailUrl: thumbnailPresignedUrl }),
+        vttUrl: thumbnailUrl,
+        id: id,
       });
+
+      this.router.navigate(['subscriber/video-player']);
     });
   }
 

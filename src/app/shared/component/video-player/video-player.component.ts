@@ -169,6 +169,7 @@ import { SharedService } from '../../shared.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { FeaturesService } from '../../../features/features.service';
+import { VideoPlayerService } from './video-player.service';
 
 declare const shaka: any;
 
@@ -192,6 +193,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   readonly shakaService = inject(ShakaPlayerService);
   readonly sharedService = inject(SharedService);
   readonly featuresService = inject(FeaturesService);
+  readonly videoPlayerService = inject(VideoPlayerService);
 
   videoUrl!: string;
   thumbnailUrl!: string;
@@ -209,18 +211,19 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      this.videoUrl = params['videoUrl'];
-      this.thumbnailUrl = params['thumbnailUrl'];
-      this.vttUrl = params['vttUrl'];
-      this.contentId = params['id'];
+    const videoData = this.videoPlayerService.getVideoData();
 
-      console.log('videoUrl:', this.videoUrl);
-      console.log('thumbnailUrl:', this.thumbnailUrl);
+    if (videoData) {
+      this.videoUrl = videoData.videoUrl;
+      this.thumbnailUrl = videoData.thumbnailUrl;
+      this.vttUrl = videoData.vttUrl;
+      this.contentId = videoData.id;
 
-      // Set controls based on URL type BEFORE template renders
-      this.controls = !this.isStreamingUrl(this.videoUrl);
-    });
+      // Clear data after use
+      this.videoPlayerService.clearVideoData();
+    }
+
+    this.controls = !this.isStreamingUrl(this.videoUrl);
   }
 
   private async initShakaPlayer() {
