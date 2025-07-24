@@ -16,6 +16,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { FeaturesService } from '../../../features/features.service';
 import { Subscription } from 'rxjs';
+import { VideoPlayerService } from '../../component/video-player/video-player.service';
 
 @Component({
   selector: 'app-banner',
@@ -28,6 +29,7 @@ export class BannerComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('bannerContainer') bannerContainer!: ElementRef<HTMLDivElement>;
   @Input() banners!: any[];
   readonly featuresService = inject(FeaturesService);
+  readonly videoPlayerService = inject(VideoPlayerService);
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
   currentMediaIndex: number = 0;
@@ -151,11 +153,24 @@ export class BannerComponent implements OnInit, AfterViewInit, OnDestroy {
     return timeParts.join(' ');
   }
 
-  watchVideo(videoUrl: string, id: string) {
-    this.featuresService.getFileUrl(videoUrl).then((presignedUrl) => {
-      this.router.navigate(['subscriber/video-player'], {
-        queryParams: { videoUrl: presignedUrl, id: id },
+  watchVideo(videoUrl: string, thumbnailUrl: string, id: string) {
+    const promises = [this.featuresService.getFileUrl(videoUrl)];
+    if (thumbnailUrl) {
+      promises.push(this.featuresService.getFileUrl(thumbnailUrl));
+    }
+
+    Promise.all(promises).then((results) => {
+      const [videoPresignedUrl, thumbnailPresignedUrl] = results;
+
+      // Store data in service
+      this.videoPlayerService.setVideoData({
+        videoUrl: videoPresignedUrl,
+        ...(thumbnailUrl && { thumbnailUrl: thumbnailPresignedUrl }),
+        vttUrl: thumbnailUrl,
+        id: id,
       });
+
+      this.router.navigate(['subscriber/video-player']);
     });
   }
 
