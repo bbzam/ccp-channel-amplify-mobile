@@ -162,14 +162,18 @@ export class MoreInfoComponent implements AfterViewInit, OnDestroy {
   watchVideo(videoUrl: string, thumbnailUrl: string, id: string) {
     this.close();
     console.log('watchVideo', videoUrl, thumbnailUrl, id);
-    Promise.all([
-      this.featuresService.getFileUrl(videoUrl),
-      this.featuresService.getFileUrl(thumbnailUrl),
-    ]).then(([videoPresignedUrl, thumbnailPresignedUrl]) => {
+
+    const promises = [this.featuresService.getFileUrl(videoUrl)];
+    if (thumbnailUrl) {
+      promises.push(this.featuresService.getFileUrl(thumbnailUrl));
+    }
+
+    Promise.all(promises).then((results) => {
+      const [videoPresignedUrl, thumbnailPresignedUrl] = results;
       this.router.navigate(['subscriber/video-player'], {
         queryParams: {
           videoUrl: videoPresignedUrl,
-          thumbnailUrl: thumbnailPresignedUrl,
+          ...(thumbnailUrl && { thumbnailUrl: thumbnailPresignedUrl }),
           vttUrl: thumbnailUrl,
           id: id,
         },
