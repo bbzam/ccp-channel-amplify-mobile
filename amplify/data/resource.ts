@@ -49,12 +49,10 @@ const schema = a.schema({
       contentToUser: a.hasMany('contentToUser', 'contentId'),
     })
     .authorization((allow) => [
-      allow
-        .groups(['SUBSCRIBER', 'IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
-        .to(['read']),
+      allow.groups(['SUBSCRIBER', 'IT_ADMIN']).to(['read']),
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
-        .to(['create', 'update', 'delete']),
+        .to(['read', 'create', 'update', 'delete']),
     ]),
 
   getContentFunction: a
