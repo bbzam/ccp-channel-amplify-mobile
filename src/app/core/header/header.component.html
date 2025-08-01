@@ -28,8 +28,16 @@
         <mat-icon>arrow_back</mat-icon>
       </button>
       } -->
-      <button class="search" mat-icon-button matTooltip="Search">
+      <!-- <button class="search" mat-icon-button matTooltip="Search">
         <mat-icon>search</mat-icon>
+      </button> -->
+      <button
+        class="search"
+        mat-icon-button
+        matTooltip="Settings"
+        (click)="settingOnClick()"
+      >
+        <mat-icon>settings</mat-icon>
       </button>
       <div class="header-right">
         <button mat-icon-button [matMenuTriggerFor]="beforeMenu">

@@ -202,6 +202,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   pauseTime!: number;
   private player: any;
   private debounceTimer: any;
+  private drmType = 'No DRM';
 
   isLoading = false;
   errorMessage = '';
@@ -224,9 +225,26 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     }
 
     this.controls = !this.isStreamingUrl(this.videoUrl);
+
+    this.detectBrowser();
+  }
+
+  private detectBrowser() {
+    const agent = navigator.userAgent.toLowerCase();
+
+    if (agent.indexOf('safari') > -1 && agent.indexOf('chrome') === -1) {
+      this.drmType = 'FairPlay';
+      throw new Error('Browser not supported!');
+    } else if (agent.indexOf('chrome') > -1 || agent.indexOf('firefox') > -1) {
+      this.drmType = 'Widevine';
+    } else if (agent.indexOf('edge') > -1 || agent.indexOf('trident') > -1) {
+      this.drmType = 'PlayReady';
+    }
+    console.log('DRM Type:', this.drmType);
   }
 
   private async initShakaPlayer() {
+    let playerConfig;
     shaka.polyfill.installAll();
     if (!shaka.Player.isBrowserSupported()) {
       throw new Error('Browser not supported!');
@@ -237,10 +255,174 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
 
     this.player = new shaka.Player(video);
 
+    if ('Widevine' === this.drmType) {
+      if (this.isAndroid()) {
+        playerConfig = {
+          drm: {
+            servers: {
+              'com.widevine.alpha':
+                'https://widevine-dash.ezdrm.com/widevine-php/widevine-foreignkey.php?pX=E3A21C',
+            },
+            advanced: {
+              'com.widevine.alpha': {
+                videoRobustness: 'HW_SECURE_ALL',
+                audioRobustness: 'HW_SECURE_CRYPTO',
+              },
+            },
+          },
+        };
+      } else {
+        console.log('not android');
+
+        playerConfig = {
+          drm: {
+            servers: {
+              'com.widevine.alpha':
+                'https://widevine-dash.ezdrm.com/widevine-php/widevine-foreignkey.php?pX=E3A21C',
+            },
+          },
+        };
+      }
+
+      this.player
+        .getNetworkingEngine()
+        .registerRequestFilter(async (type: any, request: any) => {
+          // Only add headers to license requests:
+          if (type == shaka.net.NetworkingEngine.RequestType.LICENSE) {
+            console.log('request :' + request.body);
+          }
+
+          console.log('loggggggggggg');
+
+          // // Only process segment requests (not manifest requests)
+          // if (
+          //   type === shaka.net.NetworkingEngine.RequestType.SEGMENT ||
+          //   type === shaka.net.NetworkingEngine.RequestType.MANIFEST
+          // ) {
+          //   try {
+          //     // Extract the segment URL from the request
+          //     const originalUrl = request.uris[0];
+
+          //     // Check if this is an MP4 segment (for DASH) or TS segment (for HLS)
+          //     if (
+          //       originalUrl.endsWith('.mp4') ||
+          //       originalUrl.includes('.mp4?') ||
+          //       originalUrl.endsWith('.ts') ||
+          //       originalUrl.includes('.ts?') ||
+          //       originalUrl.includes('.m3u8') ||
+          //       originalUrl.includes('.m3u8?')
+          //     ) {
+          //       console.log('MP4 segment (for DASH) or TS segment (for HLS)');
+
+          //       // Get the full path without query parameters
+          //       const urlWithoutQuery = decodeURIComponent(
+          //         originalUrl.split('?')[0]
+          //       );
+
+          //       console.log('urlWithoutQuery', urlWithoutQuery);
+
+          //       // Get just the filename with extension
+          //       const filename = urlWithoutQuery.substring(
+          //         urlWithoutQuery.lastIndexOf('/') + 1
+          //       );
+
+          //       // Get the directory path
+          //       const dirPath = urlWithoutQuery.substring(
+          //         0,
+          //         urlWithoutQuery.lastIndexOf('/') + 1
+          //       );
+
+          //       // Find the folder name (last part of the directory path)
+          //       const folderName = dirPath.split('/').filter(Boolean).pop();
+
+          //       // Construct the path for getFileUrl
+          //       const filePath = `processed-full-videos/${folderName}/${filename}`;
+
+          //       console.log('Getting presigned URL for:', filePath);
+
+          //       // Get presigned URL for the segment
+          //       const presignedUrl = await this.featuresService.getFileUrl(
+          //         filePath
+          //       );
+
+          //       // Replace the original URL with the presigned URL
+          //       request.uris[0] = presignedUrl;
+          //     }
+          //   } catch (error) {
+          //     console.error('Error getting presigned URL:', error);
+          //   }
+          // }
+        });
+
+      // // Create UI factory
+      // const ui = new shaka.ui.Overlay(this.player, container, video);
+
+      // // Configure UI
+      // const uiConfig = {
+      //   addSeekBar: true,
+      //   controlPanelElements: [
+      //     'play_pause',
+      //     'time_and_duration',
+      //     'spacer',
+      //     'mute',
+      //     'volume',
+      //     'quality',
+      //     'fullscreen',
+      //   ],
+      //   overflowMenuButtons: [
+      //     'quality',
+      //     'captions',
+      //     'picture_in_picture',
+      //     'cast',
+      //   ],
+      //   enableTooltips: true,
+      // };
+
+      // ui.configure(uiConfig);
+
+      // // Enable automatic adaptation between different quality levels
+      // this.player.configure(playerConfig);
+    } else {
+      playerConfig = {
+        drm: {
+          servers: {
+            'com.microsoft.playready':
+              'https://playready.ezdrm.com/cency/preauth.aspx?pX=803F3A',
+          },
+        },
+      };
+
+      this.player
+        .getNetworkingEngine()
+        .registerRequestFilter(async (type: any, request: any) => {
+          // Only add headers to license requests:
+          if (type == shaka.net.NetworkingEngine.RequestType.LICENSE) {
+            console.log('request :' + request.body);
+          }
+        });
+    }
+
+    await this.player
+      .getNetworkingEngine()
+      .registerResponseFilter(async (type: any, response: any) => {
+        // Alias some utilities provided by the library.
+        if (type == shaka.net.NetworkingEngine.RequestType.LICENSE) {
+          this.parsingResponse(response);
+        }
+        console.log('first if', response);
+      });
+
     // Register a request filter to modify segment requests
     this.player
       .getNetworkingEngine()
       .registerRequestFilter(async (type: any, request: any) => {
+        console.log('type', type);
+
+        console.log(
+          'shaka.net.NetworkingEngine.RequestType',
+          shaka.net.NetworkingEngine.RequestType
+        );
+
         // Only process segment requests (not manifest requests)
         if (
           type === shaka.net.NetworkingEngine.RequestType.SEGMENT ||
@@ -249,6 +431,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
           try {
             // Extract the segment URL from the request
             const originalUrl = request.uris[0];
+            console.log('originalUrl', originalUrl);
 
             // Check if this is an MP4 segment (for DASH) or TS segment (for HLS)
             if (
@@ -292,6 +475,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
                 filePath
               );
 
+              console.log('presignedUrl', presignedUrl);
+
               // Replace the original URL with the presigned URL
               request.uris[0] = presignedUrl;
             }
@@ -328,17 +513,67 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     ui.configure(uiConfig);
 
     // Enable automatic adaptation between different quality levels
-    this.player.configure({
-      streaming: {
-        rebufferingGoal: 2,
-        bufferingGoal: 10,
-        bufferBehind: 30,
-      },
-      abr: {
-        enabled: true,
-        defaultBandwidthEstimate: 1000000, // 1Mbps initial estimate
-      },
-    });
+    this.player.configure(playerConfig);
+  }
+
+  parsingResponse(response: any) {
+    let responseText = this.arrayBufferToString(response.data);
+    // Trim whitespace.
+    responseText = responseText.trim();
+
+    console.log('responseText :: ', responseText);
+
+    try {
+      const drmconObj = JSON.parse(responseText);
+      if (drmconObj && drmconObj.errorCode && drmconObj.message) {
+        if ('8002' != drmconObj.errorCode) {
+          alert(
+            'DRM Error : ' + drmconObj.message + '(' + drmconObj.errorCode + ')'
+          );
+          //window.alert('No Rights. Server Response ' + responseText);
+        } else {
+          var errorObj = JSON.parse(drmconObj.message);
+          alert('Error : ' + errorObj.MESSAGE + '(' + errorObj.ERROR + ')');
+        }
+      }
+    } catch (e) {}
+  }
+
+  arrayBufferToString(buffer: number[]) {
+    var arr = new Uint8Array(buffer);
+    var str = String.fromCharCode.apply(String, Array.from(arr));
+    // if(/[\u0080-\uffff]/.test(str)){
+    //     throw new Error("this string seems to contain (still encoded) multibytes");
+    // }
+    return str;
+  }
+
+  isAndroid() {
+    return /Android/i.test(navigator.userAgent);
+  }
+
+  private checkCodecSupport(videoUrl: string): boolean {
+    const video = document.createElement('video');
+
+    // Check common codec support
+    const codecs = {
+      mp4: 'video/mp4; codecs="avc1.42E01E"',
+      webm: 'video/webm; codecs="vp8, vorbis"',
+      ogg: 'video/ogg; codecs="theora"',
+    };
+
+    const extension = videoUrl.split('.').pop()?.toLowerCase();
+
+    switch (extension) {
+      case 'mp4':
+        return video.canPlayType(codecs.mp4) !== '';
+      case 'webm':
+        return video.canPlayType(codecs.webm) !== '';
+      case 'ogg':
+        return video.canPlayType(codecs.ogg) !== '';
+      default:
+        return false;
+    }
   }
 
   async ngAfterViewInit() {
@@ -352,16 +587,37 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
       this.isLoading = true;
       const videoElement = this.videoPlayer.nativeElement;
 
-      // Add event listeners
-      videoElement.addEventListener('pause', () => {
-        this.pauseTime = videoElement.currentTime;
+      if (this.pauseTime) {
+        // Add event listeners
+        videoElement.addEventListener('pause', () => {
+          this.pauseTime = videoElement.currentTime;
+        });
+      }
+
+      // Add better error handling for video element
+      videoElement.addEventListener('error', (e: any) => {
+        console.error('Video element error:', e);
+        if (e.target?.error?.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
+          // this.errorMessage =
+          //   'This video format is not supported in Chrome/Edge. Please use Firefox browser.';
+        } else {
+          this.errorMessage =
+            'Video playback error. Please try Firefox browser.';
+        }
+        this.isLoading = false;
       });
 
       if (this.isStreamingUrl(this.videoUrl)) {
+        console.log('VideoURL', this.videoUrl);
+
         await this.initShakaPlayer();
+
+        console.log('shaka initialized');
 
         // For streaming files, get presigned URL for the manifest
         if (this.videoUrl.endsWith('.mpd') || this.videoUrl.endsWith('.m3u8')) {
+          console.log('get presigned URL for the manifest');
+
           // Get the full path without query parameters
           const urlWithoutQuery = this.videoUrl.split('?')[0];
 
@@ -403,7 +659,23 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     } catch (error) {
       this.isLoading = false;
       console.error('Video player error:', error);
-      this.errorMessage = 'Error loading video. Please try again.';
+
+      // Convert error to string for checking
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      // Provide specific error messages for codec issues
+      if (
+        errorMessage.includes('NotSupportedError') ||
+        errorMessage.includes('no supported source') ||
+        errorMessage.includes('codec')
+      ) {
+        // this.errorMessage =
+        //   'This video format is not supported in your current browser. Please use Firefox browser for better compatibility.';
+      } else {
+        this.errorMessage =
+          'Video is currently unavailable. Please try using Firefox browser or contact support.';
+      }
     }
   }
 
@@ -572,7 +844,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
 
   onError(event: any) {
     this.isLoading = false;
-    this.errorMessage = 'Error loading video. Please try again.';
+    console.error('Video player error: Error loading video. Please try again.');
+    // this.errorMessage = 'Error loading video. Please try again.';
   }
 
   goBack() {

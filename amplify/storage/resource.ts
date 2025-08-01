@@ -2,6 +2,7 @@ import { defineStorage } from '@aws-amplify/backend';
 import { onImageUpload } from './onUpload/onImageUpload/resource';
 import { onPreviewVideoUpload } from './onUpload/onPreviewVideoUpload/resource';
 import { onFullVideoUpload } from './onUpload/onFullVideoUpload/resource';
+import { createVttFunction } from './create-vtt/resource';
 
 export const storage = defineStorage({
   name: 'mystorage',
@@ -68,6 +69,7 @@ export const storage = defineStorage({
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['read', 'write', 'delete']),
       allow.resource(onFullVideoUpload).to(['read', 'delete', 'write']),
+      allow.resource(createVttFunction).to(['read', 'write']),
     ],
   }),
 });

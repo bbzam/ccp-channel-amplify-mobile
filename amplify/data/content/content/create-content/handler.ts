@@ -2,9 +2,11 @@ import {
   DynamoDBClient,
   PutItemCommand,
   ScanCommand,
+  UpdateItemCommand,
 } from '@aws-sdk/client-dynamodb';
+import { LambdaClient } from '@aws-sdk/client-lambda';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
-import { config } from '../../../../config';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 const validateCustomFields = async (
   customFields: any,
@@ -28,7 +30,7 @@ const validateCustomFields = async (
 
     // Get all existing custom fields from database
     const scanCommand = new ScanCommand({
-      TableName: config.CUSTOMFIELDS_TABLE,
+      TableName: process.env.CUSTOMFIELDS_TABLE,
       ProjectionExpression: 'id, fieldName',
     });
 
@@ -144,7 +146,9 @@ const validateContent = async (args: any, dynamoClient: DynamoDBClient) => {
 };
 
 export const handler = async (event: any) => {
-  const dynamoClient = new DynamoDBClient({ region: config.REGION });
+  const dynamoClient = new DynamoDBClient({ region: process.env.REGION });
+  const lambdaClient = new LambdaClient({ region: process.env.REGION });
+  const s3Client = new S3Client();
 
   try {
     const { arguments: args } = event;
@@ -195,11 +199,215 @@ export const handler = async (event: any) => {
     };
 
     const command = new PutItemCommand({
-      TableName: config.CONTENT_TABLE,
+      TableName: process.env.CONTENT_TABLE,
       Item: marshall(contentItem),
     });
 
     await dynamoClient.send(command);
+
+    console.log('Content created:', contentItem);
+
+    // Create folder inside processed-full-videos using key as folder name
+    const folderKey = `processed-${contentItem.fullVideoUrl}/${contentItem.id}.folder`;
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: process.env.BUCKET_NAME,
+        Key: folderKey,
+        Body: '',
+      })
+    );
+
+    console.info(`[FULL VIDEO HANDLER] Created folder: ${folderKey}`);
+
+    // Create Media Convert
+    const AWS = require('aws-sdk');
+    const MEDIACONVERT_ROLE = process.env.MEDIACONVERT_ROLE;
+    const OUTPUT_BUCKET = process.env.BUCKET_NAME;
+    const SPEKE_URL = process.env.SPEKE_URL;
+    const RESOURCE_ID = crypto.randomUUID(); // can also generate dynamically
+    let mediaconvert;
+
+    // const record = event.Records[0];
+    const bucket = OUTPUT_BUCKET;
+    const key = decodeURIComponent(contentItem.fullVideoUrl);
+    const inputS3Url = `s3://${bucket}/${key}`;
+
+    console.log('inputS3Url:', inputS3Url);
+
+    // Get MediaConvert endpoint (only once per Lambda cold start)
+    if (!mediaconvert) {
+      const mediaconvertClient = new AWS.MediaConvert({
+        region: process.env.REGION,
+      });
+      const endpoints = await mediaconvertClient.describeEndpoints().promise();
+      mediaconvert = new AWS.MediaConvert({
+        endpoint: endpoints.Endpoints[0].Url,
+        region: process.env.REGION,
+      });
+    }
+
+    const jobParams = {
+      Role: MEDIACONVERT_ROLE,
+      Settings: {
+        Inputs: [
+          {
+            FileInput: inputS3Url,
+            AudioSelectors: {
+              'Audio Selector 1': {
+                DefaultSelection: 'DEFAULT',
+              },
+            },
+            VideoSelector: {
+              ColorSpace: 'FOLLOW',
+            },
+          },
+        ],
+        OutputGroups: [
+          {
+            Name: 'DASH ISO',
+            OutputGroupSettings: {
+              Type: 'DASH_ISO_GROUP_SETTINGS',
+              DashIsoGroupSettings: {
+                SegmentLength: 6,
+                FragmentLength: 2,
+                SegmentControl: 'SEGMENTED_FILES',
+                Destination: `s3://${OUTPUT_BUCKET}/processed-${contentItem.fullVideoUrl}/`,
+                Encryption: {
+                  SpekeKeyProvider: {
+                    Url: SPEKE_URL,
+                    SystemIds: [
+                      'edef8ba9-79d6-4ace-a3c8-27dcd51d21ed', // Widevine
+                      '9a04f079-9840-4286-ab92-e65be0885f95', // PlayReady
+                    ],
+                    ResourceId: RESOURCE_ID,
+                  },
+                },
+              },
+            },
+            Outputs: [
+              {
+                NameModifier: '_1920x1080', // Optional - appends to filenames
+                ContainerSettings: {
+                  Container: 'MPD',
+                },
+                VideoDescription: {
+                  Width: 1920,
+                  Height: 1080,
+                  CodecSettings: {
+                    Codec: 'H_264',
+                    H264Settings: {
+                      MaxBitrate: 8500000,
+                      RateControlMode: 'QVBR',
+                      SceneChangeDetect: 'TRANSITION_DETECTION',
+                      QualityTuningLevel: 'MULTI_PASS_HQ',
+                    },
+                  },
+                },
+                // AudioDescriptions: [
+                //   {
+                //     AudioSourceName: 'Audio Selector 1',
+                //     CodecSettings: {
+                //       Codec: 'AAC',
+                //       AacSettings: {
+                //         Bitrate: 192000,
+                //         CodingMode: 'CODING_MODE_2_0',
+                //         SampleRate: 48000,
+                //       },
+                //     },
+                //   },
+                // ],
+              },
+              {
+                NameModifier: '_1280x720', // Optional - appends to filenames
+                ContainerSettings: {
+                  Container: 'MPD',
+                },
+                VideoDescription: {
+                  Width: 1280,
+                  Height: 720,
+                  CodecSettings: {
+                    Codec: 'H_264',
+                    H264Settings: {
+                      MaxBitrate: 3000000,
+                      RateControlMode: 'QVBR',
+                      SceneChangeDetect: 'TRANSITION_DETECTION',
+                      QualityTuningLevel: 'MULTI_PASS_HQ',
+                    },
+                  },
+                },
+                // AudioDescriptions: [
+                //   {
+                //     AudioSourceName: 'Audio Selector 1',
+                //     CodecSettings: {
+                //       Codec: 'AAC',
+                //       AacSettings: {
+                //         Bitrate: 192000,
+                //         CodingMode: 'CODING_MODE_2_0',
+                //         SampleRate: 48000,
+                //       },
+                //     },
+                //   },
+                // ],
+              },
+              {
+                NameModifier: '_854x480', // Optional - appends to filenames
+                ContainerSettings: {
+                  Container: 'MPD',
+                },
+                VideoDescription: {
+                  Width: 854,
+                  Height: 480,
+                  CodecSettings: {
+                    Codec: 'H_264',
+                    H264Settings: {
+                      MaxBitrate: 1500000,
+                      RateControlMode: 'QVBR',
+                      SceneChangeDetect: 'TRANSITION_DETECTION',
+                      QualityTuningLevel: 'MULTI_PASS_HQ',
+                    },
+                  },
+                },
+                // AudioDescriptions: [
+                //   {
+                //     AudioSourceName: 'Audio Selector 1',
+                //     CodecSettings: {
+                //       Codec: 'AAC',
+                //       AacSettings: {
+                //         Bitrate: 96000,
+                //         CodingMode: 'CODING_MODE_2_0',
+                //         SampleRate: 48000,
+                //       },
+                //     },
+                //   },
+                // ],
+              },
+              {
+                NameModifier: '_audio',
+                ContainerSettings: {
+                  Container: 'MPD',
+                },
+                AudioDescriptions: [
+                  {
+                    AudioSourceName: 'Audio Selector 1',
+                    CodecSettings: {
+                      Codec: 'AAC',
+                      AacSettings: {
+                        Bitrate: 192000,
+                        CodingMode: 'CODING_MODE_2_0',
+                        SampleRate: 48000,
+                      },
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    const result = await mediaconvert.createJob(jobParams).promise();
+    console.log('MediaConvert job created:', result.Job.Id);
 
     return {
       success: true,

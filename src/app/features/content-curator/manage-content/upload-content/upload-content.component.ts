@@ -407,17 +407,15 @@ export class UploadContentComponent {
 
       await this.featureService.createContent(contentMetadata).then(
         async (result) => {
-          result.data
-            ? (this.featureService.handleSuccess(
-                isForPublish
-                  ? 'Content Published Successfully!'
-                  : 'Content Scheduled Successfully!'
-              ),
-              this.dialogRef.close())
-            : this.featureService.handleError(
-                'Uploading Error, Please try again.'
-              ),
-            this.uploadForm.enable();
+          result.data &&
+            (this.featureService.handleSuccess(
+              isForPublish
+                ? 'Content uploaded successfully! Publishing in progress...'
+                : 'Content uploaded successfully! Scheduling in progress...'
+            ),
+            this.dialogRef.close());
+
+          this.uploadForm.enable();
         },
         (error) => {
           isForPublish

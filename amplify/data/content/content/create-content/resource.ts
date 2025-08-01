@@ -4,8 +4,11 @@ import { config } from '../../../../config';
 export const createContentFunction = defineFunction({
   name: 'create-ContentFunction',
   environment: {
+    BUCKET_NAME: config.BUCKET_NAME,
     REGION: config.REGION,
     CONTENT_TABLE: config.CONTENT_TABLE,
     CUSTOMFIELDS_TABLE: config.CUSTOMFIELDS_TABLE,
+    MEDIACONVERT_ROLE: config.MEDIACONVERT_ROLE,
+    SPEKE_URL: config.SPEKE_URL,
   },
 });

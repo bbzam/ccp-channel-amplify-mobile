@@ -1,10 +1,9 @@
 import { defineFunction } from '@aws-amplify/backend';
-import { config } from '../../../config';
+import { config } from '../../config';
 
-export const statistics = defineFunction({
-  name: 'statistics',
+export const afterMediaConvertFunction = defineFunction({
+  name: 'after-mediaConvert',
   environment: {
-    USER_POOL_ID: config.USER_POOL_ID,
     REGION: config.REGION,
     CONTENT_TABLE: config.CONTENT_TABLE,
   },

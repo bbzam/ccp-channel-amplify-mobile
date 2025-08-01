@@ -13,6 +13,8 @@ import { getContentFunction } from './data/content/content/get-content/resource'
 import { onImageUpload } from './storage/onUpload/onImageUpload/resource';
 import { onPreviewVideoUpload } from './storage/onUpload/onPreviewVideoUpload/resource';
 import { onFullVideoUpload } from './storage/onUpload/onFullVideoUpload/resource';
+import { createVttFunction } from './storage/create-vtt/resource';
+import { afterMediaConvertFunction } from './storage/after-mediaConvert/resource';
 import { config } from './config';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { EventType } from 'aws-cdk-lib/aws-s3';
@@ -33,6 +35,8 @@ const backend = defineBackend({
   onImageUpload,
   onPreviewVideoUpload,
   onFullVideoUpload,
+  createVttFunction,
+  afterMediaConvertFunction,
 });
 
 backend.storage.resources.bucket.addEventNotification(
@@ -59,6 +63,25 @@ backend.storage.resources.bucket.addEventNotification(
   { prefix: 'full-videos/' }
 );
 
+backend.storage.resources.bucket.addEventNotification(
+  EventType.OBJECT_CREATED_PUT,
+  new LambdaDestination(backend.createVttFunction.resources.lambda),
+  { prefix: 'processed-full-videos/', suffix: '.folder' }
+);
+
+backend.storage.resources.bucket.addEventNotification(
+  EventType.OBJECT_CREATED_PUT,
+  new LambdaDestination(backend.afterMediaConvertFunction.resources.lambda),
+  { prefix: 'processed-full-videos/', suffix: '.mpd' }
+);
+
+backend.storage.resources.bucket.addEventNotification(
+  EventType.OBJECT_CREATED_PUT,
+  new LambdaDestination(backend.afterMediaConvertFunction.resources.lambda),
+  { prefix: 'processed-full-videos/', suffix: '.m3u8' }
+);
+
+const createVtt = backend.createVttFunction.resources.lambda;
 const statisticsQuery = backend.statistics.resources.lambda;
 const getcontentToUserQuery = backend.getContentToUserFunction.resources.lambda;
 const createContentToUserMutation =
@@ -68,22 +91,44 @@ const getContinueWatchQuery = backend.getContinueWatchFunction.resources.lambda;
 const getContentQuery = backend.getContentFunction.resources.lambda;
 const createContentMutation = backend.createContentFunction.resources.lambda;
 const updateContentMutation = backend.updateContentFunction.resources.lambda;
+const afterMediaConvert = backend.afterMediaConvertFunction.resources.lambda;
+
+const createVttStatement = new iam.PolicyStatement({
+  sid: 'createVtt',
+  actions: ['dynamodb:UpdateItem', 's3:PutObject', 's3:GetObject'],
+  resources: [
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
+    `arn:aws:s3:::${config.BUCKET_NAME}/*`,
+  ],
+});
 
 const getContentStatement = new iam.PolicyStatement({
   sid: 'getAllContents',
   actions: ['dynamodb:Scan'],
   resources: [
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CONTENT_TABLE}`,
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CONTENTTOUSER_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENTTOUSER_TABLE}`,
   ],
 });
 
 const createContentStatement = new iam.PolicyStatement({
   sid: 'createContent',
-  actions: ['dynamodb:PutItem', 'dynamodb:Scan'],
+  actions: [
+    'dynamodb:PutItem',
+    'dynamodb:UpdateItem',
+    'dynamodb:Scan',
+    's3:PutObject',
+    'mediaconvert:DescribeEndpoints',
+    'iam:PassRole',
+    'mediaconvert:CreateJob',
+  ],
   resources: [
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CONTENT_TABLE}`,
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CUSTOMFIELDS_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CUSTOMFIELDS_TABLE}`,
+    `arn:aws:s3:::${config.BUCKET_NAME}/*`,
+    `arn:aws:mediaconvert:${config.REGION}:${config.ACCOUNT_ID}:endpoints/*`,
+    `arn:aws:iam::${config.ACCOUNT_ID}:role/service-role/MediaConvert_Default_Role`,
+    `arn:aws:mediaconvert:${config.REGION}:${config.ACCOUNT_ID}:queues/Default`,
   ],
 });
 
@@ -91,8 +136,8 @@ const updateContentStatement = new iam.PolicyStatement({
   sid: 'updateContent',
   actions: ['dynamodb:UpdateItem', 'dynamodb:Scan'],
   resources: [
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CONTENT_TABLE}`,
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CUSTOMFIELDS_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CUSTOMFIELDS_TABLE}`,
   ],
 });
 
@@ -100,7 +145,7 @@ const statisticsStatement = new iam.PolicyStatement({
   sid: 'statistics',
   actions: ['dynamodb:Scan'],
   resources: [
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CONTENT_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
   ], //limiting the permissions to only Content table
 });
 
@@ -108,8 +153,8 @@ const createContentToUserStatement = new iam.PolicyStatement({
   sid: 'createContentToUser',
   actions: ['dynamodb:PutItem', 'dynamodb:UpdateItem', 'dynamodb:Scan'],
   resources: [
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CONTENT_TABLE}`,
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CONTENTTOUSER_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENTTOUSER_TABLE}`,
   ],
 });
 
@@ -117,7 +162,7 @@ const getContentToUserStatement = new iam.PolicyStatement({
   sid: 'getContentToUser',
   actions: ['dynamodb:Scan'],
   resources: [
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CONTENTTOUSER_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENTTOUSER_TABLE}`,
   ], //limiting the permissions to only ContentToUser table
 });
 
@@ -125,8 +170,8 @@ const getUserFavoritesStatement = new iam.PolicyStatement({
   sid: 'getUserFavorites',
   actions: ['dynamodb:Scan', 'dynamodb:BatchGetItem'],
   resources: [
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CONTENT_TABLE}`,
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CONTENTTOUSER_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENTTOUSER_TABLE}`,
   ],
 });
 
@@ -134,10 +179,19 @@ const getContinueWatchStatement = new iam.PolicyStatement({
   sid: 'getContinueWatch',
   actions: ['dynamodb:Scan'],
   resources: [
-    `arn:aws:dynamodb:ap-southeast-1:879639852836:table/${config.CONTENTTOUSER_TABLE}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENTTOUSER_TABLE}`,
   ],
 });
 
+const afterMediaConvertStatement = new iam.PolicyStatement({
+  sid: 'afterMediaConvert',
+  actions: ['dynamodb:Scan', 'dynamodb:UpdateItem'],
+  resources: [
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
+  ],
+});
+
+createVtt.addToRolePolicy(createVttStatement);
 getContentQuery.addToRolePolicy(getContentStatement);
 createContentMutation.addToRolePolicy(createContentStatement);
 updateContentMutation.addToRolePolicy(updateContentStatement);
@@ -146,3 +200,4 @@ createContentToUserMutation.addToRolePolicy(createContentToUserStatement);
 getcontentToUserQuery.addToRolePolicy(getContentToUserStatement);
 getUserFavoritesQuery.addToRolePolicy(getUserFavoritesStatement);
 getContinueWatchQuery.addToRolePolicy(getContinueWatchStatement);
+afterMediaConvert.addToRolePolicy(afterMediaConvertStatement);

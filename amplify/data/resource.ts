@@ -39,11 +39,10 @@ const schema = a.schema({
       previewVideoUrl: a.string().required(),
       fullVideoUrl: a.string().required(),
       vttUrl: a.string(),
+      processedFullVideoUrl: a.string(),
       runtime: a.float().required(),
       resolution: a.string().required(),
-      status: a.boolean().required(), //queued/on process or scheduled (false), published (true)
-      isVtt: a.boolean(),
-      isMedCon: a.boolean(),
+      status: a.boolean().required(), //scheduled (false), published (true)
       publishDate: a.date(),
       viewCount: a.integer(),
       customFields: a.json(),

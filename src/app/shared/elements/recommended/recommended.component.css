@@ -79,6 +79,11 @@
       text-overflow: ellipsis;
     }
 
+    label:hover {
+      cursor: pointer;
+      color: var(--primary);
+    }
+
     .action-buttons {
       display: flex;
       gap: 0.5em;

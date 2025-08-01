@@ -4,6 +4,13 @@ import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 export const handler = async (event: any) => {
   const { category, status, keyword, fields } = event.arguments;
   const userId = event.identity.claims.sub;
+  const userGroups = event.identity.claims['cognito:groups'] || [];
+  const isAdmin =
+    userGroups.includes('SUPER_ADMIN') ||
+    userGroups.includes('IT_ADMIN') ||
+    userGroups.includes('CONTENT_CREATOR');
+  const isSubscriber =
+    userGroups.includes('SUBSCRIBER') || userGroups.includes('USER');
 
   try {
     const ddbClient = new DynamoDBClient({});
@@ -74,7 +81,17 @@ export const handler = async (event: any) => {
 
     console.log('dataWithFavorites:', JSON.stringify(dataWithFavorites));
 
-    return JSON.stringify(dataWithFavorites);
+    // Filter content for subscribers
+    let filteredData = dataWithFavorites;
+    if (isSubscriber && !isAdmin) {
+      filteredData = dataWithFavorites?.filter(
+        (content: any) => content.vttUrl && content.processedFullVideoUrl
+      );
+    }
+
+    console.log('filteredData:', JSON.stringify(filteredData));
+
+    return JSON.stringify(filteredData);
   } catch (error) {
     console.error('Error fetching contents:', error);
     return {

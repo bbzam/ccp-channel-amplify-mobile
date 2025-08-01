@@ -215,10 +215,10 @@ export class FeaturesService {
         this.sharedService.hideLoader();
         return parsedResult;
       } else {
-        const errorMessage =
-          parsedResult?.errors?.join(', ') || 'Content creation failed';
-        this.handleError(errorMessage);
-        throw new Error(errorMessage);
+        this.sharedService.hideLoader();
+        this.handleError(
+          'An error occurred while creating content. Please try again'
+        );
       }
     } catch (error) {
       this.sharedService.hideLoader();
