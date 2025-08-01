@@ -11,15 +11,22 @@
         Sign In
       </button>
     </div>
-    } @else {
+    } @else { @if (role === 'SUBSCRIBER') {
     <div class="header-logo">
       <a href="/subscriber"
         ><img src="ccp-logo-rmvbg.png" alt="header-logo"
       /></a>
     </div>
-    @if (role === 'USER' || role === 'SUBSCRIBER') {
     <div class="hide">
       <app-navigation />
+    </div>
+    } @else if (role === 'USER') {
+    <div class="header-logo">
+      <a href="/user"><img src="ccp-logo-rmvbg.png" alt="header-logo" /></a>
+    </div>
+    } @else {
+    <div class="header-logo">
+      <img src="ccp-logo-rmvbg.png" alt="header-logo" />
     </div>
     }
     <div class="hide">
@@ -57,9 +64,11 @@
               </div>
             </mat-card-header>
             <mat-card-content>
+              @if(role === 'SUBSCRIBER') {
               <button mat-button color="primary" (click)="favoritesOnClick()">
                 <mat-icon>favorite</mat-icon><span>Favourites</span>
               </button>
+              }
               <button mat-button color="primary" (click)="settingOnClick()">
                 <mat-icon>settings</mat-icon><span>Settings</span>
               </button>

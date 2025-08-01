@@ -49,7 +49,9 @@ const schema = a.schema({
       contentToUser: a.hasMany('contentToUser', 'contentId'),
     })
     .authorization((allow) => [
-      allow.authenticated().to(['read']),
+      allow
+        .groups(['SUBSCRIBER', 'IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
+        .to(['read']),
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['create', 'update', 'delete']),
@@ -67,7 +69,6 @@ const schema = a.schema({
     .handler(a.handler.function(getContentFunction))
     .authorization((allow) => [
       allow.groups([
-        'USER',
         'SUBSCRIBER',
         'CONTENT_CREATOR',
         'IT_ADMIN',
@@ -154,7 +155,7 @@ const schema = a.schema({
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
         .to(['read', 'create', 'update', 'delete']),
-      allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER']).to(['read']),
     ]),
 
   contentToUser: a
@@ -166,7 +167,7 @@ const schema = a.schema({
       content: a.belongsTo('Content', 'contentId'),
     })
     .authorization((allow) => [
-      allow.groups(['USER', 'SUBSCRIBER']).to(['create', 'update', 'read']),
+      allow.groups(['SUBSCRIBER']).to(['create', 'update', 'read']),
       allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']).to(['read']),
     ]),
 
@@ -177,7 +178,7 @@ const schema = a.schema({
       pauseTime: a.string(),
       isFavorite: a.boolean(),
     })
-    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
     .handler(a.handler.function(createContentToUserFunction))
     .returns(a.json()),
 
@@ -186,21 +187,21 @@ const schema = a.schema({
     .arguments({
       contentId: a.string().required(),
     })
-    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
     .handler(a.handler.function(getContentToUserFunction))
     .returns(a.json()),
 
   getUserFavoritesFunction: a
     .query()
     .arguments({})
-    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
     .handler(a.handler.function(getUserFavoritesFunction))
     .returns(a.json()),
 
   getContinueWatchFunction: a
     .query()
     .arguments({})
-    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
     .handler(a.handler.function(getContinueWatchFunction))
     .returns(a.json()),
 
@@ -237,8 +238,7 @@ const schema = a.schema({
       ]),
     })
     .authorization((allow) => [
-      allow.guest().to(['read']),
-      allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER']).to(['read']),
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
         .to(['create', 'read', 'update', 'delete']),
@@ -251,7 +251,7 @@ const schema = a.schema({
       selectedContent: a.string(),
     })
     .authorization((allow) => [
-      allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER']).to(['read']),
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
         .to(['create', 'read', 'update', 'delete']),
@@ -271,8 +271,7 @@ const schema = a.schema({
       ]),
     })
     .authorization((allow) => [
-      allow.guest().to(['read']),
-      allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER']).to(['read']),
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
         .to(['create', 'read', 'update', 'delete']),
@@ -309,7 +308,6 @@ const schema = a.schema({
     })
     .authorization((allow) => [
       allow.groups([
-        'USER',
         'SUBSCRIBER',
         'CONTENT_CREATOR',
         'IT_ADMIN',

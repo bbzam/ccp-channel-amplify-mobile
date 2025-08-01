@@ -32,6 +32,66 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'privacy-policy',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import(
+            './features/public-view/privacy-policy/privacy-policy.component'
+          ).then((m) => m.PrivacyPolicyComponent),
+      },
+      {
+        path: 'notfound',
+        loadComponent: () =>
+          import('./shared/page-not-found/page-not-found.component').then(
+            (m) => m.PageNotFoundComponent
+          ),
+      },
+      { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
+    ],
+  },
+  {
+    path: 'user',
+    canActivate: [roleGuard, authGuard],
+    data: { roles: ['USER'] },
+    loadComponent: () =>
+      import('./features/user/user/user.component').then(
+        (m) => m.UserComponent
+      ),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/user/home-page/home-page.component').then(
+            (m) => m.HomePageComponent
+          ),
+      },
+      {
+        path: 'about',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import('./features/public-view/about/about.component').then(
+            (m) => m.AboutComponent
+          ),
+      },
+      {
+        path: 'privacy-policy',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import(
+            './features/public-view/privacy-policy/privacy-policy.component'
+          ).then((m) => m.PrivacyPolicyComponent),
+      },
+      {
+        path: 'account-settings',
+        loadComponent: () =>
+          import(
+            './shared/component/account-settings/account-settings.component'
+          ).then((m) => m.AccountSettingsComponent),
+      },
+      {
         path: 'notfound',
         loadComponent: () =>
           import('./shared/page-not-found/page-not-found.component').then(
@@ -44,7 +104,7 @@ export const routes: Routes = [
   {
     path: 'subscriber',
     canActivate: [roleGuard, authGuard],
-    data: { roles: ['SUBSCRIBER', 'USER'] },
+    data: { roles: ['SUBSCRIBER'] },
     loadComponent: () =>
       import('./features/subscriber/subscriber/subscriber.component').then(
         (m) => m.SubscriberComponent
@@ -130,6 +190,15 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'privacy-policy',
+        resolve: { loading: loaderResolver },
+        data: { loadingMessage: 'Loading Page...' },
+        loadComponent: () =>
+          import(
+            './features/public-view/privacy-policy/privacy-policy.component'
+          ).then((m) => m.PrivacyPolicyComponent),
+      },
+      {
         path: 'account-settings',
         loadComponent: () =>
           import(
@@ -195,18 +264,18 @@ export const routes: Routes = [
         resolve: { loading: loaderResolver },
         data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
-          import('./features/content-curator/manage-tag/settag/settag.component').then(
-            (m) => m.SettagComponent
-          ),
+          import(
+            './features/content-curator/manage-tag/settag/settag.component'
+          ).then((m) => m.SettagComponent),
       },
       {
         path: 'tag',
         resolve: { loading: loaderResolver },
         data: { loadingMessage: 'Loading Page...' },
         loadComponent: () =>
-          import('./features/content-curator/manage-tag/tag/tag.component').then(
-            (m) => m.TagComponent
-          ),
+          import(
+            './features/content-curator/manage-tag/tag/tag.component'
+          ).then((m) => m.TagComponent),
       },
       {
         path: 'custom-fields',

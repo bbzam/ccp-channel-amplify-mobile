@@ -1,0 +1,12 @@
+<div class="mainLayout">
+  <div class="header">
+    <app-header (menuClicked)="sidenav.toggleDrawer()" />
+  </div>
+  <div class="body">
+    <router-outlet />
+  </div>
+  <div class="footer">
+    <app-footer />
+  </div>
+  <app-sidenav #sidenav></app-sidenav>
+</div>

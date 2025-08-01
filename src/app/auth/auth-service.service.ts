@@ -49,6 +49,9 @@ export class AuthServiceService {
       this.setSessionData(idToken);
       switch (userRole) {
         case 'USER':
+          this.router.navigate(['/user']);
+          this.sharedService.hideLoader();
+          break;
         case 'SUBSCRIBER':
           this.router.navigate(['/subscriber']);
           this.sharedService.hideLoader();
