@@ -350,6 +350,30 @@ export class FeaturesService {
     }
   }
 
+  async createPayment(rate: string): Promise<any> {
+    try {
+      this.sharedService.showLoader('Redirecting to Dragonpay...');
+      const result = await this.client.queries.createPayment({
+        rate: rate,
+        email: String(sessionStorage.getItem('email')),
+      });
+
+      console.log('result', result);
+
+      if (result.data && typeof result.data === 'string') {
+        const parsedData = JSON.parse(result.data);
+        this.sharedService.hideLoader();
+        return parsedData.data || [];
+      }
+
+      return result.data;
+    } catch (error) {
+      this.sharedService.hideLoader();
+      this.handleError('Error creating a payment');
+      throw error;
+    }
+  }
+
   async toggleFavorite(contentId: string, isFavorite: boolean): Promise<any> {
     try {
       const result = await this.client.mutations.createContentToUserFunction({

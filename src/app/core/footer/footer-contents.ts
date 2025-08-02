@@ -25,7 +25,7 @@ export const contents: Section[] = [
   {
     title: 'Legal',
     items: [
-      { label: 'Privacy Policy', url: 'landing-page/privacy-policy' },
+      { label: 'Privacy Policy', url: '' },
       // { label: 'Terms of Service', url: '' },
       // { label: 'Cookie Preferences', url: '' },
       // { label: 'Corporate Information', url: '' },

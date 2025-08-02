@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { BannerComponent } from '../../public-view/public-banner/banner.component';
-import { topFeatured } from '../../public-view/mock-data';
+import { subscribeNow } from '../../public-view/mock-data';
 
 @Component({
   selector: 'app-home-page',
@@ -9,5 +9,5 @@ import { topFeatured } from '../../public-view/mock-data';
   styleUrl: './home-page.component.css',
 })
 export class HomePageComponent {
-  banners: any[] = topFeatured;
+  banners: any[] = subscribeNow;
 }

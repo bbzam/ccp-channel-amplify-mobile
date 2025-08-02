@@ -13,6 +13,7 @@ import { getContinueWatchFunction } from './content/content-to-user/get-continue
 import { createContentFunction } from './content/content/create-content/resource';
 import { updateContentFunction } from './content/content/update-content/resource';
 import { getContentFunction } from './content/content/get-content/resource';
+import { createPaymentFunction } from './payment/create-payment/resource';
 
 const schema = a.schema({
   Content: a
@@ -166,6 +167,19 @@ const schema = a.schema({
     })
     .authorization((allow) => [
       allow.groups(['SUBSCRIBER']).to(['create', 'update', 'read']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']).to(['read']),
+    ]),
+
+  paymentToUser: a
+    .model({
+      transactionId: a.string().required(),
+      userId: a.string().required(),
+      amount: a.string().required(),
+      status: a.string().required(),
+    })
+    .authorization((allow) => [
+      allow.guest().to(['update']),
+      allow.groups(['USER']).to(['create']),
       allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']).to(['read']),
     ]),
 
@@ -326,6 +340,16 @@ const schema = a.schema({
       allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(listUsers))
+    .returns(a.json()),
+
+  createPayment: a
+    .query()
+    .arguments({
+      rate: a.string().required(),
+      email: a.string().required(),
+    })
+    .authorization((allow) => [allow.groups(['USER'])])
+    .handler(a.handler.function(createPaymentFunction))
     .returns(a.json()),
 
   editUser: a

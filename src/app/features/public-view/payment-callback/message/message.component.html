@@ -1,0 +1,58 @@
+<div class="payment-callback-container">
+  @if (txnid && refno && status) {
+  <mat-card class="payment-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon [color]="getStatusColor()" class="status-icon">{{
+          getStatusIcon()
+        }}</mat-icon
+        >Payment {{ getStatusText() }}</mat-card-title
+      >
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="payment-details">
+        <p><strong>Reference Number:</strong> {{ refno }}</p>
+        <p><strong>Transaction ID:</strong> {{ txnid }}</p>
+        @if (message) {
+        <mat-card class="message-card">
+          <mat-card-content>{{ message }}</mat-card-content>
+        </mat-card>
+        }
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <div class="actions-center">
+        <button mat-raised-button (click)="goToLandingOnClick()">
+          Go to Landing page
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+  } @else {
+  <mat-card class="payment-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon color="warn" class="status-icon">error</mat-icon>
+        Invalid Payment Data
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="payment-details">
+        <p>Payment information is incomplete or missing.</p>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <div class="actions-center">
+        <button mat-raised-button color="primary" (click)="goToLandingOnClick()">
+          Go to Landing page
+        </button>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+  }
+</div>

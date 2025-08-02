@@ -7,9 +7,13 @@ export const config = {
   CONTENT_TABLE: 'Content-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
   CONTENTTOUSER_TABLE: 'contentToUser-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
   CUSTOMFIELDS_TABLE: 'customFields-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
+  PAYMENTTOUSER_TABLE: 'paymentToUser-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
   MEDIACONVERT_ROLE: 'role/service-role/MediaConvert_Default_Role',
   SPEKE_URL:
-    'https://ian6qy9unb.execute-api.ap-southeast-1.amazonaws.com/production/copyProtection',
+    'https://27jahlsoj3.execute-api.ap-southeast-1.amazonaws.com/production/copyProtection',
   SHARP_LAYER: 'node-js-sharp:1',
   FFMPEG_LAYER: 'ffmpeg:2',
+  PAYMENT_URL: 'https://test.dragonpay.ph/api/collect/v1/',
+  MERCHANT_ID: 'CCP3',
+  API_KEY: 'SfJXiEKxxZqscfs',
 };

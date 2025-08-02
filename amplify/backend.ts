@@ -15,6 +15,7 @@ import { onPreviewVideoUpload } from './storage/onUpload/onPreviewVideoUpload/re
 import { onFullVideoUpload } from './storage/onUpload/onFullVideoUpload/resource';
 import { createVttFunction } from './storage/create-vtt/resource';
 import { afterMediaConvertFunction } from './storage/after-mediaConvert/resource';
+import { createPaymentFunction } from './data/payment/create-payment/resource';
 import { config } from './config';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { EventType } from 'aws-cdk-lib/aws-s3';
@@ -37,6 +38,7 @@ const backend = defineBackend({
   onFullVideoUpload,
   createVttFunction,
   afterMediaConvertFunction,
+  createPaymentFunction,
 });
 
 backend.storage.resources.bucket.addEventNotification(
@@ -92,6 +94,7 @@ const getContentQuery = backend.getContentFunction.resources.lambda;
 const createContentMutation = backend.createContentFunction.resources.lambda;
 const updateContentMutation = backend.updateContentFunction.resources.lambda;
 const afterMediaConvert = backend.afterMediaConvertFunction.resources.lambda;
+const createPaymentQuery = backend.createPaymentFunction.resources.lambda;
 
 const createVttStatement = new iam.PolicyStatement({
   sid: 'createVtt',
@@ -191,6 +194,14 @@ const afterMediaConvertStatement = new iam.PolicyStatement({
   ],
 });
 
+const createPaymentStatement = new iam.PolicyStatement({
+  sid: 'createPayment',
+  actions: ['dynamodb:PutItem'],
+  resources: [
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.PAYMENTTOUSER_TABLE}`,
+  ],
+});
+
 createVtt.addToRolePolicy(createVttStatement);
 getContentQuery.addToRolePolicy(getContentStatement);
 createContentMutation.addToRolePolicy(createContentStatement);
@@ -201,3 +212,4 @@ getcontentToUserQuery.addToRolePolicy(getContentToUserStatement);
 getUserFavoritesQuery.addToRolePolicy(getUserFavoritesStatement);
 getContinueWatchQuery.addToRolePolicy(getContinueWatchStatement);
 afterMediaConvert.addToRolePolicy(afterMediaConvertStatement);
+createPaymentQuery.addToRolePolicy(createPaymentStatement);
