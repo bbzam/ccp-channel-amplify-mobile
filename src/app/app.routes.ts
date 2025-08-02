@@ -41,26 +41,26 @@ export const routes: Routes = [
           ).then((m) => m.PrivacyPolicyComponent),
       },
       {
-        path: 'callback',
-        resolve: { loading: loaderResolver },
-        data: { loadingMessage: 'Loading Page...' },
-        children: [
-          {
-            path: 'message',
-            loadComponent: () =>
-              import(
-                './features/public-view/payment-callback/message/message.component'
-              ).then((m) => m.MessageComponent),
-          },
-          {
-            path: 'notfound',
-            loadComponent: () =>
-              import('./shared/page-not-found/page-not-found.component').then(
-                (m) => m.PageNotFoundComponent
-              ),
-          },
-          { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
-        ],
+        path: 'notfound',
+        loadComponent: () =>
+          import('./shared/page-not-found/page-not-found.component').then(
+            (m) => m.PageNotFoundComponent
+          ),
+      },
+      { path: '**', redirectTo: 'notfound', pathMatch: 'full' },
+    ],
+  },
+  {
+    path: 'callback',
+    resolve: { loading: loaderResolver },
+    data: { loadingMessage: 'Loading Page...' },
+    children: [
+      {
+        path: 'message',
+        loadComponent: () =>
+          import(
+            './features/public-view/payment-callback/message/message.component'
+          ).then((m) => m.MessageComponent),
       },
       {
         path: 'notfound',
