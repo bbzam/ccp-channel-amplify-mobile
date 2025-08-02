@@ -146,7 +146,7 @@
     <!-- Custom Fields -->
     <div class="form-field-container">
       <label
-        >Custom Fields @if (isEditing()) {
+        >@if (isEditing()) { Custom Fields
         <button
           type="button"
           mat-icon-button
@@ -575,13 +575,13 @@
       } @if(fullErrorMessage()) {
       <mat-error>{{ fullErrorMessage() }}</mat-error
       >} } @if (fullFilePresignedURL) {
-      <video
+      <!-- <video
         class="previewMedia"
         [src]="fullFilePresignedURL"
         alt="full-video"
         controls
         preload="metadata"
-      ></video>
+      ></video> -->
       }
     </div>
   </form>

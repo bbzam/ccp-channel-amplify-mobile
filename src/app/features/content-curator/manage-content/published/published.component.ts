@@ -73,14 +73,15 @@ export class PublishedComponent {
       this.featuresService.getFileUrl(row.landscapeImageUrl),
       this.featuresService.getFileUrl(row.portraitImageUrl),
       this.featuresService.getFileUrl(row.previewVideoUrl),
-      this.featuresService.getFileUrl(row.fullVideoUrl),
-    ]).then(([urlLandscape, urlPortrait, urlPreviewVideo, urlFullVideo]) => {
+      // this.featuresService.getFileUrl(row.fullVideoUrl),
+    // ]).then(([urlLandscape, urlPortrait, urlPreviewVideo, urlFullVideo]) => {
+    ]).then(([urlLandscape, urlPortrait, urlPreviewVideo]) => {
       const updatedRow = {
         ...row,
         landscapeImagePresignedUrl: urlLandscape,
         portraitImagePresignedUrl: urlPortrait,
         previewVideoPresignedUrl: urlPreviewVideo,
-        fullVideoPresignedUrl: urlFullVideo,
+        // fullVideoPresignedUrl: urlFullVideo,
       };
 
       this.dialog

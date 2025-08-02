@@ -594,19 +594,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
         });
       }
 
-      // Add better error handling for video element
-      videoElement.addEventListener('error', (e: any) => {
-        console.error('Video element error:', e);
-        if (e.target?.error?.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
-          // this.errorMessage =
-          //   'This video format is not supported in Chrome/Edge. Please use Firefox browser.';
-        } else {
-          this.errorMessage =
-            'Video playback error. Please try Firefox browser.';
-        }
-        this.isLoading = false;
-      });
-
       if (this.isStreamingUrl(this.videoUrl)) {
         console.log('VideoURL', this.videoUrl);
 
@@ -659,23 +646,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     } catch (error) {
       this.isLoading = false;
       console.error('Video player error:', error);
-
-      // Convert error to string for checking
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-
-      // Provide specific error messages for codec issues
-      if (
-        errorMessage.includes('NotSupportedError') ||
-        errorMessage.includes('no supported source') ||
-        errorMessage.includes('codec')
-      ) {
-        // this.errorMessage =
-        //   'This video format is not supported in your current browser. Please use Firefox browser for better compatibility.';
-      } else {
-        this.errorMessage =
-          'Video is currently unavailable. Please try using Firefox browser or contact support.';
-      }
     }
   }
 
@@ -845,7 +815,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   onError(event: any) {
     this.isLoading = false;
     console.error('Video player error: Error loading video. Please try again.');
-    // this.errorMessage = 'Error loading video. Please try again.';
   }
 
   goBack() {

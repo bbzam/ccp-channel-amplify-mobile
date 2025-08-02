@@ -7,8 +7,9 @@ export const config = {
   CONTENT_TABLE: 'Content-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
   CONTENTTOUSER_TABLE: 'contentToUser-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
   CUSTOMFIELDS_TABLE: 'customFields-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
-  MEDIACONVERT_ROLE:
-    'arn:aws:iam::879639852836:role/service-role/MediaConvert_Default_Role',
+  MEDIACONVERT_ROLE: 'role/service-role/MediaConvert_Default_Role',
   SPEKE_URL:
     'https://ian6qy9unb.execute-api.ap-southeast-1.amazonaws.com/production/copyProtection',
+  SHARP_LAYER: 'sharpLayer:2',
+  FFMPEG_LAYER: 'ffmpeg:1',
 };

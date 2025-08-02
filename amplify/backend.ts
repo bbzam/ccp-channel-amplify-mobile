@@ -127,7 +127,7 @@ const createContentStatement = new iam.PolicyStatement({
     `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CUSTOMFIELDS_TABLE}`,
     `arn:aws:s3:::${config.BUCKET_NAME}/*`,
     `arn:aws:mediaconvert:${config.REGION}:${config.ACCOUNT_ID}:endpoints/*`,
-    `${config.MEDIACONVERT_ROLE}`,
+    `arn:aws:iam::${config.ACCOUNT_ID}:${config.MEDIACONVERT_ROLE}`,
     `arn:aws:mediaconvert:${config.REGION}:${config.ACCOUNT_ID}:queues/Default`,
   ],
 });

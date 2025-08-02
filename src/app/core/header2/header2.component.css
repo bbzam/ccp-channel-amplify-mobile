@@ -107,6 +107,8 @@ mat-card-actions {
   }
 
   div {
+    max-width: 10em;
+
     mat-card-title {
       color: var(--primary);
       font-weight: bold;
@@ -116,6 +118,9 @@ mat-card-actions {
     mat-card-subtitle {
       color: #b4b4b4;
       font-size: 0.813em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }

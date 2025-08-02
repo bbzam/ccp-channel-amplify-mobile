@@ -4,6 +4,6 @@ import { config } from '../../../config';
 export const onImageUpload = defineFunction({
   name: 'on-image-upload',
   layers: {
-    'sharp-layer': `arn:aws:lambda:${config.REGION}:${config.ACCOUNT_ID}:layer:node-js-sharp:1`,
+    'sharp-layer': `arn:aws:lambda:${config.REGION}:${config.ACCOUNT_ID}:layer:${config.SHARP_LAYER}`,
   },
 });
