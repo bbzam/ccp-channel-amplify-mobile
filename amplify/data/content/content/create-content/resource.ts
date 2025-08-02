@@ -8,7 +8,7 @@ export const createContentFunction = defineFunction({
     REGION: config.REGION,
     CONTENT_TABLE: config.CONTENT_TABLE,
     CUSTOMFIELDS_TABLE: config.CUSTOMFIELDS_TABLE,
-    MEDIACONVERT_ROLE: config.MEDIACONVERT_ROLE,
+    MEDIACONVERT_ROLE: `arn:aws:iam::${config.ACCOUNT_ID}:${config.MEDIACONVERT_ROLE}`,
     SPEKE_URL: config.SPEKE_URL,
   },
 });
