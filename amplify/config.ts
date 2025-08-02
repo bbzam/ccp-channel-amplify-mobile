@@ -10,6 +10,6 @@ export const config = {
   MEDIACONVERT_ROLE: 'role/service-role/MediaConvert_Default_Role',
   SPEKE_URL:
     'https://ian6qy9unb.execute-api.ap-southeast-1.amazonaws.com/production/copyProtection',
-  SHARP_LAYER: 'sharpLayer:2',
-  FFMPEG_LAYER: 'ffmpeg:1',
+  SHARP_LAYER: 'node-js-sharp:1',
+  FFMPEG_LAYER: 'ffmpeg:2',
 };
