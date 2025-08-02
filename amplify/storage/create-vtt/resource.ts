@@ -10,7 +10,7 @@ export const createVttFunction = defineFunction({
   layers: {
     ffmpeg: `arn:aws:lambda:${config.REGION}:${config.ACCOUNT_ID}:layer:ffmpeg:2`,
   },
-  memoryMB: 3072, // default is 128MB. Max is 10240 (10 GB)
+  memoryMB: 3008, //original value is 3072 but change to 3008 as this aws account is still new, i.e. requires service limit increase
   ephemeralStorageSizeMB: 10240, // default is 512 MB
   timeoutSeconds: 900,
 });
