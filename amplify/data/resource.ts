@@ -174,8 +174,9 @@ const schema = a.schema({
     .model({
       transactionId: a.string().required(),
       userId: a.string().required(),
-      amount: a.string().required(),
-      status: a.string().required(),
+      subscriptionType: a.string().required(),
+      status: a.string(),
+      message: a.string(),
     })
     .authorization((allow) => [
       allow.guest().to(['update']),

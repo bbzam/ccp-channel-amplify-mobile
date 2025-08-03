@@ -15,7 +15,7 @@ export const handler = async (event: any) => {
     const merchantId = process.env.MERCHANT_ID;
     const apiKey = process.env.API_KEY;
 
-    const amount = event.arguments.rate === 'M' ? '99' : '599'; // M (monthly) A (Annual)
+    const amount = event.arguments.rate === 'M' ? '99' : '599';  // M (monthly) A (Annual)
     const userId = event.identity.claims.sub;
 
     const payload = {
@@ -48,8 +48,9 @@ export const handler = async (event: any) => {
     const transaction = {
       id: transactionId,
       userId: userId,
-      amount: amount,
+      subscriptionType: event.arguments.rate,
       status: '',
+      message: '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
