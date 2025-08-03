@@ -13,7 +13,7 @@ export const config = {
     'https://27jahlsoj3.execute-api.ap-southeast-1.amazonaws.com/production/copyProtection',
   SHARP_LAYER: 'node-js-sharp:1',
   FFMPEG_LAYER: 'ffmpeg:2',
-  PAYMENT_URL: 'https://test.dragonpay.ph/api/collect/v2/',
+  PAYMENT_URL: 'https://test.dragonpay.ph/api/collect/v1/',
   MERCHANT_ID: 'CCP3',
   API_KEY: 'SfJXiEKxxZqscfs',
 };
