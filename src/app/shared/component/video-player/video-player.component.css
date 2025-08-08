@@ -8,6 +8,10 @@
   z-index: 1000;
 }
 
+.video-container.controls-visible .back-button {
+  opacity: 1;
+}
+
 .loading-state,
 .error-state {
   position: absolute;
@@ -38,6 +42,8 @@
   display: flex;
   align-items: center;
   gap: 0.5em;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .thumbnail-container {
@@ -75,4 +81,17 @@
   position: absolute;
   bottom: 0;
   width: 100%;
+}
+
+/* Shaka Player embedded loader - maroon color */
+::ng-deep .shaka-spinner-svg {
+  color: var(--primary) !important;
+}
+
+::ng-deep .shaka-spinner-path {
+  stroke: var(--primary) !important;
+}
+
+::ng-deep .shaka-spinner {
+  border-color: var(--primary) !important;
 }

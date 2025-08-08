@@ -175,7 +175,7 @@ const schema = a.schema({
       transactionId: a.string().required(),
       userId: a.string().required(),
       amount: a.string().required(),
-      status: a.string().required(),
+      status: a.string(),
     })
     .authorization((allow) => [
       allow.guest().to(['update']),
@@ -320,6 +320,7 @@ const schema = a.schema({
     })
     .authorization((allow) => [
       allow.groups([
+        'USER',
         'SUBSCRIBER',
         'CONTENT_CREATOR',
         'IT_ADMIN',
@@ -346,6 +347,7 @@ const schema = a.schema({
     .query()
     .arguments({
       rate: a.string().required(),
+      ProcId: a.string().required(),
       email: a.string().required(),
     })
     .authorization((allow) => [allow.groups(['USER'])])

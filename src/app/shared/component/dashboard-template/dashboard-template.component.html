@@ -6,13 +6,23 @@
         <span class="title">Total Users</span>
       </mat-card-header>
       <mat-card-content>
-        <span class="data">{{ userStats?.totalUsers || 0 }} Users</span>
+        <span class="data"
+          >{{ formatNumber(userStats?.totalUsers || 0) }} Users</span
+        >
         <div class="sub-data">
           @if(userStats?.groupCounts){
-          <div>Free Users: {{ userStats?.groupCounts?.USER || 0 }}</div>
-          <div>Subscribers: {{ userStats?.groupCounts?.SUBSCRIBER || 0 }}</div>
+          <div>
+            Guest Users: {{ formatNumber(userStats?.groupCounts?.USER || 0) }}
+          </div>
+          <div>
+            Subscribers:
+            {{ formatNumber(userStats?.groupCounts?.SUBSCRIBER || 0) }}
+          </div>
           } @if(userStats?.newRegistrations){
-          <div>New today: {{ userStats?.newRegistrations?.daily || 0 }}</div>
+          <div>
+            New today:
+            {{ formatNumber(userStats?.newRegistrations?.daily || 0) }}
+          </div>
           }
         </div>
       </mat-card-content>
@@ -25,17 +35,23 @@
       </mat-card-header>
       <mat-card-content>
         <span class="data"
-          >{{ userStats?.newRegistrations?.daily || 0 }} New</span
+          >{{ formatNumber(userStats?.newRegistrations?.daily || 0) }} New</span
         >
         <div class="sub-data">
           <div>
-            Daily: {{ userStats?.newRegistrations?.daily || 0 }} Registers
+            Daily:
+            {{ formatNumber(userStats?.newRegistrations?.daily || 0) }}
+            Registers
           </div>
           <div>
-            Weekly: {{ userStats?.newRegistrations?.weekly || 0 }} Registers
+            Weekly:
+            {{ formatNumber(userStats?.newRegistrations?.weekly || 0) }}
+            Registers
           </div>
           <div>
-            Monthly: {{ userStats?.newRegistrations?.monthly || 0 }} Registers
+            Monthly:
+            {{ formatNumber(userStats?.newRegistrations?.monthly || 0) }}
+            Registers
           </div>
         </div>
       </mat-card-content>
@@ -47,14 +63,24 @@
         <span class="title">Content Stats</span>
       </mat-card-header>
       <mat-card-content>
-        <span class="data">{{ contentStats?.totalViews || 0 }} Views</span>
+        <span class="data"
+          >{{ formatNumber(contentStats?.totalViews || 0) }} Views</span
+        >
         <div class="sub-data">
-          <div>Average Views: {{ contentStats?.averageViews || 0 }}</div>
-          <div>Total Views: {{ contentStats?.totalViews || 0 }} Views</div>
+          <div>
+            Average Views:
+            {{ contentStats?.averageViews || 0 | number : "1.2-2" }}
+          </div>
+          <div>
+            Total Views: {{ formatNumber(contentStats?.totalViews || 0) }} Views
+          </div>
           @for (category of getCategories(); track $index) {
           <div>
-            {{ category }}:
-            {{ contentStats?.contentByCategory[category].views || 0 }} Views
+            <span class="label">{{ category }}:</span>
+            {{
+              formatNumber(contentStats?.contentByCategory[category].views || 0)
+            }}
+            Views
           </div>
           }
         </div>
@@ -68,14 +94,21 @@
       </mat-card-header>
       <mat-card-content>
         <div class="data">
-          <span>{{ getCategories().length || 0 }} Categories</span>
-          <span>{{ contentStats?.totalContent || 0 }} Contents</span>
+          <span
+            >{{ formatNumber(getCategories().length || 0) }} Categories</span
+          >
+          <span
+            >{{ formatNumber(contentStats?.totalContent || 0) }} Contents</span
+          >
         </div>
         <div class="sub-data">
           @for (category of getCategories(); track $index) {
           <div>
-            {{ category }}:
-            {{ contentStats?.contentByCategory[category].count || 0 }} Titles
+            <span>{{ category }}:</span>
+            {{
+              formatNumber(contentStats?.contentByCategory[category].count || 0)
+            }}
+            Titles
           </div>
           }
         </div>
@@ -101,19 +134,16 @@
       <mat-card-header> <span class="title">Browsers</span> </mat-card-header>
       <mat-card-content>
         <table mat-table [dataSource]="browserStats" class="mat-elevation-z8">
-          <!-- Browser Column -->
           <ng-container matColumnDef="browser">
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let element">{{ element.browser }}</td>
           </ng-container>
-
-          <!-- Users Count Column -->
           <ng-container matColumnDef="users">
             <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let element">{{ element.users }}</td>
+            <td mat-cell *matCellDef="let element">
+              {{ formatNumber(element.users) }}
+            </td>
           </ng-container>
-
-          <!-- <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr> -->
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
       </mat-card-content>

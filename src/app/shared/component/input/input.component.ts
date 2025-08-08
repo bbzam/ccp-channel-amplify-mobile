@@ -23,6 +23,7 @@ import { disallowCharacters } from '../../utils/validators';
 import { errorMessages } from '../../utils/errorMessages';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-input',
@@ -36,6 +37,7 @@ import { MatDividerModule } from '@angular/material/divider';
     MatDividerModule,
     FormsModule,
     ReactiveFormsModule,
+    MatTooltipModule,
   ],
   templateUrl: './input.component.html',
   styleUrl: './input.component.css',
@@ -101,5 +103,9 @@ export class InputComponent implements OnInit {
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  close() {
+    this.dialogRef.close();
   }
 }

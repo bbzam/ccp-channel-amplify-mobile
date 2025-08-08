@@ -1,0 +1,37 @@
+<div class="payment-dialog">
+  <h2 mat-dialog-title>Select Payment Method</h2>
+
+  <div class="payment-methods">
+    @for (method of paymentMethods; track method.value) {
+    <mat-card
+      class="payment-card"
+      [class.selected]="selectedPaymentMethod === method.value"
+      (click)="selectPaymentMethod(method.value)"
+    >
+      <mat-card-content class="payment-content">
+        <mat-icon class="payment-icon">{{ method.icon }}</mat-icon>
+        <div class="payment-info">
+          <h3>{{ method.label }}</h3>
+          <p>{{ method.description }}</p>
+        </div>
+
+        @if (selectedPaymentMethod === method.value) {
+        <mat-icon class="check-icon">check_circle</mat-icon>
+        }
+      </mat-card-content>
+    </mat-card>
+    }
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button
+      class="confirm"
+      mat-raised-button
+      (click)="onConfirm()"
+      [disabled]="!selectedPaymentMethod"
+    >
+      Continue
+    </button>
+  </div>
+</div>

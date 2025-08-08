@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NgClass } from '@angular/common';
 import { SignupComponent } from '../../../auth/components/signup/signup.component';
 import { FeaturesService } from '../../features.service';
+import { SigninComponent } from '../../../auth/components/signin/signin.component';
 
 @Component({
   selector: 'app-banner',
@@ -44,16 +45,7 @@ export class BannerComponent implements OnInit, AfterViewInit {
   }
 
   async subscribeNowOnClick(rate: string) {
-    if (rate && this.role === 'USER') {
-      const url = await this.featuresService.createPayment(rate);
-
-      if (url) {
-        console.log('result', url);
-        window.location.href = url;
-      }
-    } else {
-      return;
-    }
+    this.signUpOnClick();
   }
 
   autoPlayMedia() {
@@ -94,7 +86,11 @@ export class BannerComponent implements OnInit, AfterViewInit {
     return this.teaserDuration;
   }
 
-  register(): void {
-    this.dialog.open(SignupComponent, { disableClose: true }).afterClosed();
+  signUpOnClick(): void {
+    this.dialog.open(SignupComponent).afterClosed();
+  }
+
+  signInOnClick() {
+    this.dialog.open(SigninComponent).afterClosed();
   }
 }

@@ -16,6 +16,7 @@ import { disallowCharacters } from '../../utils/validators';
 import { errorMessages } from '../../utils/errorMessages';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-input-date',
@@ -29,6 +30,7 @@ import { MatDividerModule } from '@angular/material/divider';
     MatDividerModule,
     FormsModule,
     ReactiveFormsModule,
+    MatTooltipModule,
   ],
   templateUrl: './input-date.component.html',
   styleUrl: './input-date.component.css',
@@ -93,5 +95,9 @@ export class InputDateComponent implements OnInit {
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  close() {
+    this.dialogRef.close();
   }
 }

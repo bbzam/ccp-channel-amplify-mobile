@@ -13,7 +13,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { merge } from 'rxjs';
-import { disallowCharacters } from '../../../shared/utils/validators';
+import {
+  disallowCharacters,
+  emailValidator,
+} from '../../../shared/utils/validators';
 import { errorMessages } from '../../../shared/utils/errorMessages';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
@@ -22,6 +25,7 @@ import { Router } from '@angular/router';
 import { AuthServiceService } from '../../auth-service.service';
 import { ResetPasswordComponent } from '../reset-password/reset-password.component';
 import { InputComponent } from '../../../shared/component/input/input.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-signin',
@@ -33,6 +37,7 @@ import { InputComponent } from '../../../shared/component/input/input.component'
     MatIconModule,
     MatButtonModule,
     MatDividerModule,
+    MatTooltipModule,
   ],
   templateUrl: './signin.component.html',
   styleUrl: './signin.component.css',
@@ -53,7 +58,7 @@ export class SigninComponent implements OnInit {
   private readonly authService = inject(AuthServiceService);
 
   signInForm: FormGroup = this.fb.group({
-    email: ['', [Validators.required, disallowCharacters()]],
+    email: ['', [Validators.required, disallowCharacters(), emailValidator()]],
     password: ['', [Validators.required, disallowCharacters()]],
   });
 
@@ -85,6 +90,8 @@ export class SigninComponent implements OnInit {
       errorSignal.set(errorMessages.REQUIRED);
     } else if (control.hasError('disallowedCharacters')) {
       errorSignal.set(errorMessages.DISALLOWEDCHARACTERS);
+    } else if (control.hasError('invalidEmailAddress')) {
+      errorSignal.set(errorMessages.INVALIDEMAIL);
     } else {
       errorSignal.set('');
     }
@@ -171,10 +178,14 @@ export class SigninComponent implements OnInit {
 
   signUpOnClick(): void {
     this.dialogRef.close();
-    this.dialog.open(SignupComponent, { disableClose: true }).afterClosed();
+    this.dialog.open(SignupComponent).afterClosed();
   }
 
   togglePasswordVisibility(): void {
     this.isPasswordVisible = !this.isPasswordVisible;
+  }
+
+  close() {
+    this.dialogRef.close();
   }
 }

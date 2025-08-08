@@ -28,6 +28,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { SigninComponent } from '../signin/signin.component';
 import { AuthServiceService } from '../../auth-service.service';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-signup',
@@ -39,6 +40,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatIconModule,
     MatDividerModule,
     MatButtonModule,
+    MatTooltipModule,
   ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css',
@@ -51,6 +53,8 @@ export class SignupComponent implements OnInit {
 
   signupForm!: FormGroup;
   readonly isLoading = signal(false);
+  isPasswordVisible: boolean = false;
+  isConfirmPasswordVisible: boolean = false;
 
   // Error message signals
   firstnameErrorMessage = signal('');
@@ -73,6 +77,14 @@ export class SignupComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  togglePasswordVisibility(): void {
+    this.isPasswordVisible = !this.isPasswordVisible;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.isConfirmPasswordVisible = !this.isConfirmPasswordVisible;
+  }
 
   private createForm(): void {
     this.signupForm = this.fb.group({
@@ -215,5 +227,9 @@ export class SignupComponent implements OnInit {
   signInOnClick(): void {
     this.dialogRef.close();
     this.dialog.open(SigninComponent).afterClosed().subscribe();
+  }
+
+  close() {
+    this.dialogRef.close();
   }
 }

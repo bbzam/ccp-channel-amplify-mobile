@@ -801,6 +801,10 @@ export class UploadContentComponent {
     return '720p';
   }
 
+  close() {
+    this.dialogRef.close();
+  }
+
   // ngOnDestroy to clean up URLs
   ngOnDestroy() {
     if (this.previewFileURL) {

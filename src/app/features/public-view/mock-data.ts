@@ -10,13 +10,9 @@ export const topFeatured = [
 
 export const subscribeNow = [
   {
-    title: `Welcome aboard${
-      sessionStorage.getItem('username')
-        ? `, ${sessionStorage.getItem('username')}`
-        : ''
-    }!`,
+    title: 'You’ve successfully subscribed, choose your plan',
     description:
-      "You've successfully registered — now unlock the real experience. Subscribe now to dive into exclusive shows, movies, and originals you won't find anywhere else.",
+      "Welcome to CCP Channel — now unlock the real experience. Subscribe now to dive into exclusive shows, movies, and originals you won't find anywhere else.",
     landscapeImageUrl:
       'Thumbnails/Doc Resureccion_ Gagamutin ang Bayan/Banner.png',
   },

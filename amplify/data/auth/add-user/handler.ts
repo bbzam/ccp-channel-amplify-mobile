@@ -11,11 +11,19 @@ const client = new CognitoIdentityProviderClient();
 
 const ALLOWED_ROLES = ['USER', 'CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN'];
 
-export const handler: Handler = async (event) => {
+export const handler: Handler = async (event: any) => {
   const userPoolId = process.env.UserPoolId;
   console.log(userPoolId);
 
   const body = event.arguments;
+
+  // Check if the current user has the required role
+  const userGroups = event.identity.claims['cognito:groups'] || [];
+  if (!userGroups.includes('IT_ADMIN') && !userGroups.includes('SUPER_ADMIN')) {
+    throw new Error(
+      'Access denied. Only IT_ADMIN and SUPER_ADMIN can add users.'
+    );
+  }
 
   // Validate role
   if (!body.role || !ALLOWED_ROLES.includes(body.role)) {
@@ -51,7 +59,7 @@ export const handler: Handler = async (event) => {
       },
       {
         Name: 'email_verified',
-        Value: 'true'
+        Value: 'true',
       },
       {
         Name: 'email',
@@ -77,7 +85,7 @@ export const handler: Handler = async (event) => {
     });
 
     console.log(groupCommand);
-    
+
     await client.send(groupCommand);
 
     return response;

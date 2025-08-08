@@ -53,6 +53,10 @@ mat-grid-list {
         .sub-data {
           font-size: 0.8em;
           color: #8491a5;
+
+          span {
+            text-transform: capitalize;
+          }
         }
 
         .chart-container {

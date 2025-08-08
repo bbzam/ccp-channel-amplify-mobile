@@ -2,6 +2,7 @@
   <div class="form-field-container">
     <div class="header">
       <h2>User Details</h2>
+      @if (userRole === 'IT_ADMIN' || userRole === 'SUPER_ADMIN') {
       <div class="buttons">
         @if (Enabled && isEditing()) {
         <button
@@ -31,84 +32,89 @@
           <mat-icon>edit</mat-icon>
         </button>
       </div>
+      }
     </div>
   </div>
 
   <div class="form-field-container">
-    <!-- First Name Field -->
-    <label for="firstname">First Name</label>
-    <input
-      id="firstname"
-      matInput
-      placeholder="Enter your Firstname"
-      formControlName="firstname"
-      required
-    />
-    @if (firstnameErrorMessage()) {
-    <mat-error>{{ firstnameErrorMessage() }}</mat-error>
-    }
+    <mat-form-field appearance="outline">
+      <mat-label>First Name</mat-label>
+      <input
+        id="firstname"
+        matInput
+        placeholder="Enter your Firstname"
+        formControlName="firstname"
+        required
+      />
+      @if (firstnameErrorMessage()) {
+      <mat-error>{{ firstnameErrorMessage() }}</mat-error>
+      }
+    </mat-form-field>
   </div>
 
   <div class="form-field-container">
-    <!-- Last Name Field -->
-    <label for="lastname">Last name</label>
-    <input
-      id="lastname"
-      matInput
-      placeholder="Enter your Lastname"
-      formControlName="lastname"
-      required
-    />
-    @if (lastnameErrorMessage()) {
-    <mat-error>{{ lastnameErrorMessage() }}</mat-error>
-    }
+    <mat-form-field appearance="outline">
+      <mat-label>Last Name</mat-label>
+      <input
+        id="lastname"
+        matInput
+        placeholder="Enter your Lastname"
+        formControlName="lastname"
+        required
+      />
+      @if (lastnameErrorMessage()) {
+      <mat-error>{{ lastnameErrorMessage() }}</mat-error>
+      }
+    </mat-form-field>
   </div>
 
   <div class="form-field-container">
-    <!-- Email Field -->
-    <label for="email">Email</label>
-    <input
-      id="email"
-      autocomplete="off"
-      matInput
-      placeholder="Enter your email"
-      formControlName="email"
-      required
-    />
-    @if (emailErrorMessage()) {
-    <mat-error>{{ emailErrorMessage() }}</mat-error>
-    }
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input
+        id="email"
+        autocomplete="off"
+        matInput
+        placeholder="Enter your email"
+        formControlName="email"
+        required
+      />
+      @if (emailErrorMessage()) {
+      <mat-error>{{ emailErrorMessage() }}</mat-error>
+      }
+    </mat-form-field>
   </div>
 
   <div class="form-field-container">
-    <!-- Bithdate Field -->
-    <label for="birthdate">Birthdate</label>
-    <input
-      id="birthdate"
-      matInput
-      type="date"
-      placeholder="Enter your Birthdate"
-      formControlName="birthdate"
-      required
-    />
-    @if (birthdateErrorMessage()) {
-    <mat-error>{{ birthdateErrorMessage() }}</mat-error>
-    }
+    <mat-form-field appearance="outline">
+      <mat-label>Birthdate</mat-label>
+      <input
+        id="birthdate"
+        matInput
+        type="date"
+        placeholder="Enter your Birthdate"
+        formControlName="birthdate"
+        required
+      />
+      @if (birthdateErrorMessage()) {
+      <mat-error>{{ birthdateErrorMessage() }}</mat-error>
+      }
+    </mat-form-field>
   </div>
 
-  <!-- Role -->
   <div class="form-field-container">
-    <label for="role">Role</label>
-    <select id="role" formControlName="role" required placeholder="Select role">
-      <option value="USER">User</option>
-      <!-- <option value="SUBSCRIBER">Subscriber</option> -->
-      <option value="CONTENT_CREATOR">Content Curator</option>
-      <option value="IT_ADMIN">IT Admin</option>
-      <option value="SUPER_ADMIN">Super Admin</option>
-    </select>
-    @if(roleErrorMessage()) {
-    <mat-error>{{ roleErrorMessage() }}</mat-error>
-    }
+    <mat-form-field appearance="outline">
+      <mat-label>Role</mat-label>
+      <mat-select id="role" formControlName="role" required>
+        <mat-option value="USER">User</mat-option>
+        <mat-option value="CONTENT_CREATOR">Content Curator</mat-option>
+        <mat-option value="IT_ADMIN">IT Admin</mat-option>
+        <mat-option value="SUPER_ADMIN">Super Admin</mat-option>
+      </mat-select>
+      @if(roleErrorMessage()) {
+      <mat-error>{{ roleErrorMessage() }}</mat-error>
+      }
+    </mat-form-field>
   </div>
 
   <div class="action-buttons">

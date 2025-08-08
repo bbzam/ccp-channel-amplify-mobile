@@ -1,5 +1,10 @@
 <div class="close-button-container">
-  <button class="close-button" mat-icon-button matTooltip="close" (click)="close()">
+  <button
+    class="close-button"
+    mat-icon-button
+    matTooltip="close"
+    (click)="close()"
+  >
     <mat-icon>close</mat-icon>
   </button>
 </div>
@@ -10,15 +15,17 @@
       <p>Enter the code we emailed to {{ destination }}</p>
     </div>
     <div class="form-field-container">
-      <label>Confirmation Code</label>
-      <input
-        matInput
-        placeholder="Enter your code"
-        formControlName="code"
-        autocomplete="off"
-        required
-      />
-      <mat-error>{{ codeErrorMessage() }}</mat-error>
+      <mat-form-field appearance="outline">
+        <mat-label>Confirmation Code</mat-label>
+        <input
+          matInput
+          placeholder="Enter your code"
+          formControlName="code"
+          autocomplete="off"
+          required
+        />
+        <mat-error>{{ codeErrorMessage() }}</mat-error>
+      </mat-form-field>
     </div>
 
     <div class="form-field-container">

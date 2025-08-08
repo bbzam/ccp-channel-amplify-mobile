@@ -84,13 +84,6 @@ export class HeaderComponent implements OnInit {
     return String(sessionStorage.getItem('email'));
   }
 
-  signInOnClick() {
-    this.dialog
-      .open(SigninComponent)
-      .afterClosed()
-      .subscribe((data) => {});
-  }
-
   logout() {
     this.dialog
       .open(ConfirmationDialogComponent, {

@@ -1,20 +1,32 @@
+<div class="close-button-container">
+  <button
+    class="close-button"
+    mat-icon-button
+    (click)="close()"
+    matTooltip="close"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 <div class="signin-main">
   <form [formGroup]="betaAccessForm" (ngSubmit)="confirm()">
     <div class="form-field-container">
       <h2>Schedule Date</h2>
     </div>
     <div class="form-field-container">
-      <label for="date">Date</label>
-      <input
-        id="date"
-        matInput
-        type="date"
-        placeholder="Select date"
-        formControlName="date"
-        autocomplete="off"
-        required
-      />
-      <mat-error>{{ dateErrorMessage() }}</mat-error>
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input
+          id="date"
+          matInput
+          type="date"
+          placeholder="Select date"
+          formControlName="date"
+          autocomplete="off"
+          required
+        />
+        <mat-error>{{ dateErrorMessage() }}</mat-error>
+      </mat-form-field>
     </div>
 
     <div class="form-field-container">

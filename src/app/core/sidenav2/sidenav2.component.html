@@ -4,7 +4,8 @@
   </div>
   <mat-card>
     <mat-card-content>
-      @if (lastSegment === 'manage-users') {
+      @if (lastSegment === 'manage-users' && (role === 'IT_ADMIN' || role ===
+      'SUPER_ADMIN')) {
       <button class="new" mat-fab extended (click)="addNewUser()">
         <mat-icon>add</mat-icon><span>New User</span>
       </button>

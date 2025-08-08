@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   Input,
@@ -14,7 +15,7 @@ export interface TabConfig {
 
 @Component({
   selector: 'app-tab',
-  imports: [MatTabsModule],
+  imports: [MatTabsModule, NgTemplateOutlet],
   templateUrl: './tab.component.html',
   styleUrl: './tab.component.css',
 })

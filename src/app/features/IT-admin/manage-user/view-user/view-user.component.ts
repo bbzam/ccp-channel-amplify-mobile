@@ -30,6 +30,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { FeaturesService } from '../../../features.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-view-user',
@@ -42,6 +43,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatDividerModule,
     MatButtonModule,
     MatTooltipModule,
+    MatSelectModule,
   ],
   templateUrl: './view-user.component.html',
   styleUrl: './view-user.component.css',
@@ -94,6 +96,10 @@ export class ViewUserComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  get userRole(): string {
+    return String(sessionStorage.getItem('role'));
+  }
 
   private createForm(): void {
     this.editUserForm = this.fb.group({

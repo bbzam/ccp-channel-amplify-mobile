@@ -350,11 +350,12 @@ export class FeaturesService {
     }
   }
 
-  async createPayment(rate: string): Promise<any> {
+  async createPayment(rate: string, ProcId: string): Promise<any> {
     try {
       this.sharedService.showLoader('Redirecting to Dragonpay...');
       const result = await this.client.queries.createPayment({
         rate: rate,
+        ProcId: ProcId,
         email: String(sessionStorage.getItem('email')),
       });
 

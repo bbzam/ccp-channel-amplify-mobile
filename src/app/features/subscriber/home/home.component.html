@@ -113,10 +113,10 @@ continueWatching.length) {
 
   <!-- CCP Specials Category -->
   @if (ccpspecials.length) {
-  <div class="frc" data-category="ccpspecials">
+  <div class="frc" data-category="ccpspecial">
     <div class="label-wrapper">
       <h1 class="label">CCP Specials</h1>
-      <div class="see-more" (click)="seeMoreOnClick('ccpspecials')">
+      <div class="see-more" (click)="seeMoreOnClick('ccpspecial')">
         <span>See more</span>
         <button mat-icon-button><mat-icon>arrow_forward</mat-icon></button>
       </div>
@@ -130,7 +130,7 @@ continueWatching.length) {
   <div class="frc" data-category="ccpclassics">
     <div class="label-wrapper">
       <h1 class="label">CCP Classics</h1>
-      <div class="see-more" (click)="seeMoreOnClick('ccpclassics')">
+      <div class="see-more" (click)="seeMoreOnClick('ccpclassic')">
         <span>See more</span>
         <button mat-icon-button><mat-icon>arrow_forward</mat-icon></button>
       </div>
@@ -141,6 +141,8 @@ continueWatching.length) {
 </div>
 } @else {
 <div class="noData">
+  @if(!isLoading()) {
   <h1>No Videos Available at the Moment.</h1>
+  }
 </div>
 }

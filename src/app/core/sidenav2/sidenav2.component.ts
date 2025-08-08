@@ -74,6 +74,10 @@ export class Sidenav2Component implements OnInit {
     }
   }
 
+  get role(): string {
+    return String(sessionStorage.getItem('role'));
+  }
+
   toggleDrawer() {
     this.drawer.toggle(); // Toggle the drawer visibility
   }
@@ -92,7 +96,6 @@ export class Sidenav2Component implements OnInit {
   }
 
   uploadNewContent() {
-    // this.router.navigate(['content-curator/upload-content']);
     this.dialog
       .open(UploadContentComponent, {
         disableClose: true,

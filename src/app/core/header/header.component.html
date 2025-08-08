@@ -6,11 +6,11 @@
         ><img src="ccp-logo-rmvbg.png" alt="header-logo"
       /></a>
     </div>
-    <div>
+    <!-- <div>
       <button (click)="signInOnClick()" class="buttonMS" mat-stroked-button>
         Sign In
       </button>
-    </div>
+    </div> -->
     } @else { @if (role === 'SUBSCRIBER') {
     <div class="header-logo">
       <a href="/subscriber"
@@ -54,7 +54,7 @@
           <mat-card>
             <mat-card-header>
               <div class="user">
-                <button mat-icon-button>
+                <button disabled mat-icon-button>
                   <mat-icon>person</mat-icon>
                 </button>
                 <div>
