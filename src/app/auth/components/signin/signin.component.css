@@ -21,6 +21,10 @@
     color: var(--tertiary) !important;
   }
 
+  .mat-mdc-form-field-input-control input:hover {
+    color: var(--terrtiary);
+  }
+
   .mdc-notched-outline__leading,
   .mdc-notched-outline__notch,
   .mdc-notched-outline__trailing {

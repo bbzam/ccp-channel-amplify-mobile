@@ -166,6 +166,13 @@ mat-form-field {
   .mat-mdc-form-field-label {
     color: var(--tertiary) !important;
   }
+
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(
+      .mdc-text-field--focused
+    ):hover
+    .mdc-floating-label {
+    color: unset !important;
+  }
 }
 
 body {

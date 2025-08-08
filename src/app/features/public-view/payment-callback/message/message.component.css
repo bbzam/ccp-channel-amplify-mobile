@@ -65,6 +65,7 @@ p strong {
   margin-left: 0.5em;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 
   p {
     color: var(--tertiary);

@@ -300,7 +300,7 @@ const schema = a.schema({
       role: a.string().required(),
     })
     .authorization((allow) => [
-      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(addUser))
     .returns(a.json()),
@@ -365,7 +365,7 @@ const schema = a.schema({
       role: a.string().required(),
     })
     .authorization((allow) => [
-      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(editUser))
     .returns(a.json()),
@@ -376,7 +376,7 @@ const schema = a.schema({
       email: a.string().required(),
     })
     .authorization((allow) => [
-      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(disableUser))
     .returns(a.json()),
@@ -387,7 +387,7 @@ const schema = a.schema({
       email: a.string().required(),
     })
     .authorization((allow) => [
-      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(enableUser))
     .returns(a.json()),
