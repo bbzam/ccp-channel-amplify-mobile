@@ -21,6 +21,7 @@ import { SharedService } from '../shared/shared.service';
 import { SigninComponent } from './components/signin/signin.component';
 import { ForcedChangePasswordComponent } from './components/forced-change-password/forced-change-password.component';
 import { ConfirmationDialogComponent } from '../shared/dialogs/confirmation-dialog/confirmation-dialog.component';
+import { FeaturesService } from '../features/features.service';
 
 interface CognitoIdTokenPayload {
   'cognito:groups'?: string[];
@@ -34,6 +35,7 @@ export class AuthServiceService {
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
   readonly sharedService = inject(SharedService);
+  readonly featuresService = inject(FeaturesService);
 
   constructor() {}
 
@@ -146,7 +148,9 @@ export class AuthServiceService {
       }
     } catch (error) {
       this.sharedService.hideLoader();
-      this.handleError('An error occurred while signing in. Please try again');
+      this.handleError(
+        'Unable to sign in. Please check your email and password, then try again.'
+      );
       return false;
     }
     return false; // Default to false if no condition matches
@@ -309,13 +313,43 @@ export class AuthServiceService {
 
   async logout() {
     try {
-      sessionStorage.clear();
-      localStorage.clear();
+      //signout
       await signOut({ global: true });
+
+      //navigate to landing page
       await this.router.navigate(['landing-page']);
-      window.location.reload();
+
+      //clear caches
+      this.navigateToLandingPageClean();
     } catch (error) {
       this.handleError(error);
+    }
+  }
+
+  async navigateToLandingPageClean() {
+    try {
+      // Clear all storage
+      sessionStorage.clear();
+      localStorage.clear();
+
+      // Clear service caches and state
+      this.isLoggedIn = false;
+
+      // Clear shared service loader state
+      this.sharedService.hideLoader();
+
+      // Clear all intervals (simpler approach)
+      for (let i = 1; i < 99999; i++) {
+        clearInterval(i);
+      }
+
+      // Navigate to landing page
+      await this.router.navigate(['landing-page']);
+
+      return true;
+    } catch (error) {
+      this.handleError(error);
+      return false;
     }
   }
 

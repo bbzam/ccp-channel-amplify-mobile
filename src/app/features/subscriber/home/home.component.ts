@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { BannerComponent } from '../../../shared/elements/banner/banner.component';
 import { FeaturedComponent } from '../../../shared/elements/featured/featured.component';
 import { RecommendedComponent } from '../../../shared/elements/recommended/recommended.component';
@@ -40,12 +40,15 @@ export class HomeComponent implements OnInit {
   ccpspecials: any[] = [];
   ccpclassics: any[] = [];
 
+  readonly isLoading = signal(false);
+
   readonly featuresService = inject(FeaturesService);
   readonly sharedService = inject(SharedService);
   readonly dialog = inject(MatDialog);
   readonly router = inject(Router);
 
   ngOnInit(): void {
+    this.isLoading.set(true);
     setTimeout(() => this.loadEssentialContent(), 1000);
     setTimeout(() => this.loadAllCategories(), 1500);
   }
@@ -144,6 +147,7 @@ export class HomeComponent implements OnInit {
         this.continueWatching = processedItems.filter(Boolean);
       }
     } catch (error) {
+      this.isLoading.set(false);
       this.banners = [];
       this.featured = [];
     }
@@ -179,7 +183,10 @@ export class HomeComponent implements OnInit {
       });
 
       await this.loadCustomTagCategories(allData);
-    } catch (error) {}
+      this.isLoading.set(false);
+    } catch (error) {
+      this.isLoading.set(false);
+    }
   }
 
   async loadCustomTagCategories(allData: any[]) {

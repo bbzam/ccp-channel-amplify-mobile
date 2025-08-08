@@ -21,6 +21,7 @@ import {
 import { MatDividerModule } from '@angular/material/divider';
 import { FeaturesService } from '../../../features.service';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-add-user',
@@ -32,6 +33,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatIconModule,
     MatDividerModule,
     MatButtonModule,
+    MatSelectModule,
   ],
   templateUrl: './add-user.component.html',
   styleUrl: './add-user.component.css',

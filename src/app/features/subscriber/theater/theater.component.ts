@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { BannerComponent } from '../../../shared/elements/banner/banner.component';
 import { FeaturedComponent } from '../../../shared/elements/featured/featured.component';
 import { RecommendedComponent } from '../../../shared/elements/recommended/recommended.component';
@@ -28,6 +28,8 @@ export class TheaterComponent implements OnInit {
   allContents: any[] = [];
   category: string = 'theater';
 
+  readonly isLoading = signal(false);
+
   readonly featuresService = inject(FeaturesService);
   readonly sharedService = inject(SharedService);
 
@@ -37,6 +39,7 @@ export class TheaterComponent implements OnInit {
 
   async getAllContents(currentTab: string) {
     try {
+      this.isLoading.set(true);
       // First get all contents
       const data = await this.featuresService.getAllContents(currentTab, true);
 
@@ -104,7 +107,9 @@ export class TheaterComponent implements OnInit {
           })
         );
       }
+      this.isLoading.set(false);
     } catch (error) {
+      this.isLoading.set(false);
       this.banners = [];
       this.featured = [];
       this.allContents = [];

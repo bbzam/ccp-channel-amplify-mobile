@@ -39,8 +39,19 @@
           <div class="action-container">
             <div class="watch">
               @if(role !== 'USER') {
-              <button class="buttonMS" mat-icon-button (click)="register()">
+              <button
+                class="buttonMS"
+                mat-icon-button
+                (click)="signUpOnClick()"
+              >
                 <div>Subscribe Now!</div>
+              </button>
+              <button
+                class="buttonMS"
+                mat-icon-button
+                (click)="signInOnClick()"
+              >
+                <div>Sign In</div>
               </button>
               }
             </div>
@@ -49,19 +60,11 @@
         </div>
         @if (banners[currentMediaIndex].title !== 'ABOUT') {
         <div class="rates">
-          <div
-            class="card"
-            [ngClass]="{ 'hover-enabled': role === 'USER' }"
-            (click)="subscribeNowOnClick('M')"
-          >
+          <div class="card" (click)="subscribeNowOnClick('M')">
             <p class="title">Monthly</p>
             <p class="price">₱99</p>
           </div>
-          <div
-            class="card"
-            [ngClass]="{ 'hover-enabled': role === 'USER' }"
-            (click)="subscribeNowOnClick('A')"
-          >
+          <div class="card" (click)="subscribeNowOnClick('A')">
             <p class="title">Annual</p>
             <p class="old-price">₱1,188</p>
             <p class="price">₱599</p>

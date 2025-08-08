@@ -56,7 +56,13 @@
 
           button {
             i {
-              color: var(--primary-hovered);
+              color: var(--primary);
+            }
+          }
+
+          button:hover {
+            i {
+              color: var(--gray);
             }
           }
         }

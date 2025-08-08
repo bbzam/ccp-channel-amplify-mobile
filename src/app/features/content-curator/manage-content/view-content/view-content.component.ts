@@ -1042,4 +1042,8 @@ export class ViewContentComponent {
     if (resolution >= 1920) return '1080p';
     return '720p';
   }
+
+  close() {
+    this.dialogRef.close();
+  }
 }

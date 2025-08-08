@@ -1,41 +1,3 @@
-// export const curatorNavItems = [
-//   {
-//     label: 'Dashboard',
-//     routeLink: '/content-curator/dashboard',
-//     icon: 'dashboard',
-//   },
-//   {
-//     label: 'Published',
-//     routeLink: '/content-curator/published',
-//     icon: 'check_circle',
-//   },
-//   {
-//     label: 'Scheduled',
-//     routeLink: '/content-curator/scheduled',
-//     icon: 'schedule',
-//   },
-//   {
-//     label: 'Set Featured',
-//     routeLink: '/content-curator/featured',
-//     icon: 'drag_indicator',
-//   },
-//   // {
-//   //   label: 'Manage Landing',
-//   //   routeLink: '/content-curator/configure-landing-page',
-//   //   icon: 'featured_video',
-//   // },
-//   {
-//     label: 'Manage Users',
-//     routeLink: '/content-curator/manage-users',
-//     icon: 'person',
-//   },
-//   {
-//     label: 'Manage Keys',
-//     routeLink: '/content-curator/manage-keys',
-//     icon: 'vpn_key',
-//   },
-// ];
-
 export const curatorNavItems = [
   {
     label: 'Dashboard',
@@ -87,17 +49,10 @@ export const curatorNavItems = [
     ],
   },
   {
-    label: 'Administration',
-    routeLink: '/content-curator/admin',
-    icon: 'admin_panel_settings',
+    label: 'View Users',
+    routeLink: '/content-curator/manage-users',
+    icon: 'person',
     expanded: false,
-    children: [
-      {
-        label: 'Manage Users',
-        routeLink: '/content-curator/manage-users',
-        icon: 'person',
-      },
-    ],
   },
 ];
 
@@ -109,10 +64,17 @@ export const itAdminNavItems = [
     expanded: false,
   },
   {
-    label: 'Manage Users',
-    routeLink: '/it-admin/manage-users',
-    icon: 'person',
+    label: 'Administration',
+    routeLink: '/it-admin/admin',
+    icon: 'admin_panel_settings',
     expanded: false,
+    children: [
+      {
+        label: 'Manage Users',
+        routeLink: '/it-admin/manage-users',
+        icon: 'person',
+      },
+    ],
   },
 ];
 
@@ -139,12 +101,44 @@ export const superAdminNavItems = [
         routeLink: '/super-admin/scheduled',
         icon: 'schedule',
       },
+      {
+        label: 'Set Featured',
+        routeLink: '/super-admin/featured',
+        icon: 'star',
+      },
+      {
+        label: 'Set Tag',
+        routeLink: '/super-admin/settag',
+        icon: 'local_offer',
+      },
+      {
+        label: 'Manage Tag',
+        routeLink: '/super-admin/tag',
+        icon: 'bookmark',
+      },
+      {
+        label: 'Custom Fields',
+        routeLink: '/super-admin/custom-fields',
+        icon: 'tune',
+      },
+      // {
+      //   label: 'Landing Page',
+      //   routeLink: '/super-admin/configure-landing-page',
+      //   icon: 'featured_video',
+      // },
     ],
   },
   {
-    label: 'Manage Users',
-    routeLink: '/super-admin/manage-users',
-    icon: 'person',
+    label: 'Administration',
+    routeLink: '/super-admin/admin',
+    icon: 'admin_panel_settings',
     expanded: false,
+    children: [
+      {
+        label: 'Manage Users',
+        routeLink: '/super-admin/manage-users',
+        icon: 'person',
+      },
+    ],
   },
 ];

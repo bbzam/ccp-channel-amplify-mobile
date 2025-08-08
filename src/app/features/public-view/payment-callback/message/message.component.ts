@@ -83,6 +83,5 @@ export class MessageComponent implements OnInit {
 
   goToLandingOnClick() {
     this.authService.logout();
-    this.router.navigate(['/landing-page']);
   }
 }

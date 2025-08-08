@@ -39,9 +39,17 @@ export const contents: Section[] = [
   {
     title: 'Follow Us',
     items: [
-      { name: 'Facebook', icon: 'fa-brands fa-facebook', url: '' },
-      { name: 'Instagram', icon: 'fa-brands fa-instagram', url: '' },
-      { name: 'Twitter', icon: 'fa-brands fa-twitter', url: '' },
+      {
+        name: 'Facebook',
+        icon: 'fa-brands fa-facebook',
+        url: 'https://www.facebook.com/culturalcenterofthephilippines/',
+      },
+      {
+        name: 'Instagram',
+        icon: 'fa-brands fa-instagram',
+        url: 'https://www.instagram.com/culturalcenterph/',
+      },
+      // { name: 'Twitter', icon: 'fa-brands fa-twitter', url: '' },
     ],
   },
 ];

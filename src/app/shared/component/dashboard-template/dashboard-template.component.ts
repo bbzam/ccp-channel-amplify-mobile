@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { Chart, ChartConfiguration, ChartType } from 'chart.js/auto';
 import { SharedService } from '../../shared.service';
+import { DecimalPipe } from '@angular/common';
 
 interface VideoData {
   id: string;
@@ -21,7 +22,13 @@ interface VideoData {
 
 @Component({
   selector: 'app-dashboard-template',
-  imports: [MatGridListModule, MatCardModule, MatIconModule, MatTableModule],
+  imports: [
+    MatGridListModule,
+    MatCardModule,
+    MatIconModule,
+    MatTableModule,
+    DecimalPipe,
+  ],
   templateUrl: './dashboard-template.component.html',
   styleUrl: './dashboard-template.component.css',
 })
@@ -53,110 +60,26 @@ export class DashboardTemplateComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.initializeBarChart();
 
-    // // Use mock data for testing
-    // const mockMonthlyStats = this.createMockMonthlyStats();
-    // this.updateBarChartWithMonthlyStats(mockMonthlyStats);
-
     // Only initialize line chart if data is available
     if (this.videoData && this.videoData.length > 0) {
       this.initializeLineChart();
     }
   }
 
-  // Add this method to your component
-  private createMockMonthlyStats(): any {
-    return {
-      '2022': {
-        January: {
-          count: 5,
-          totalViews: 250,
-          averageViews: 50,
-          byCategory: { tutorial: 2, news: 3 },
-        },
-        March: {
-          count: 8,
-          totalViews: 480,
-          averageViews: 60,
-          byCategory: { tutorial: 3, news: 5 },
-        },
-        May: {
-          count: 12,
-          totalViews: 840,
-          averageViews: 70,
-          byCategory: { tutorial: 5, news: 7 },
-        },
-        July: {
-          count: 7,
-          totalViews: 560,
-          averageViews: 80,
-          byCategory: { tutorial: 3, news: 4 },
-        },
-        October: {
-          count: 10,
-          totalViews: 900,
-          averageViews: 90,
-          byCategory: { tutorial: 4, news: 6 },
-        },
-        December: {
-          count: 15,
-          totalViews: 1500,
-          averageViews: 100,
-          byCategory: { tutorial: 7, news: 8 },
-        },
-      },
-      '2023': {
-        February: {
-          count: 9,
-          totalViews: 630,
-          averageViews: 70,
-          byCategory: { tutorial: 4, news: 5 },
-        },
-        April: {
-          count: 11,
-          totalViews: 880,
-          averageViews: 80,
-          byCategory: { tutorial: 5, news: 6 },
-        },
-        June: {
-          count: 14,
-          totalViews: 1260,
-          averageViews: 90,
-          byCategory: { tutorial: 6, news: 8 },
-        },
-        August: {
-          count: 18,
-          totalViews: 1800,
-          averageViews: 100,
-          byCategory: { tutorial: 8, news: 10 },
-        },
-        November: {
-          count: 22,
-          totalViews: 2420,
-          averageViews: 110,
-          byCategory: { tutorial: 10, news: 12 },
-        },
-      },
-      '2024': {
-        January: {
-          count: 16,
-          totalViews: 1920,
-          averageViews: 120,
-          byCategory: { tutorial: 7, news: 9 },
-        },
-        March: {
-          count: 20,
-          totalViews: 2600,
-          averageViews: 130,
-          byCategory: { tutorial: 9, news: 11 },
-        },
-        May: {
-          count: 25,
-          totalViews: 3500,
-          averageViews: 140,
-          byCategory: { tutorial: 12, news: 13 },
-        },
-      },
-    };
+  formatNumber(value: number): string {
+    if (value >= 1000000000000) {
+      return (value / 1000000000000).toFixed(1).replace(/\.0$/, '') + 'T';
+    }
+    if (value >= 1000000000) {
+      return (value / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
+    }
+    if (value >= 1000000) {
+      return (value / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    }
+    if (value >= 1000) {
+      return (value / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    }
+    return value.toString();
   }
 
   getCategories(): string[] {

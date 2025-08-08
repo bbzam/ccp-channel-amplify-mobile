@@ -303,19 +303,6 @@ export const handler = async (event: any) => {
                     },
                   },
                 },
-                // AudioDescriptions: [
-                //   {
-                //     AudioSourceName: 'Audio Selector 1',
-                //     CodecSettings: {
-                //       Codec: 'AAC',
-                //       AacSettings: {
-                //         Bitrate: 192000,
-                //         CodingMode: 'CODING_MODE_2_0',
-                //         SampleRate: 48000,
-                //       },
-                //     },
-                //   },
-                // ],
               },
               {
                 NameModifier: '_1280x720', // Optional - appends to filenames
@@ -335,19 +322,6 @@ export const handler = async (event: any) => {
                     },
                   },
                 },
-                // AudioDescriptions: [
-                //   {
-                //     AudioSourceName: 'Audio Selector 1',
-                //     CodecSettings: {
-                //       Codec: 'AAC',
-                //       AacSettings: {
-                //         Bitrate: 192000,
-                //         CodingMode: 'CODING_MODE_2_0',
-                //         SampleRate: 48000,
-                //       },
-                //     },
-                //   },
-                // ],
               },
               {
                 NameModifier: '_854x480', // Optional - appends to filenames
@@ -367,19 +341,6 @@ export const handler = async (event: any) => {
                     },
                   },
                 },
-                // AudioDescriptions: [
-                //   {
-                //     AudioSourceName: 'Audio Selector 1',
-                //     CodecSettings: {
-                //       Codec: 'AAC',
-                //       AacSettings: {
-                //         Bitrate: 96000,
-                //         CodingMode: 'CODING_MODE_2_0',
-                //         SampleRate: 48000,
-                //       },
-                //     },
-                //   },
-                // ],
               },
               {
                 NameModifier: '_audio',

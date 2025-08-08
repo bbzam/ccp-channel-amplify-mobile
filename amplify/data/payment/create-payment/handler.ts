@@ -23,6 +23,7 @@ export const handler = async (event: any) => {
       Currency: 'PHP',
       Description: 'Payment',
       Email: event.arguments.email,
+      ProcId: event.arguments.ProcId,
     };
 
     console.log('payload', payload);

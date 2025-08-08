@@ -321,6 +321,7 @@ const schema = a.schema({
     })
     .authorization((allow) => [
       allow.groups([
+        'USER',
         'SUBSCRIBER',
         'CONTENT_CREATOR',
         'IT_ADMIN',
@@ -347,6 +348,7 @@ const schema = a.schema({
     .query()
     .arguments({
       rate: a.string().required(),
+      ProcId: a.string().required(),
       email: a.string().required(),
     })
     .authorization((allow) => [allow.groups(['USER'])])
