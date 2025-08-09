@@ -4,7 +4,6 @@ import {
   ScanCommand,
 } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
-import { config } from '../../../../config';
 
 const validateCustomFields = async (
   customFields: any,
@@ -26,7 +25,7 @@ const validateCustomFields = async (
     if (fieldIds.length === 0) return [];
 
     const scanCommand = new ScanCommand({
-      TableName: config.CUSTOMFIELDS_TABLE,
+      TableName: process.env.CUSTOMFIELDS_TABLE,
       ProjectionExpression: 'id, fieldName',
     });
 
@@ -128,7 +127,7 @@ const validateContent = async (args: any, dynamoClient: DynamoDBClient) => {
 };
 
 export const handler = async (event: any) => {
-  const dynamoClient = new DynamoDBClient({ region: config.REGION });
+  const dynamoClient = new DynamoDBClient({ region: process.env.REGION });
 
   try {
     const { arguments: args } = event;
@@ -211,7 +210,7 @@ export const handler = async (event: any) => {
     expressionAttributeValues[':updatedAt'] = new Date().toISOString();
 
     const command = new UpdateItemCommand({
-      TableName: config.CONTENT_TABLE,
+      TableName: process.env.CONTENT_TABLE,
       Key: marshall({ id: args.id }),
       UpdateExpression: `SET ${updateExpression.join(', ')}`,
       ExpressionAttributeNames: expressionAttributeNames,

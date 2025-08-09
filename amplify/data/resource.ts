@@ -13,6 +13,7 @@ import { getContinueWatchFunction } from './content/content-to-user/get-continue
 import { createContentFunction } from './content/content/create-content/resource';
 import { updateContentFunction } from './content/content/update-content/resource';
 import { getContentFunction } from './content/content/get-content/resource';
+import { createPaymentFunction } from './payment/create-payment/resource';
 
 const schema = a.schema({
   Content: a
@@ -39,21 +40,20 @@ const schema = a.schema({
       previewVideoUrl: a.string().required(),
       fullVideoUrl: a.string().required(),
       vttUrl: a.string(),
+      processedFullVideoUrl: a.string(),
       runtime: a.float().required(),
       resolution: a.string().required(),
-      status: a.boolean().required(), //queued/on process or scheduled (false), published (true)
-      isVtt: a.boolean(),
-      isMedCon: a.boolean(),
+      status: a.boolean().required(), //scheduled (false), published (true)
       publishDate: a.date(),
       viewCount: a.integer(),
       customFields: a.json(),
       contentToUser: a.hasMany('contentToUser', 'contentId'),
     })
     .authorization((allow) => [
-      allow.authenticated().to(['read']),
+      allow.groups(['SUBSCRIBER', 'IT_ADMIN']).to(['read']),
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
-        .to(['create', 'update', 'delete']),
+        .to(['read', 'create', 'update', 'delete']),
     ]),
 
   getContentFunction: a
@@ -68,7 +68,6 @@ const schema = a.schema({
     .handler(a.handler.function(getContentFunction))
     .authorization((allow) => [
       allow.groups([
-        'USER',
         'SUBSCRIBER',
         'CONTENT_CREATOR',
         'IT_ADMIN',
@@ -155,7 +154,7 @@ const schema = a.schema({
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
         .to(['read', 'create', 'update', 'delete']),
-      allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER']).to(['read']),
     ]),
 
   contentToUser: a
@@ -167,7 +166,21 @@ const schema = a.schema({
       content: a.belongsTo('Content', 'contentId'),
     })
     .authorization((allow) => [
-      allow.groups(['USER', 'SUBSCRIBER']).to(['create', 'update', 'read']),
+      allow.groups(['SUBSCRIBER']).to(['create', 'update', 'read']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']).to(['read']),
+    ]),
+
+  paymentToUser: a
+    .model({
+      transactionId: a.string().required(),
+      userId: a.string().required(),
+      subscriptionType: a.string().required(),
+      status: a.string(),
+      message: a.string(),
+    })
+    .authorization((allow) => [
+      allow.guest().to(['update']),
+      allow.groups(['USER']).to(['create']),
       allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']).to(['read']),
     ]),
 
@@ -178,7 +191,7 @@ const schema = a.schema({
       pauseTime: a.string(),
       isFavorite: a.boolean(),
     })
-    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
     .handler(a.handler.function(createContentToUserFunction))
     .returns(a.json()),
 
@@ -187,21 +200,21 @@ const schema = a.schema({
     .arguments({
       contentId: a.string().required(),
     })
-    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
     .handler(a.handler.function(getContentToUserFunction))
     .returns(a.json()),
 
   getUserFavoritesFunction: a
     .query()
     .arguments({})
-    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
     .handler(a.handler.function(getUserFavoritesFunction))
     .returns(a.json()),
 
   getContinueWatchFunction: a
     .query()
     .arguments({})
-    .authorization((allow) => [allow.groups(['USER', 'SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
     .handler(a.handler.function(getContinueWatchFunction))
     .returns(a.json()),
 
@@ -239,8 +252,7 @@ const schema = a.schema({
       ]),
     })
     .authorization((allow) => [
-      allow.guest().to(['read']),
-      allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER']).to(['read']),
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
         .to(['create', 'read', 'update', 'delete']),
@@ -253,7 +265,7 @@ const schema = a.schema({
       selectedContent: a.string(),
     })
     .authorization((allow) => [
-      allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER']).to(['read']),
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
         .to(['create', 'read', 'update', 'delete']),
@@ -273,8 +285,7 @@ const schema = a.schema({
       ]),
     })
     .authorization((allow) => [
-      allow.guest().to(['read']),
-      allow.groups(['USER', 'SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER']).to(['read']),
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
         .to(['create', 'read', 'update', 'delete']),
@@ -290,7 +301,7 @@ const schema = a.schema({
       role: a.string().required(),
     })
     .authorization((allow) => [
-      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(addUser))
     .returns(a.json()),
@@ -334,6 +345,17 @@ const schema = a.schema({
     .handler(a.handler.function(listUsers))
     .returns(a.json()),
 
+  createPayment: a
+    .query()
+    .arguments({
+      rate: a.string().required(),
+      ProcId: a.string().required(),
+      email: a.string().required(),
+    })
+    .authorization((allow) => [allow.groups(['USER'])])
+    .handler(a.handler.function(createPaymentFunction))
+    .returns(a.json()),
+
   editUser: a
     .mutation()
     .arguments({
@@ -344,7 +366,7 @@ const schema = a.schema({
       role: a.string().required(),
     })
     .authorization((allow) => [
-      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(editUser))
     .returns(a.json()),
@@ -355,7 +377,7 @@ const schema = a.schema({
       email: a.string().required(),
     })
     .authorization((allow) => [
-      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(disableUser))
     .returns(a.json()),
@@ -366,7 +388,7 @@ const schema = a.schema({
       email: a.string().required(),
     })
     .authorization((allow) => [
-      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(enableUser))
     .returns(a.json()),

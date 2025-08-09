@@ -3,20 +3,18 @@ import { unmarshall } from '@aws-sdk/util-dynamodb';
 import {
   CognitoIdentityProviderClient,
   ListUsersInGroupCommand,
-  AdminListUserAuthEventsCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
-import { config } from '../../../config';
 
 export const handler = async (event: any) => {
-  const dynamoClient = new DynamoDBClient({ region: config.REGION });
+  const dynamoClient = new DynamoDBClient({ region: process.env.REGION });
   const cognitoClient = new CognitoIdentityProviderClient({
-    region: config.REGION,
+    region: process.env.REGION,
   });
 
   try {
     // 1. Get content statistics
     const contentCommand = new ScanCommand({
-      TableName: config.CONTENT_TABLE,
+      TableName: process.env.CONTENT_TABLE,
       ProjectionExpression: 'id, title, viewCount, createdAt, category',
     });
 
@@ -164,7 +162,7 @@ export const handler = async (event: any) => {
       do {
         const usersResponse = await cognitoClient.send(
           new ListUsersInGroupCommand({
-            UserPoolId: config.USER_POOL_ID,
+            UserPoolId: process.env.USER_POOL_ID,
             GroupName: groupName,
             Limit: 60,
             NextToken: nextToken,

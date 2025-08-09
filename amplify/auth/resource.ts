@@ -129,6 +129,10 @@ export const auth = defineAuth({
       mutable: true,
       required: true,
     },
+    'custom:paidUntil': {
+      dataType: 'DateTime',
+      mutable: true,
+    }
   },
   groups: ['USER', 'SUBSCRIBER', 'CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN'],
   triggers: {

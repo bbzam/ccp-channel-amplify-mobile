@@ -22,13 +22,15 @@ export class ManageUsersComponent {
   role!: string;
   keyword!: string;
 
-  tabs: Tab[] = [
-    { label: 'FREE USERS', role: 'USER' },
+  private allTabs: Tab[] = [
+    { label: 'GUEST USERS', role: 'USER' },
     { label: 'SUBSCRIBERS', role: 'SUBSCRIBER' },
     { label: 'CONTENT CURATORS', role: 'CONTENT_CREATOR' },
     { label: 'IT ADMINS', role: 'IT_ADMIN' },
     { label: 'SUPER ADMINS', role: 'SUPER_ADMIN' },
   ];
+
+  tabs: Tab[] = [];
 
   columns = [
     { def: 'given_name', header: 'Firstname', sortable: true },
@@ -43,8 +45,32 @@ export class ManageUsersComponent {
   tableData: any[] = [];
 
   ngOnInit(): void {
+    this.setTabsBasedOnUserRole();
     this.role = 'USER';
     this.getAllUsers(this.role);
+  }
+
+  private setTabsBasedOnUserRole(): void {
+    const currentUserRole = sessionStorage.getItem('role');
+
+    switch (currentUserRole) {
+      case 'CONTENT_CREATOR':
+        this.tabs = this.allTabs.filter((tab) =>
+          ['USER', 'SUBSCRIBER'].includes(tab.role)
+        );
+        break;
+      case 'IT_ADMIN':
+        this.tabs = this.allTabs.filter((tab) =>
+          ['USER', 'SUBSCRIBER', 'CONTENT_CREATOR'].includes(tab.role)
+        );
+        break;
+      case 'SUPER_ADMIN':
+        this.tabs = [...this.allTabs];
+        break;
+      default:
+        this.tabs = [];
+        break;
+    }
   }
 
   onTabChanged(role: any): void {

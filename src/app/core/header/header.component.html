@@ -6,20 +6,27 @@
         ><img src="ccp-logo-rmvbg.png" alt="header-logo"
       /></a>
     </div>
-    <div>
+    <!-- <div>
       <button (click)="signInOnClick()" class="buttonMS" mat-stroked-button>
         Sign In
       </button>
-    </div>
-    } @else {
+    </div> -->
+    } @else { @if (role === 'SUBSCRIBER') {
     <div class="header-logo">
       <a href="/subscriber"
         ><img src="ccp-logo-rmvbg.png" alt="header-logo"
       /></a>
     </div>
-    @if (role === 'USER' || role === 'SUBSCRIBER') {
     <div class="hide">
       <app-navigation />
+    </div>
+    } @else if (role === 'USER') {
+    <div class="header-logo">
+      <a href="/user"><img src="ccp-logo-rmvbg.png" alt="header-logo" /></a>
+    </div>
+    } @else {
+    <div class="header-logo">
+      <img src="ccp-logo-rmvbg.png" alt="header-logo" />
     </div>
     }
     <div class="hide">
@@ -28,8 +35,16 @@
         <mat-icon>arrow_back</mat-icon>
       </button>
       } -->
-      <button class="search" mat-icon-button matTooltip="Search">
+      <!-- <button class="search" mat-icon-button matTooltip="Search">
         <mat-icon>search</mat-icon>
+      </button> -->
+      <button
+        class="search"
+        mat-icon-button
+        matTooltip="Settings"
+        (click)="settingOnClick()"
+      >
+        <mat-icon>settings</mat-icon>
       </button>
       <div class="header-right">
         <button mat-icon-button [matMenuTriggerFor]="beforeMenu">
@@ -39,7 +54,7 @@
           <mat-card>
             <mat-card-header>
               <div class="user">
-                <button mat-icon-button>
+                <button disabled mat-icon-button>
                   <mat-icon>person</mat-icon>
                 </button>
                 <div>
@@ -49,9 +64,11 @@
               </div>
             </mat-card-header>
             <mat-card-content>
+              @if(role === 'SUBSCRIBER') {
               <button mat-button color="primary" (click)="favoritesOnClick()">
                 <mat-icon>favorite</mat-icon><span>Favourites</span>
               </button>
+              }
               <button mat-button color="primary" (click)="settingOnClick()">
                 <mat-icon>settings</mat-icon><span>Settings</span>
               </button>

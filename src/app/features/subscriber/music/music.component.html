@@ -52,6 +52,8 @@ continueWatching.length) {
 </div>
 } @else {
 <div class="noData">
+  @if(!isLoading()) {
   <h1>No Videos Available at the Moment.</h1>
+  }
 </div>
 }

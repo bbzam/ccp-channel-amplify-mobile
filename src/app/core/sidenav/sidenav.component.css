@@ -26,7 +26,7 @@ mat-drawer-container {
 mat-card {
   background-color: unset;
   box-shadow: unset;
-  
+
   mat-card-content {
     display: flex;
 
@@ -73,6 +73,8 @@ mat-card {
   }
 
   div {
+    max-width: 10em;
+
     mat-card-title {
       color: var(--accent);
       font-weight: bold;
@@ -82,6 +84,9 @@ mat-card {
     mat-card-subtitle {
       color: var(--gray);
       font-size: 0.813em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }

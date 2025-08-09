@@ -1,6 +1,34 @@
+:host {
+  --mdc-outlined-text-field-label-text-color: var(--secondary);
+  --mdc-outlined-text-field-input-text-color: var(--secondary);
+  --mdc-outlined-text-field-outline-color: var(--secondary);
+  --mdc-outlined-text-field-hover-outline-color: var(--secondary);
+  --mdc-outlined-text-field-focus-outline-color: var(--primary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--primary);
+}
+
+::ng-deep .form-field-container mat-form-field {
+  width: 100%;
+  min-width: 18em;
+
+  .mat-mdc-text-field-wrapper {
+    border-radius: 0.5em;
+  }
+
+  .mat-mdc-form-field-input-control input {
+    font-size: 0.875em;
+    padding: 0.7em;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-radius: 0.5em;
+  }
+}
+
 form {
   max-height: 30em;
-  /* overflow: auto; */
   padding: 0 2em 2em;
 
   .form-field-container {
@@ -11,22 +39,8 @@ form {
       font-size: 0.875em;
     }
 
-    label {
-      font-size: 0.875em;
-      margin-left: 0.8em;
-    }
-
-    input,
-    select {
-      font-size: 0.875em;
-      min-width: 18em;
-      padding: 0.7em;
-      border-radius: 0.5em;
-    }
-
     mat-error {
       font-size: 0.875em;
-      margin-left: 0.8em;
       color: red;
     }
 

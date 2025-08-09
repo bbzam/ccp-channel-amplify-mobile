@@ -3,6 +3,7 @@ import {
   S3Client,
   GetObjectCommand,
   DeleteObjectCommand,
+  PutObjectCommand,
 } from '@aws-sdk/client-s3';
 
 const FULL_VIDEO_CONFIG = {

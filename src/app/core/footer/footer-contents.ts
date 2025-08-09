@@ -18,30 +18,38 @@ export const contents: Section[] = [
     items: [
       { label: 'Home', url: '' },
       { label: 'About', url: '' },
-      { label: 'FAQ', url: '' },
-      { label: 'Help Centre', url: '' },
+      // { label: 'FAQ', url: '' },
+      // { label: 'Help Centre', url: '' },
     ],
   },
   {
     title: 'Legal',
     items: [
       { label: 'Privacy Policy', url: '' },
-      { label: 'Terms of Service', url: '' },
-      { label: 'Cookie Preferences', url: '' },
-      { label: 'Corporate Information', url: '' },
+      // { label: 'Terms of Service', url: '' },
+      // { label: 'Cookie Preferences', url: '' },
+      // { label: 'Corporate Information', url: '' },
     ],
   },
   {
     title: 'Contact Us',
-    email: '',
-    phone: '',
+    email: 'ccpchannel@culturalcenter.gov.ph',
+    phone: '(02) 8832 1125 loc 1511',
   },
   {
     title: 'Follow Us',
     items: [
-      { name: 'Facebook', icon: 'fa-brands fa-facebook', url: '' },
-      { name: 'Instagram', icon: 'fa-brands fa-instagram', url: '' },
-      { name: 'Twitter', icon: 'fa-brands fa-twitter', url: '' },
+      {
+        name: 'Facebook',
+        icon: 'fa-brands fa-facebook',
+        url: 'https://www.facebook.com/culturalcenterofthephilippines/',
+      },
+      {
+        name: 'Instagram',
+        icon: 'fa-brands fa-instagram',
+        url: 'https://www.instagram.com/culturalcenterph/',
+      },
+      // { name: 'Twitter', icon: 'fa-brands fa-twitter', url: '' },
     ],
   },
 ];

@@ -8,6 +8,16 @@ export const topFeatured = [
   },
 ];
 
+export const subscribeNow = [
+  {
+    title: 'You’ve successfully subscribed, choose your plan',
+    description:
+      "Welcome to CCP Channel — now unlock the real experience. Subscribe now to dive into exclusive shows, movies, and originals you won't find anywhere else.",
+    landscapeImageUrl:
+      'Thumbnails/Doc Resureccion_ Gagamutin ang Bayan/Banner.png',
+  },
+];
+
 export const featuredImages = [
   {
     name: 'My Boy Superman',

@@ -34,8 +34,10 @@ export class FeaturedComponent implements AfterViewInit, OnInit, OnDestroy {
   startIndex: number = 0;
   itemsToShow: number = 8;
   private observer: IntersectionObserver | null = null;
+  isFirefox: boolean = false;
 
   ngOnInit(): void {
+    this.isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
     this.updateVisibleItems();
     this.updateItemsToShow();
   }

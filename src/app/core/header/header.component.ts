@@ -84,13 +84,6 @@ export class HeaderComponent implements OnInit {
     return String(sessionStorage.getItem('email'));
   }
 
-  signInOnClick() {
-    this.dialog
-      .open(SigninComponent)
-      .afterClosed()
-      .subscribe((data) => {});
-  }
-
   logout() {
     this.dialog
       .open(ConfirmationDialogComponent, {
@@ -115,7 +108,7 @@ export class HeaderComponent implements OnInit {
   settingOnClick() {
     switch (this.role) {
       case 'USER':
-        this.router.navigate(['subscriber/account-settings']);
+        this.router.navigate(['user/account-settings']);
         break;
       case 'SUBSCRIBER':
         this.router.navigate(['subscriber/account-settings']);

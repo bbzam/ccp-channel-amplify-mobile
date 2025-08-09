@@ -1,3 +1,13 @@
+<div class="close-button-container">
+  <button
+    class="close-button"
+    mat-icon-button
+    (click)="close()"
+    matTooltip="close"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 <div class="signin-main">
   <form [formGroup]="inputForm" (ngSubmit)="submit()">
     <div class="form-field-container">
@@ -7,23 +17,25 @@
       }
     </div>
     <div class="form-field-container">
-      <label for="input">{{ content.label }}</label>
-      <input
-        id="input"
-        type="{{ content.inputType }}"
-        matInput
-        [placeholder]="content.placeholder"
-        formControlName="input"
-        autocomplete="off"
-        [attr.aria-label]="content.label"
-        [attr.aria-describedby]="
-          inputForm.get('input')?.errors ? 'input-error' : null
-        "
-        required
-      />
-      @if (inputErrorMessage()) {
-      <mat-error id="input-error">{{ inputErrorMessage() }}</mat-error>
-      }
+      <mat-form-field appearance="outline">
+        <mat-label>{{ content.label }}</mat-label>
+        <input
+          id="input"
+          type="{{ content.inputType }}"
+          matInput
+          [placeholder]="content.placeholder"
+          formControlName="input"
+          autocomplete="off"
+          [attr.aria-label]="content.label"
+          [attr.aria-describedby]="
+            inputForm.get('input')?.errors ? 'input-error' : null
+          "
+          required
+        />
+        @if (inputErrorMessage()) {
+        <mat-error id="input-error">{{ inputErrorMessage() }}</mat-error>
+        }
+      </mat-form-field>
     </div>
 
     <div class="form-field-container">

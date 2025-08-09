@@ -22,7 +22,9 @@
           column.def === "updatedAt" || column.def === "createdAt"
             ? (element[column.def] | date : "MMM d yyyy h:mm a")
             : column.def === "status"
-            ? element[column.def] === false
+            ? !element.vttUrl || !element.processedFullVideoUrl
+              ? "Processing"
+              : element[column.def] === false
               ? "Scheduled"
               : "Published"
             : column.def === "Enabled"

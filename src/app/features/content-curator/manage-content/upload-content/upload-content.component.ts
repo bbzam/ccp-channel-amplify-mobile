@@ -407,17 +407,15 @@ export class UploadContentComponent {
 
       await this.featureService.createContent(contentMetadata).then(
         async (result) => {
-          result.data
-            ? (this.featureService.handleSuccess(
-                isForPublish
-                  ? 'Content Published Successfully!'
-                  : 'Content Scheduled Successfully!'
-              ),
-              this.dialogRef.close())
-            : this.featureService.handleError(
-                'Uploading Error, Please try again.'
-              ),
-            this.uploadForm.enable();
+          result.data &&
+            (this.featureService.handleSuccess(
+              isForPublish
+                ? 'Content uploaded successfully! Publishing in progress...'
+                : 'Content uploaded successfully! Scheduling in progress...'
+            ),
+            this.dialogRef.close());
+
+          this.uploadForm.enable();
         },
         (error) => {
           isForPublish
@@ -801,6 +799,10 @@ export class UploadContentComponent {
     if (resolution >= 3840) return '4K';
     if (resolution >= 1920) return '1080p';
     return '720p';
+  }
+
+  close() {
+    this.dialogRef.close();
   }
 
   // ngOnDestroy to clean up URLs

@@ -96,7 +96,7 @@ export class AppComponent implements OnInit {
     switch (this.userRole) {
       case 'USER':
         if (publicRoutes.includes(currentUrl)) {
-          this.router.navigate(['/subscriber']);
+          this.router.navigate(['/user']);
         }
         break;
       case 'SUBSCRIBER':

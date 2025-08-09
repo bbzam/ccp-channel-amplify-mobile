@@ -1,0 +1,31 @@
+<div class="main-media-container">
+  <ng-container>
+    <div class="supermain-div">
+      <div class="media-container">
+        <img [src]="banners[0].landscapeImageUrl" [alt]="banners[0].title" />
+      </div>
+      <div class="overlay">
+        <div class="details">
+          <h1 class="title">{{ banners[0].title }}!</h1>
+          <p class="description">
+            Hi
+            <span
+              ><strong>{{ username }}</strong></span
+            >! {{ banners[0].description }}
+          </p>
+        </div>
+        <div class="rates">
+          <div class="card" (click)="subscribeNowOnClick('M')">
+            <p class="title">Monthly</p>
+            <p class="price">₱99</p>
+          </div>
+          <div class="card" (click)="subscribeNowOnClick('A')">
+            <p class="title">Annual</p>
+            <p class="old-price">₱1,188</p>
+            <p class="price">₱599</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

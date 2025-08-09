@@ -89,7 +89,7 @@ export class SidenavComponent implements OnInit {
     this.drawer.close();
     switch (this.role) {
       case 'USER':
-        this.router.navigate(['subscriber/account-settings']);
+        this.router.navigate(['user/account-settings']);
         break;
       case 'SUBSCRIBER':
         this.router.navigate(['subscriber/account-settings']);

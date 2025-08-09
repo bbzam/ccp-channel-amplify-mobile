@@ -73,6 +73,9 @@
       flex-wrap: wrap;
 
       .watch {
+        display: flex;
+        gap: 1em;
+
         button {
           min-width: 12em;
           display: flex;
@@ -95,8 +98,9 @@
     padding-bottom: 3em;
 
     .card {
+      transition: transform 0.3s ease-in-out;
+      position: relative;
       box-shadow: 0 0 19px 10px rgba(255, 255, 255, 0.2);
-      /* background-color: var(--primary); */
       border: 1px solid var(--tertiary);
       padding: 1em;
       min-width: 15em;
@@ -105,6 +109,7 @@
       line-height: 1;
       text-align: center;
       align-content: center;
+      cursor: pointer;
 
       .title {
         color: var(--gray);
@@ -125,6 +130,12 @@
         font-size: 2.5em;
         color: var(--tertiary);
       }
+    }
+
+    .card:hover {
+      box-shadow: 0 0 19px 10px rgba(255, 255, 255, 0.2),
+        0 0 0 2px var(--tertiary);
+      transform: scale(1.05);
     }
   }
 }
@@ -176,7 +187,7 @@
       height: auto;
       align-items: flex-start;
       justify-content: flex-start;
-      padding: 0 1em;
+      padding: 0 1em 1em;
 
       .card {
         min-width: 10em;

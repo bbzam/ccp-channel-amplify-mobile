@@ -215,10 +215,10 @@ export class FeaturesService {
         this.sharedService.hideLoader();
         return parsedResult;
       } else {
-        const errorMessage =
-          parsedResult?.errors?.join(', ') || 'Content creation failed';
-        this.handleError(errorMessage);
-        throw new Error(errorMessage);
+        this.sharedService.hideLoader();
+        this.handleError(
+          'An error occurred while creating content. Please try again'
+        );
       }
     } catch (error) {
       this.sharedService.hideLoader();
@@ -346,6 +346,31 @@ export class FeaturesService {
       return result.data || [];
     } catch (error) {
       this.sharedService.hideLoader();
+      throw error;
+    }
+  }
+
+  async createPayment(rate: string, ProcId: string): Promise<any> {
+    try {
+      this.sharedService.showLoader('Redirecting to Dragonpay...');
+      const result = await this.client.queries.createPayment({
+        rate: rate,
+        ProcId: ProcId,
+        email: String(sessionStorage.getItem('email')),
+      });
+
+      console.log('result', result);
+
+      if (result.data && typeof result.data === 'string') {
+        const parsedData = JSON.parse(result.data);
+        this.sharedService.hideLoader();
+        return parsedData.data || [];
+      }
+
+      return result.data;
+    } catch (error) {
+      this.sharedService.hideLoader();
+      this.handleError('Error creating a payment');
       throw error;
     }
   }

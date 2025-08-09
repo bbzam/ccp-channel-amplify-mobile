@@ -1,155 +1,3 @@
-// import {
-//   Component,
-//   OnInit,
-//   ViewChild,
-//   ElementRef,
-//   inject,
-//   Input,
-//   AfterViewInit,
-// } from '@angular/core';
-// import { ActivatedRoute, Router } from '@angular/router';
-// import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-// import { Location } from '@angular/common';
-// import { ShakaPlayerService } from '../../shaka-player.service';
-// import { SharedService } from '../../shared.service';
-
-// @Component({
-//   selector: 'app-video-player',
-//   imports: [MatProgressSpinnerModule],
-//   templateUrl: './video-player.component.html',
-//   styleUrl: './video-player.component.css',
-// })
-// export class VideoPlayerComponent implements OnInit, AfterViewInit {
-//   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
-//   // @Input() videoUrl: string = '';
-//   readonly router = inject(Router);
-//   readonly route = inject(ActivatedRoute);
-//   readonly location = inject(Location);
-//   readonly shakaService = inject(ShakaPlayerService);
-//   readonly sharedService = inject(SharedService);
-//   videoUrl!: string;
-//   contentId!: string;
-//   pauseTime!: number;
-
-//   isLoading = false;
-//   errorMessage = '';
-//   controls: boolean = true; // Enables video controls
-//   controlsList: string = 'nodownload'; // Prevents download option
-
-//   ngOnInit(): void {
-//     this.route.queryParams.subscribe((params) => {
-//       this.videoUrl = params['videoUrl'];
-//       this.contentId = params['id'];
-//     });
-//   }
-
-//   async ngAfterViewInit() {
-//     try {
-//       if (!this.videoUrl) {
-//         throw new Error('No video URL provided');
-//       }
-
-//       this.isLoading = true;
-
-//       const videoElement = this.videoPlayer.nativeElement;
-
-//       // Add event listeners for tracking video playback
-//       videoElement.addEventListener('pause', () => {
-//         this.pauseTime = videoElement.currentTime;
-//       });
-
-//       videoElement.addEventListener('seeked', () => {
-//       });
-
-//       videoElement.addEventListener('play', () => {
-//       });
-
-//       // For Amplify hosted videos, we might not need Shaka Player
-//       // if they're standard MP4/WebM files
-//       if (this.isStreamingUrl(this.videoUrl)) {
-//         // Initialize Shaka Player only for streaming content
-//         await this.shakaService.initialize(this.videoPlayer.nativeElement);
-//         await this.shakaService.loadVideo(this.videoUrl);
-//         // Request fullscreen after video loads
-//         this.requestFullscreen();
-//         await videoElement.play();
-//       } else {
-//         // For regular videos, set src directly
-//         this.videoPlayer.nativeElement.src = this.videoUrl;
-//         // Request fullscreen after video loads
-//         this.requestFullscreen();
-//         await videoElement.play();
-//       }
-
-//       this.isLoading = false;
-//     } catch (error) {
-//       this.isLoading = false;
-//       this.errorMessage = 'Failed to load video';
-//     }
-//   }
-
-//   async requestFullscreen() {
-//     try {
-//       const videoElement = this.videoPlayer.nativeElement;
-//       if (videoElement.requestFullscreen) {
-//         await videoElement.requestFullscreen();
-//       } else if ((videoElement as any).webkitRequestFullscreen) {
-//         await (videoElement as any).webkitRequestFullscreen();
-//       } else if ((videoElement as any).msRequestFullscreen) {
-//         await (videoElement as any).msRequestFullscreen();
-//       }
-//     } catch (error) {
-//     }
-//   }
-
-//   private isStreamingUrl(url: string): boolean {
-//     // Check if the URL is for a streaming manifest
-//     return url.endsWith('.mpd') || url.endsWith('.m3u8');
-//   }
-
-//   onLoadStart() {
-//     this.isLoading = true;
-//     this.errorMessage = '';
-//   }
-
-//   async onVideoLoaded() {
-//     this.isLoading = false;
-//     const video = this.videoPlayer.nativeElement;
-
-//     // const userId = sessionStorage.getItem('userId');
-//     const getContentToUserData = await this.sharedService.getContentToUser(
-//       this.contentId
-//     );
-//     if (getContentToUserData) {
-//       video.currentTime = Number(getContentToUserData.data[0].pauseTime);
-//     }
-//   }
-
-//   onError(event: any) {
-//     this.isLoading = false;
-//     this.errorMessage = 'Error loading video. Please try again.';
-//   }
-
-//   goBack() {
-//     this.location.back();
-//   }
-
-//   ngOnDestroy() {
-//     this.shakaService.destroy();
-
-//     // Get the current time right before saving
-//     if (this.videoPlayer?.nativeElement) {
-//       this.pauseTime = this.videoPlayer.nativeElement.currentTime;
-//     }
-
-//     this.sharedService.createContentToUser({
-//       isFavorite: undefined,
-//       contentId: this.contentId,
-//       pauseTime: this.pauseTime,
-//     });
-//   }
-// }
-
 import {
   Component,
   OnInit,
@@ -164,7 +12,6 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Location, isPlatformBrowser } from '@angular/common';
-import { ShakaPlayerService } from '../../shaka-player.service';
 import { SharedService } from '../../shared.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -190,7 +37,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   readonly router = inject(Router);
   readonly route = inject(ActivatedRoute);
   readonly location = inject(Location);
-  readonly shakaService = inject(ShakaPlayerService);
   readonly sharedService = inject(SharedService);
   readonly featuresService = inject(FeaturesService);
   readonly videoPlayerService = inject(VideoPlayerService);
@@ -202,6 +48,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
   pauseTime!: number;
   private player: any;
   private debounceTimer: any;
+  private drmType = 'No DRM';
+  private hideControlsTimeout: any;
 
   isLoading = false;
   errorMessage = '';
@@ -224,9 +72,26 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     }
 
     this.controls = !this.isStreamingUrl(this.videoUrl);
+
+    this.detectBrowser();
+  }
+
+  private detectBrowser() {
+    const agent = navigator.userAgent.toLowerCase();
+
+    if (agent.indexOf('safari') > -1 && agent.indexOf('chrome') === -1) {
+      this.drmType = 'FairPlay';
+      throw new Error('Browser not supported!');
+    } else if (agent.indexOf('chrome') > -1 || agent.indexOf('firefox') > -1) {
+      this.drmType = 'Widevine';
+    } else if (agent.indexOf('edge') > -1 || agent.indexOf('trident') > -1) {
+      this.drmType = 'PlayReady';
+    }
+    console.log('DRM Type:', this.drmType);
   }
 
   private async initShakaPlayer() {
+    let playerConfig;
     shaka.polyfill.installAll();
     if (!shaka.Player.isBrowserSupported()) {
       throw new Error('Browser not supported!');
@@ -237,10 +102,86 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
 
     this.player = new shaka.Player(video);
 
+    if ('Widevine' === this.drmType) {
+      if (this.isAndroid()) {
+        playerConfig = {
+          drm: {
+            servers: {
+              'com.widevine.alpha':
+                'https://widevine-dash.ezdrm.com/widevine-php/widevine-foreignkey.php?pX=E3A21C',
+            },
+            advanced: {
+              'com.widevine.alpha': {
+                videoRobustness: 'HW_SECURE_ALL',
+                audioRobustness: 'HW_SECURE_CRYPTO',
+              },
+            },
+          },
+        };
+      } else {
+        console.log('not android');
+
+        playerConfig = {
+          drm: {
+            servers: {
+              'com.widevine.alpha':
+                'https://widevine-dash.ezdrm.com/widevine-php/widevine-foreignkey.php?pX=E3A21C',
+            },
+          },
+        };
+      }
+
+      this.player
+        .getNetworkingEngine()
+        .registerRequestFilter(async (type: any, request: any) => {
+          // Only add headers to license requests:
+          if (type == shaka.net.NetworkingEngine.RequestType.LICENSE) {
+            console.log('request :' + request.body);
+          }
+
+          console.log('loggggggggggg');
+        });
+    } else {
+      playerConfig = {
+        drm: {
+          servers: {
+            'com.microsoft.playready':
+              'https://playready.ezdrm.com/cency/preauth.aspx?pX=803F3A',
+          },
+        },
+      };
+
+      this.player
+        .getNetworkingEngine()
+        .registerRequestFilter(async (type: any, request: any) => {
+          // Only add headers to license requests:
+          if (type == shaka.net.NetworkingEngine.RequestType.LICENSE) {
+            console.log('request :' + request.body);
+          }
+        });
+    }
+
+    await this.player
+      .getNetworkingEngine()
+      .registerResponseFilter(async (type: any, response: any) => {
+        // Alias some utilities provided by the library.
+        if (type == shaka.net.NetworkingEngine.RequestType.LICENSE) {
+          this.parsingResponse(response);
+        }
+        console.log('first if', response);
+      });
+
     // Register a request filter to modify segment requests
     this.player
       .getNetworkingEngine()
       .registerRequestFilter(async (type: any, request: any) => {
+        console.log('type', type);
+
+        console.log(
+          'shaka.net.NetworkingEngine.RequestType',
+          shaka.net.NetworkingEngine.RequestType
+        );
+
         // Only process segment requests (not manifest requests)
         if (
           type === shaka.net.NetworkingEngine.RequestType.SEGMENT ||
@@ -249,6 +190,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
           try {
             // Extract the segment URL from the request
             const originalUrl = request.uris[0];
+            console.log('originalUrl', originalUrl);
 
             // Check if this is an MP4 segment (for DASH) or TS segment (for HLS)
             if (
@@ -292,6 +234,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
                 filePath
               );
 
+              console.log('presignedUrl', presignedUrl);
+
               // Replace the original URL with the presigned URL
               request.uris[0] = presignedUrl;
             }
@@ -308,37 +252,111 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     const uiConfig = {
       addSeekBar: true,
       controlPanelElements: [
+        'rewind',
         'play_pause',
+        'fast_forward',
         'time_and_duration',
         'spacer',
         'mute',
         'volume',
-        'quality',
-        'fullscreen',
+        'overflow_menu',
       ],
-      overflowMenuButtons: [
-        'quality',
-        'captions',
-        'picture_in_picture',
-        'cast',
-      ],
+      overflowMenuButtons: ['quality', 'captions', 'playback_rate', 'cast'],
+      seekBarColors: {
+        base: 'rgba(255, 255, 255, 0.3)',
+        buffered: 'rgba(255, 255, 255, 0.54)',
+        played: 'var(--primary)', // Maroon color
+      },
+      volumeBarColors: {
+        base: 'rgba(255, 255, 255, 0.3)',
+        level: 'var(--primary)', // Maroon color
+      },
       enableTooltips: true,
     };
 
     ui.configure(uiConfig);
 
+    this.setupControlsVisibility();
+
     // Enable automatic adaptation between different quality levels
-    this.player.configure({
-      streaming: {
-        rebufferingGoal: 2,
-        bufferingGoal: 10,
-        bufferBehind: 30,
-      },
-      abr: {
-        enabled: true,
-        defaultBandwidthEstimate: 1000000, // 1Mbps initial estimate
-      },
+    this.player.configure(playerConfig);
+  }
+
+  private setupControlsVisibility() {
+    const container = this.videoContainer.nativeElement;
+
+    container.addEventListener('mousemove', () => {
+      container.classList.add('controls-visible');
+      clearTimeout(this.hideControlsTimeout);
+      this.hideControlsTimeout = setTimeout(() => {
+        container.classList.remove('controls-visible');
+      }, 3000);
     });
+
+    container.addEventListener('mouseleave', () => {
+      clearTimeout(this.hideControlsTimeout);
+      container.classList.remove('controls-visible');
+    });
+  }
+
+  parsingResponse(response: any) {
+    let responseText = this.arrayBufferToString(response.data);
+    // Trim whitespace.
+    responseText = responseText.trim();
+
+    console.log('responseText :: ', responseText);
+
+    try {
+      const drmconObj = JSON.parse(responseText);
+      if (drmconObj && drmconObj.errorCode && drmconObj.message) {
+        if ('8002' != drmconObj.errorCode) {
+          alert(
+            'DRM Error : ' + drmconObj.message + '(' + drmconObj.errorCode + ')'
+          );
+          //window.alert('No Rights. Server Response ' + responseText);
+        } else {
+          var errorObj = JSON.parse(drmconObj.message);
+          alert('Error : ' + errorObj.MESSAGE + '(' + errorObj.ERROR + ')');
+        }
+      }
+    } catch (e) {}
+  }
+
+  arrayBufferToString(buffer: number[]) {
+    var arr = new Uint8Array(buffer);
+    var str = String.fromCharCode.apply(String, Array.from(arr));
+    // if(/[\u0080-\uffff]/.test(str)){
+    //     throw new Error("this string seems to contain (still encoded) multibytes");
+    // }
+    return str;
+  }
+
+  isAndroid() {
+    return /Android/i.test(navigator.userAgent);
+  }
+
+  private checkCodecSupport(videoUrl: string): boolean {
+    const video = document.createElement('video');
+
+    // Check common codec support
+    const codecs = {
+      mp4: 'video/mp4; codecs="avc1.42E01E"',
+      webm: 'video/webm; codecs="vp8, vorbis"',
+      ogg: 'video/ogg; codecs="theora"',
+    };
+
+    const extension = videoUrl.split('.').pop()?.toLowerCase();
+
+    switch (extension) {
+      case 'mp4':
+        return video.canPlayType(codecs.mp4) !== '';
+      case 'webm':
+        return video.canPlayType(codecs.webm) !== '';
+      case 'ogg':
+        return video.canPlayType(codecs.ogg) !== '';
+      default:
+        return false;
+    }
   }
 
   async ngAfterViewInit() {
@@ -352,16 +370,24 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
       this.isLoading = true;
       const videoElement = this.videoPlayer.nativeElement;
 
-      // Add event listeners
-      videoElement.addEventListener('pause', () => {
-        this.pauseTime = videoElement.currentTime;
-      });
+      if (this.pauseTime) {
+        // Add event listeners
+        videoElement.addEventListener('pause', () => {
+          this.pauseTime = videoElement.currentTime;
+        });
+      }
 
       if (this.isStreamingUrl(this.videoUrl)) {
+        console.log('VideoURL', this.videoUrl);
+
         await this.initShakaPlayer();
+
+        console.log('shaka initialized');
 
         // For streaming files, get presigned URL for the manifest
         if (this.videoUrl.endsWith('.mpd') || this.videoUrl.endsWith('.m3u8')) {
+          console.log('get presigned URL for the manifest');
+
           // Get the full path without query parameters
           const urlWithoutQuery = this.videoUrl.split('?')[0];
 
@@ -403,7 +429,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
     } catch (error) {
       this.isLoading = false;
       console.error('Video player error:', error);
-      this.errorMessage = 'Error loading video. Please try again.';
     }
   }
 
@@ -572,7 +597,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
 
   onError(event: any) {
     this.isLoading = false;
-    this.errorMessage = 'Error loading video. Please try again.';
+    console.error('Video player error: Error loading video. Please try again.');
   }
 
   goBack() {

@@ -1,33 +1,36 @@
 import { PostConfirmationTriggerEvent } from 'aws-lambda';
 import {
-    CognitoIdentityProviderClient,
-    AdminAddUserToGroupCommand
-  } from '@aws-sdk/client-cognito-identity-provider';
-  
+  CognitoIdentityProviderClient,
+  AdminAddUserToGroupCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
+
 export const handler = async (event: PostConfirmationTriggerEvent) => {
   try {
-    // Get the user attributes from the event
-    const { userPoolId, userName } = event;
-    const groupName = process.env.GROUP_NAME;
+    // Only add to group if this is a sign-up confirmation, not password reset
+    if (event.triggerSource === 'PostConfirmation_ConfirmSignUp') {
+      // Get the user attributes from the event
+      const { userPoolId, userName } = event;
+      const groupName = process.env.GROUP_NAME;
 
-    // Add user to group using AWS SDK v3
-    const params = {
-      GroupName: groupName,
-      UserPoolId: userPoolId,
-      Username: userName
-    };
+      // Add user to group using AWS SDK v3
+      const params = {
+        GroupName: groupName,
+        UserPoolId: userPoolId,
+        Username: userName,
+      };
 
-    const client = new CognitoIdentityProviderClient();
+      const client = new CognitoIdentityProviderClient();
 
-    // You'll need to use AWS SDK to add the user to the group
-   const command = new AdminAddUserToGroupCommand({
-          GroupName: params.GroupName,
-          Username: params.Username,
-          UserPoolId: event.userPoolId
-    });
-    const response = await client.send(command);
+      // You'll need to use AWS SDK to add the user to the group
+      const command = new AdminAddUserToGroupCommand({
+        GroupName: params.GroupName,
+        Username: params.Username,
+        UserPoolId: event.userPoolId,
+      });
+      const response = await client.send(command);
 
-    console.log(`User ${userName} has been added to group ${groupName}`);
+      console.log(`User ${userName} has been added to group ${groupName}`);
+    }
 
     // Return the event object back to Amazon Cognito
     return event;

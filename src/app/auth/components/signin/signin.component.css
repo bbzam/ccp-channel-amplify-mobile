@@ -1,3 +1,66 @@
+:host {
+  --mdc-outlined-text-field-label-text-color: var(--tertiary);
+  --mdc-outlined-text-field-input-text-color: var(--tertiary);
+  --mdc-outlined-text-field-outline-color: var(--tertiary);
+  --mdc-outlined-text-field-hover-outline-color: var(--tertiary);
+  --mdc-outlined-text-field-focus-outline-color: var(--tertiary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--tertiary);
+}
+
+::ng-deep .form-field-container mat-form-field {
+  width: 100%;
+  min-width: 18em;
+
+  .mat-mdc-text-field-wrapper {
+    border-radius: 0.5em;
+  }
+
+  .mat-mdc-form-field-input-control input {
+    font-size: 0.875em;
+    padding: 0.7em;
+    color: var(--tertiary) !important;
+  }
+
+  .mat-mdc-form-field-input-control input:hover {
+    color: var(--terrtiary);
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-radius: 0.5em;
+    border-color: var(--tertiary) !important;
+  }
+
+  .mat-mdc-form-field-label {
+    color: var(--tertiary) !important;
+  }
+
+  &.mat-focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--tertiary) !important;
+      border-width: 2px !important;
+    }
+
+    .mat-mdc-form-field-label {
+      color: var(--tertiary) !important;
+    }
+  }
+}
+
+.close-button-container {
+  display: flex;
+  justify-content: flex-end;
+
+  .close-button {
+    color: var(--gray);
+    position: fixed;
+    z-index: 1;
+  }
+}
+
 .signin-main {
   background-color: var(--secondary);
   color: var(--tertiary);
@@ -34,23 +97,14 @@
         p:hover {
           color: var(--primary-hovered);
         }
-      }
 
-      label {
-        font-size: 0.875em;
-        margin-left: 0.8em;
-      }
-
-      input {
-        font-size: 0.875em;
-        min-width: 18em;
-        padding: 0.7em;
-        border-radius: 0.5em;
+        mat-icon {
+          color: var(--primary);
+        }
       }
 
       mat-error {
         font-size: 0.875em;
-        margin-left: 0.8em;
         color: red;
       }
 

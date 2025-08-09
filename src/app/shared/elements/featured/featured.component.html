@@ -1,7 +1,7 @@
 <div class="supermain-div">
   <div class="main-div" #scrollContainer>
     @for (item of visibleItems; track item;) {
-    <mat-card class="card">
+    <mat-card class="card" (click)="moreInfo(item)">
       <img
         class="image"
         mat-card-image
@@ -19,8 +19,8 @@
         autoplay
         loop
         [muted]="true"
-        (click)="moreInfo(item)"
-        controls
+        [attr.controls]="isFirefox ? null : ''"
+        controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
       ></video>
       <div class="actions">
         <label>{{ item.title }}</label>

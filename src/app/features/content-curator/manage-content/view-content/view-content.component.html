@@ -1,13 +1,23 @@
 <div class="signin-main">
   <div class="h1-button">
     <h1>CONTENT DETAILS</h1>
-    <button
-      mat-icon-button
-      (click)="toggleEditMode()"
-      matTooltip="{{ isEditing() ? 'Disable Edit' : 'Enable Edit' }}"
-    >
-      <mat-icon>edit</mat-icon>
-    </button>
+    <div class="action-button">
+      <button
+        mat-icon-button
+        (click)="toggleEditMode()"
+        matTooltip="{{ isEditing() ? 'Disable Edit' : 'Enable Edit' }}"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button
+        class="close-button"
+        mat-icon-button
+        (click)="close()"
+        matTooltip="close"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
   <mat-divider></mat-divider>
   <form [formGroup]="uploadForm">
@@ -146,7 +156,7 @@
     <!-- Custom Fields -->
     <div class="form-field-container">
       <label
-        >Custom Fields @if (isEditing()) {
+        >@if (isEditing()) { Custom Fields
         <button
           type="button"
           mat-icon-button
@@ -208,7 +218,7 @@
           </span>
         </div>
         @if (!buttonDisabled() || uploadProgress['landscape'] === 100) {
-        <button
+        <!-- <button
           mat-icon-button
           matTooltip="remove"
           (click)="
@@ -220,7 +230,7 @@
           "
         >
           <mat-icon>delete</mat-icon>
-        </button>
+        </button> -->
         }
       </div>
       } @else { @if (uploadProgress['landscape']) {
@@ -307,7 +317,7 @@
           </span>
         </div>
         @if (!buttonDisabled() || uploadProgress['portrait'] === 100) {
-        <button
+        <!-- <button
           mat-icon-button
           matTooltip="remove"
           (click)="
@@ -319,7 +329,7 @@
           "
         >
           <mat-icon>delete</mat-icon>
-        </button>
+        </button> -->
         }
       </div>
       } @else { @if (uploadProgress['portrait']) {
@@ -406,7 +416,7 @@
           </span>
         </div>
         @if (!buttonDisabled() || uploadProgress['preview'] === 100) {
-        <button
+        <!-- <button
           mat-icon-button
           matTooltip="remove"
           (click)="
@@ -418,7 +428,7 @@
           "
         >
           <mat-icon>delete</mat-icon>
-        </button>
+        </button> -->
         }
       </div>
       } @else { @if (uploadProgress['preview']) {
@@ -506,7 +516,7 @@
           </span>
         </div>
         @if (!buttonDisabled() || uploadProgress['full'] === 100) {
-        <button
+        <!-- <button
           mat-icon-button
           matTooltip="remove"
           (click)="
@@ -514,7 +524,7 @@
           "
         >
           <mat-icon>delete</mat-icon>
-        </button>
+        </button> -->
         }
       </div>
       } @else { @if (uploadProgress['full']) {
@@ -575,13 +585,13 @@
       } @if(fullErrorMessage()) {
       <mat-error>{{ fullErrorMessage() }}</mat-error
       >} } @if (fullFilePresignedURL) {
-      <video
+      <!-- <video
         class="previewMedia"
         [src]="fullFilePresignedURL"
         alt="full-video"
         controls
         preload="metadata"
-      ></video>
+      ></video> -->
       }
     </div>
   </form>

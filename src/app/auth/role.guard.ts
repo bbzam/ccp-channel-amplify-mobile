@@ -59,6 +59,12 @@ export const roleGuard: CanActivateFn = (route, state) => {
     return false;
   }
 
+  // For USER, restrict to only user routes
+  if (userRole === 'USER' && !state.url.startsWith('/user')) {
+    router.navigate(['/user']);
+    return false;
+  }
+
   // For SUBSCRIBER, restrict to only subscriber routes
   if (userRole === 'SUBSCRIBER' && !state.url.startsWith('/subscriber')) {
     router.navigate(['/subscriber']);

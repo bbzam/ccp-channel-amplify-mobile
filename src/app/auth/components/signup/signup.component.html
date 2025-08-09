@@ -1,3 +1,14 @@
+<div class="close-button-container">
+  <button
+    class="close-button"
+    mat-icon-button
+    (click)="close()"
+    matTooltip="close"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
 <div class="signup-main">
   <div class="header-logo">
     <img src="ccp-logo-rmvbg.png" alt="header-logo" />
@@ -8,84 +19,119 @@
     </div>
 
     <div class="form-field-container">
-      <!-- First Name Field -->
-      <label for="firstname">First Name</label>
-      <input
-        id="firstname"
-        matInput
-        placeholder="Enter your Firstname"
-        formControlName="firstname"
-        required
-      />
-      <mat-error>{{ firstnameErrorMessage() }}</mat-error>
+      <mat-form-field appearance="outline">
+        <mat-label>First Name</mat-label>
+        <input
+          id="firstname"
+          matInput
+          placeholder="Enter your Firstname"
+          formControlName="firstname"
+          required
+        />
+        <mat-error>{{ firstnameErrorMessage() }}</mat-error>
+      </mat-form-field>
     </div>
 
     <div class="form-field-container">
-      <!-- Last Name Field -->
-      <label for="lastname">Last name</label>
-      <input
-        id="lastname"
-        matInput
-        placeholder="Enter your Lastname"
-        formControlName="lastname"
-        required
-      />
-      <mat-error>{{ lastnameErrorMessage() }}</mat-error>
+      <mat-form-field appearance="outline">
+        <mat-label>Last Name</mat-label>
+        <input
+          id="lastname"
+          matInput
+          placeholder="Enter your Lastname"
+          formControlName="lastname"
+          required
+        />
+        <mat-error>{{ lastnameErrorMessage() }}</mat-error>
+      </mat-form-field>
     </div>
 
     <div class="form-field-container">
-      <!-- Email Field -->
-      <label for="email">Email</label>
-      <input
-        id="email"
-        autocomplete="off"
-        matInput
-        placeholder="Enter your email"
-        formControlName="email"
-        required
-      />
-      <mat-error>{{ emailErrorMessage() }}</mat-error>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input
+          id="email"
+          autocomplete="off"
+          matInput
+          placeholder="Enter your email"
+          formControlName="email"
+          required
+        />
+        <mat-error>{{ emailErrorMessage() }}</mat-error>
+      </mat-form-field>
     </div>
 
     <div class="form-field-container">
-      <!-- Bithdate Field -->
-      <label for="birthdate">Birthdate</label>
-      <input
-        id="birthdate"
-        matInput
-        type="date"
-        placeholder="Enter your Birthdate"
-        formControlName="birthdate"
-        required
-      />
-      <mat-error>{{ birthdateErrorMessage() }}</mat-error>
+      <mat-form-field appearance="outline">
+        <mat-label>Birthdate</mat-label>
+        <input
+          id="birthdate"
+          matInput
+          type="date"
+          placeholder="Enter your Birthdate"
+          formControlName="birthdate"
+          required
+        />
+        <mat-error>{{ birthdateErrorMessage() }}</mat-error>
+      </mat-form-field>
     </div>
 
     <div class="form-field-container">
-      <!-- Password Field -->
-      <label for="password">Password</label>
-      <input
-        id="password"
-        matInput
-        placeholder="Enter your password"
-        formControlName="password"
-        autocomplete="off"
-        required
-      />
-      <mat-error>{{ passwordErrorMessage() }}</mat-error>
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input
+          id="password"
+          matInput
+          placeholder="Enter your password"
+          formControlName="password"
+          autocomplete="off"
+          [type]="isPasswordVisible ? 'text' : 'password'"
+          required
+        />
+        <button
+          class="eye"
+          type="button"
+          mat-icon-button
+          matSuffix
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="isPasswordVisible"
+        >
+          <mat-icon>{{
+            isPasswordVisible ? "visibility_off" : "visibility"
+          }}</mat-icon>
+        </button>
+        <mat-error>{{ passwordErrorMessage() }}</mat-error>
+      </mat-form-field>
     </div>
 
     <div class="form-field-container">
-      <label for="confirmpassword">Confirm Password</label>
-      <input
-        id="confirmpassword"
-        matInput
-        placeholder="Confirm your password"
-        formControlName="confirmPassword"
-        autocomplete="off"
-        required
-      />
-      <mat-error>{{ confirmPasswordErrorMessage() }}</mat-error>
+      <mat-form-field appearance="outline">
+        <mat-label>Confirm Password</mat-label>
+        <input
+          id="confirmpassword"
+          matInput
+          placeholder="Confirm your password"
+          formControlName="confirmPassword"
+          autocomplete="off"
+          [type]="isConfirmPasswordVisible ? 'text' : 'password'"
+          required
+        />
+        <button
+          class="eye"
+          type="button"
+          mat-icon-button
+          matSuffix
+          (click)="toggleConfirmPasswordVisibility()"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="isConfirmPasswordVisible"
+        >
+          <mat-icon>{{
+            isConfirmPasswordVisible ? "visibility_off" : "visibility"
+          }}</mat-icon>
+        </button>
+        <mat-error>{{ confirmPasswordErrorMessage() }}</mat-error>
+      </mat-form-field>
     </div>
 
     <div class="form-field-container">
@@ -109,6 +155,7 @@
         class="buttonSignUp"
         mat-raised-button
         type="button"
+        [disabled]="isLoading()"
         (click)="signInOnClick()"
       >
         Sign In

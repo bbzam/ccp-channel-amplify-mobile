@@ -26,6 +26,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { SigninComponent } from '../signin/signin.component';
 import { AuthServiceService } from '../../auth-service.service';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-forced-change-password',
@@ -37,6 +38,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatIconModule,
     MatDividerModule,
     MatButtonModule,
+    MatTooltipModule,
   ],
   templateUrl: './forced-change-password.component.html',
   styleUrl: './forced-change-password.component.css',
@@ -183,5 +185,9 @@ export class ForcedChangePasswordComponent implements OnInit {
   signInOnClick(): void {
     this.dialogRef.close();
     this.dialog.open(SigninComponent).afterClosed().subscribe();
+  }
+
+  close() {
+    this.dialogRef.close();
   }
 }

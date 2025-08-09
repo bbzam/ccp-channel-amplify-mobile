@@ -20,11 +20,11 @@ export const handler: Handler = async (event) => {
   const body = event.arguments;
 
   // Validate role
-  // if (!body.role || !ALLOWED_ROLES.includes(body.role)) {
-  //   throw new Error(
-  //     `Invalid role. Allowed roles are: ${ALLOWED_ROLES.join(', ')}`
-  //   );
-  // }
+  if (!body.role || !ALLOWED_ROLES.includes(body.role)) {
+    throw new Error(
+      `Invalid role. Allowed roles are: ${ALLOWED_ROLES.join(', ')}`
+    );
+  }
 
   // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

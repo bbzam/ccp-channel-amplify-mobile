@@ -110,6 +110,10 @@
 
   button {
     font: icon;
+
+    i {
+      font-size: x-large;
+    }
   }
 
   .mdc-linear-progress__bar-inner {
@@ -136,6 +140,38 @@
       min-width: 1.688em;
       font-size: 0.6em;
     }
+  }
+
+  --mdc-outlined-text-field-label-text-color: var(--tertiary);
+  --mdc-outlined-text-field-input-text-color: var(--tertiary);
+  --mdc-outlined-text-field-outline-color: var(--tertiary);
+  --mdc-outlined-text-field-hover-outline-color: var(--tertiary);
+  --mdc-outlined-text-field-focus-outline-color: var(--tertiary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--tertiary);
+}
+
+mat-form-field {
+  width: 100%;
+
+  .mat-mdc-text-field-wrapper {
+    border-radius: 0.5em;
+  }
+
+  .mat-mdc-form-field-input-control input {
+    font-size: 0.875em;
+    padding: 0.7em;
+    color: var(--tertiary) !important;
+  }
+
+  .mat-mdc-form-field-label {
+    color: var(--tertiary) !important;
+  }
+
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(
+      .mdc-text-field--focused
+    ):hover
+    .mdc-floating-label {
+    color: unset !important;
   }
 }
 

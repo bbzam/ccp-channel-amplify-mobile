@@ -51,6 +51,7 @@ export class FooterComponent implements OnInit, OnDestroy {
     const navigationUrls: Record<string, string> = {
       Home: this.parentRoute,
       About: `${this.parentRoute}/about`,
+      'Privacy Policy': `${this.parentRoute}/privacy-policy`,
     };
 
     const navigationSection = this.contents.find(
@@ -59,6 +60,18 @@ export class FooterComponent implements OnInit, OnDestroy {
 
     if (navigationSection && navigationSection.items) {
       navigationSection.items.forEach((item: NavigationItem) => {
+        if (item.label in navigationUrls) {
+          item.url = navigationUrls[item.label];
+        }
+      });
+    }
+
+    const legalSection = this.contents.find(
+      (section: any) => section.title === 'Legal'
+    );
+
+    if (legalSection && legalSection.items) {
+      legalSection.items.forEach((item: NavigationItem) => {
         if (item.label in navigationUrls) {
           item.url = navigationUrls[item.label];
         }

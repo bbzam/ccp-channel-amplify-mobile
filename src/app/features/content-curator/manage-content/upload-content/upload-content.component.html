@@ -1,5 +1,17 @@
 <div class="signin-main">
-  <h1>UPLOAD NEW CONTENT</h1>
+  <div class="h1-button">
+    <h1>UPLOAD NEW CONTENT</h1>
+    <div class="action-button">
+      <button
+        class="close-button"
+        mat-icon-button
+        (click)="close()"
+        matTooltip="close"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
   <mat-divider></mat-divider>
   <form [formGroup]="uploadForm">
     <!-- Title -->
@@ -560,7 +572,7 @@
       (click)="publishContent(true)"
       [disabled]="uploadForm.invalid || isLoading() || isScheduling()"
     >
-      {{ isLoading() ? "Publishing..." : "Publish" }}
+      {{ isLoading() ? "Processing Video..." : "Process Video" }}
     </button>
   </div>
 </div>

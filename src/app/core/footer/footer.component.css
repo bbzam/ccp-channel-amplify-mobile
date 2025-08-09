@@ -56,7 +56,13 @@
 
           button {
             i {
-              color: var(--primary-hovered);
+              color: var(--primary);
+            }
+          }
+
+          button:hover {
+            i {
+              color: var(--gray);
             }
           }
         }
@@ -130,6 +136,7 @@
         justify-content: space-evenly;
         flex-direction: column;
         align-content: center;
+        align-items: center;
 
         .footer-section {
           text-align: center;

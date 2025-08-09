@@ -21,6 +21,6 @@ export class HomePageComponent implements OnInit {
   ngOnInit(): void {}
 
   register(): void {
-    this.dialog.open(SignupComponent, { disableClose: true }).afterClosed();
+    this.dialog.open(SignupComponent).afterClosed();
   }
 }
