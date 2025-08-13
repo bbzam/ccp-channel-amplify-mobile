@@ -225,7 +225,7 @@ export class AuthServiceService {
       if (confirmSignUpNextStep.signUpStep === 'DONE') {
         this.dialog
           .open(SuccessMessageDialogComponent, {
-            data: { message: 'SignUp Completed!' },
+            data: { message: 'Sign-up Completed! Please sign in to continue.' },
           })
           .afterClosed()
           .subscribe(() => {

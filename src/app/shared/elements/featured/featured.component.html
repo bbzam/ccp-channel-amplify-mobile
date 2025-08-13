@@ -7,6 +7,9 @@
         mat-card-image
         [src]="item.landscapeImagePresignedUrl"
         [alt]="item.title"
+        [attr.loading]="'lazy'"
+        [attr.decoding]="'async'"
+        [style.object-fit]="'cover'"
       />
       <video
         playsinline

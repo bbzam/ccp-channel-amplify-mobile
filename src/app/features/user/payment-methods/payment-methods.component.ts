@@ -24,9 +24,9 @@ export class PaymentMethodsComponent {
     },
     {
       value: ' ',
-      label: 'DragonPay',
+      label: 'Other Payment Option',
       icon: 'credit_card',
-      description: 'Pay with DragonPay gateway',
+      description: 'Pay with other payment option',
     },
   ];
 

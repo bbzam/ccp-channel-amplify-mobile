@@ -7,6 +7,10 @@
         mat-card-image
         [src]="item.portraitImagePresignedUrl"
         [alt]="item.title"
+        [attr.loading]="'lazy'"
+        [attr.decoding]="'async'"
+        [style.aspect-ratio]="'2/3'"
+        [style.object-fit]="'cover'"
       />
       <video
         playsinline

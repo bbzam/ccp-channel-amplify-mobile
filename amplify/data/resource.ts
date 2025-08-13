@@ -14,6 +14,8 @@ import { createContentFunction } from './content/content/create-content/resource
 import { updateContentFunction } from './content/content/update-content/resource';
 import { getContentFunction } from './content/content/get-content/resource';
 import { createPaymentFunction } from './payment/create-payment/resource';
+import { userStatistics } from './content/statistics/user-statistics/resource';
+import { contentStatistics } from './content/statistics/content-statistics/resource';
 
 const schema = a.schema({
   Content: a
@@ -63,6 +65,7 @@ const schema = a.schema({
       status: a.boolean(),
       keyword: a.string(),
       fields: a.string().array(),
+      filterBy: a.json(),
     })
     .returns(a.string())
     .handler(a.handler.function(getContentFunction))
@@ -300,19 +303,35 @@ const schema = a.schema({
       birthdate: a.string().required(),
       role: a.string().required(),
     })
-    .authorization((allow) => [
-      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']),
-    ])
+    .authorization((allow) => [allow.groups(['IT_ADMIN', 'SUPER_ADMIN'])])
     .handler(a.handler.function(addUser))
     .returns(a.json()),
 
-  statistics: a
+  // statistics: a
+  //   .query()
+  //   .arguments({})
+  //   .authorization((allow) => [
+  //     allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+  //   ])
+  //   .handler(a.handler.function(statistics))
+  //   .returns(a.json()),
+
+  userStatistics: a
     .query()
     .arguments({})
     .authorization((allow) => [
       allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
     ])
-    .handler(a.handler.function(statistics))
+    .handler(a.handler.function(userStatistics))
+    .returns(a.json()),
+
+  contentStatistics: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(contentStatistics))
     .returns(a.json()),
 
   listUser: a
@@ -365,9 +384,7 @@ const schema = a.schema({
       birthdate: a.string().required(),
       role: a.string().required(),
     })
-    .authorization((allow) => [
-      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']),
-    ])
+    .authorization((allow) => [allow.groups(['IT_ADMIN', 'SUPER_ADMIN'])])
     .handler(a.handler.function(editUser))
     .returns(a.json()),
 
@@ -376,9 +393,7 @@ const schema = a.schema({
     .arguments({
       email: a.string().required(),
     })
-    .authorization((allow) => [
-      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']),
-    ])
+    .authorization((allow) => [allow.groups(['IT_ADMIN', 'SUPER_ADMIN'])])
     .handler(a.handler.function(disableUser))
     .returns(a.json()),
 
@@ -387,9 +402,7 @@ const schema = a.schema({
     .arguments({
       email: a.string().required(),
     })
-    .authorization((allow) => [
-      allow.groups(['IT_ADMIN', 'SUPER_ADMIN']),
-    ])
+    .authorization((allow) => [allow.groups(['IT_ADMIN', 'SUPER_ADMIN'])])
     .handler(a.handler.function(enableUser))
     .returns(a.json()),
 });

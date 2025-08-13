@@ -9,7 +9,13 @@ import * as crypto from 'crypto';
 type Handler = Schema['addUser']['functionHandler'];
 const client = new CognitoIdentityProviderClient();
 
-const ALLOWED_ROLES = ['USER', 'CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN'];
+const ALLOWED_ROLES = [
+  'USER',
+  'SUBSCRIBER',
+  'CONTENT_CREATOR',
+  'IT_ADMIN',
+  'SUPER_ADMIN',
+];
 
 export const handler: Handler = async (event: any) => {
   const userPoolId = process.env.UserPoolId;
@@ -23,6 +29,13 @@ export const handler: Handler = async (event: any) => {
     throw new Error(
       'Access denied. Only IT_ADMIN and SUPER_ADMIN can add users.'
     );
+  }
+
+  // Role assignment restrictions based on admin type
+  const isItAdmin =
+    userGroups.includes('IT_ADMIN') && !userGroups.includes('SUPER_ADMIN');
+  if (isItAdmin && !['USER', 'CONTENT_CREATOR'].includes(body.role)) {
+    throw new Error('IT_ADMIN can only assign USER and CONTENT_CREATOR roles');
   }
 
   // Validate role

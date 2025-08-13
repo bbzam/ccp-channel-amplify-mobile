@@ -11,7 +11,10 @@
             Hi
             <span
               ><strong>{{ username }}</strong></span
-            >! {{ banners[0].description }}
+            >!
+            <span
+              [innerHTML]="formatDescription(banners[0].description)"
+            ></span>
           </p>
         </div>
         <div class="rates">

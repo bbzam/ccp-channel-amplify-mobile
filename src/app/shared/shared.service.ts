@@ -31,29 +31,28 @@ export class SharedService {
   async getStatistics(): Promise<any> {
     try {
       this.showLoader('Fetching content...');
-      const stats = await this.client.queries.statistics({});
+      const [contentStats, userStats] = await Promise.all([
+        this.client.queries.contentStatistics({}),
+        this.client.queries.userStatistics({}),
+      ]);
 
-      if (stats && stats.data) {
-        this.hideLoader();
-
-        // Check if data is a string before parsing
-        const parsedData =
-          typeof stats.data === 'string' ? JSON.parse(stats.data) : stats.data;
-
-        // if (parsedData.success && parsedData.data) {
-        //   // Map the viewCount array to the requested format
-        //   const formattedViewCount = parsedData.data.map((item: any) => ({
-        //     title: item.title?.S,
-        //     viewCount: item.viewCount?.N,
-        //   }));
-
-        //   return formattedViewCount;
-        // }
-        return parsedData;
-      }
+      const contentData = contentStats?.data
+        ? typeof contentStats.data === 'string'
+          ? JSON.parse(contentStats.data)
+          : contentStats.data
+        : {};
+      const userData = userStats?.data
+        ? typeof userStats.data === 'string'
+          ? JSON.parse(userStats.data)
+          : userStats.data
+        : {};
 
       this.hideLoader();
-      return stats;
+
+      return {
+        contentStats: contentData,
+        userStats: userData,
+      };
     } catch (error) {
       this.hideLoader();
       this.handleError(error);

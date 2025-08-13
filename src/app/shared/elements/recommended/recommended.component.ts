@@ -47,12 +47,20 @@ export class RecommendedComponent implements AfterViewInit, OnInit, OnDestroy {
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
+
           if (!entry.isIntersecting) {
             video.pause();
-          } else {
-            // Reset video to start and play when visible
             video.currentTime = 0;
-            video.play().catch(() => {});
+          } else {
+            // Only load video when needed
+            if (!video.src && entry.target.getAttribute('data-src')) {
+              video.src = entry.target.getAttribute('data-src')!;
+            }
+
+            setTimeout(() => {
+              video.currentTime = 5;
+              video.play().catch(() => {});
+            }, 2000); // 2s delay
           }
         });
       },

@@ -259,7 +259,9 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
         'spacer',
         'mute',
         'volume',
-        'overflow_menu',
+        'quality',
+        'cast',
+        'fullscreen',
       ],
       overflowMenuButtons: ['quality', 'captions', 'playback_rate', 'cast'],
       seekBarColors: {
