@@ -65,6 +65,7 @@ const schema = a.schema({
       status: a.boolean(),
       keyword: a.string(),
       fields: a.string().array(),
+      filterBy: a.json(),
     })
     .returns(a.string())
     .handler(a.handler.function(getContentFunction))

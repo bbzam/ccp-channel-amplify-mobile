@@ -298,9 +298,12 @@ export class FeaturesService {
     category: string,
     status: boolean,
     fields?: any[],
-    keyword?: string
+    keyword?: string,
+    filterBy?: {}
   ): Promise<any> {
-    const cacheKey = `${category}-${status}-${keyword || ''}`;
+    const cacheKey = `${category}-${status}-${keyword || ''}-${JSON.stringify(
+      filterBy || {}
+    )}`;
 
     if (this.contentCache.has(cacheKey)) {
       return this.contentCache.get(cacheKey);
@@ -314,6 +317,7 @@ export class FeaturesService {
         status,
         keyword,
         fields,
+        filterBy,
       });
 
       if (result.data && typeof result.data === 'string') {

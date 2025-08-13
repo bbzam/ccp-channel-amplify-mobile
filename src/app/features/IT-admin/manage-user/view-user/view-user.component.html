@@ -108,8 +108,11 @@
       <mat-select id="role" formControlName="role" required>
         <mat-option value="USER">User</mat-option>
         <mat-option value="CONTENT_CREATOR">Content Curator</mat-option>
+        @if (userRole === 'SUPER_ADMIN') {
+        <mat-option value="SUBSCRIBER">Subscriber</mat-option>
         <mat-option value="IT_ADMIN">IT Admin</mat-option>
         <mat-option value="SUPER_ADMIN">Super Admin</mat-option>
+        }
       </mat-select>
       @if(roleErrorMessage()) {
       <mat-error>{{ roleErrorMessage() }}</mat-error>

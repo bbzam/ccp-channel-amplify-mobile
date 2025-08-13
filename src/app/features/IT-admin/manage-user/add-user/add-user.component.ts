@@ -68,6 +68,10 @@ export class AddUserComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  get userRole(): string {
+    return String(sessionStorage.getItem('role'));
+  }
+
   private createForm(): void {
     this.createUserForm = this.fb.group({
       firstname: [

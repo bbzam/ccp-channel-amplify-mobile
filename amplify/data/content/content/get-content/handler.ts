@@ -2,7 +2,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 export const handler = async (event: any) => {
-  const { category, status, keyword, fields } = event.arguments;
+  const { category, status, keyword, fields, filterBy } = event.arguments;
   const userId = event.identity.claims.sub;
   const userGroups = event.identity.claims['cognito:groups'] || [];
   const isAdmin =
@@ -26,10 +26,12 @@ export const handler = async (event: any) => {
       params.ProjectionExpression = fields.join(', ');
     }
 
-    if (category || status !== undefined || keyword) {
+    if (category || status !== undefined || keyword || filterBy) {
       let filterExpression = [];
       let expressionAttributeValues: any = {};
+      let expressionAttributeNames: any = {};
 
+      // Existing filters
       if (category) {
         filterExpression.push('category = :category');
         expressionAttributeValues[':category'] = category;
@@ -38,7 +40,7 @@ export const handler = async (event: any) => {
       if (status !== undefined) {
         filterExpression.push('#status = :status');
         expressionAttributeValues[':status'] = status;
-        params.ExpressionAttributeNames = { '#status': 'status' };
+        expressionAttributeNames['#status'] = 'status';
       }
 
       if (keyword) {
@@ -48,8 +50,22 @@ export const handler = async (event: any) => {
         expressionAttributeValues[':keyword'] = keyword;
       }
 
+      // New filterBy logic
+      if (filterBy) {
+        Object.entries(filterBy).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            filterExpression.push(`#${key} = :${key}`);
+            expressionAttributeValues[`:${key}`] = value;
+            expressionAttributeNames[`#${key}`] = key;
+          }
+        });
+      }
+
       params.FilterExpression = filterExpression.join(' AND ');
       params.ExpressionAttributeValues = expressionAttributeValues;
+      if (Object.keys(expressionAttributeNames).length > 0) {
+        params.ExpressionAttributeNames = expressionAttributeNames;
+      }
     }
 
     const result = await docClient.send(new ScanCommand(params));

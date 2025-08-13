@@ -50,15 +50,20 @@ export class ContinueWatchingComponent
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
-          video.currentTime = 5;
 
           if (!entry.isIntersecting) {
             video.pause();
+            video.currentTime = 0;
           } else {
-            // Reset video to start and play when visible
+            // Only load video when needed
+            if (!video.src && entry.target.getAttribute('data-src')) {
+              video.src = entry.target.getAttribute('data-src')!;
+            }
+
             setTimeout(() => {
+              video.currentTime = 5;
               video.play().catch(() => {});
-            }, 3000); // 3 second delay
+            }, 2000); // 2s delay
           }
         });
       },
