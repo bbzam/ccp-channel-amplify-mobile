@@ -50,12 +50,15 @@ export class ContinueWatchingComponent
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
+          video.currentTime = 5;
+
           if (!entry.isIntersecting) {
             video.pause();
           } else {
             // Reset video to start and play when visible
-            video.currentTime = 0;
-            video.play().catch(() => {});
+            setTimeout(() => {
+              video.play().catch(() => {});
+            }, 3000); // 3 second delay
           }
         });
       },

@@ -6,18 +6,42 @@ import {
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
 } from '@aws-sdk/client-cognito-identity-provider';
-import * as crypto from 'crypto';
 
 type Handler = Schema['editUser']['functionHandler'];
 const client = new CognitoIdentityProviderClient();
 
-const ALLOWED_ROLES = ['USER', 'CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN'];
+const ALLOWED_ROLES = [
+  'USER',
+  'SUBSCRIBER',
+  'CONTENT_CREATOR',
+  'IT_ADMIN',
+  'SUPER_ADMIN',
+];
 
 export const handler: Handler = async (event) => {
   const userPoolId = process.env.UserPoolId;
   console.log(userPoolId);
 
   const body = event.arguments;
+
+  // Check if the current user has the required role
+  const userGroups =
+    event.identity && 'claims' in event.identity
+      ? (event.identity.claims['cognito:groups'] as string[]) || []
+      : [];
+
+  if (!userGroups.includes('IT_ADMIN') && !userGroups.includes('SUPER_ADMIN')) {
+    throw new Error(
+      'Access denied. Only IT_ADMIN and SUPER_ADMIN can edit users.'
+    );
+  }
+
+  // Role assignment restrictions based on admin type
+  const isItAdmin =
+    userGroups.includes('IT_ADMIN') && !userGroups.includes('SUPER_ADMIN');
+  if (isItAdmin && !['USER', 'CONTENT_CREATOR'].includes(body.role)) {
+    throw new Error('IT_ADMIN can only assign USER and CONTENT_CREATOR roles');
+  }
 
   // Validate role
   if (!body.role || !ALLOWED_ROLES.includes(body.role)) {

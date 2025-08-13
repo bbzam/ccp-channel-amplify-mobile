@@ -7,6 +7,8 @@
         mat-card-image
         [src]="item.portraitImagePresignedUrl"
         [alt]="item.title"
+        [attr.loading]="'lazy'"
+        [attr.decoding]="'async'"
       />
       <video
         playsinline

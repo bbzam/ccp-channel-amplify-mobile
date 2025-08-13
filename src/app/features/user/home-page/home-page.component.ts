@@ -36,4 +36,8 @@ export class HomePageComponent {
         }
       });
   }
+
+  formatDescription(description: string): string {
+    return description.replace(/\.\s+/g, '.<br>');
+  }
 }

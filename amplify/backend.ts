@@ -2,7 +2,9 @@ import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { storage } from './storage/resource';
-import { statistics } from './data/content/statistics/resource';
+// import { statistics } from './data/content/statistics/resource';
+import { userStatistics } from './data/content/statistics/user-statistics/resource';
+import { contentStatistics } from './data/content/statistics/content-statistics/resource';
 import { createContentToUserFunction } from './data/content/content-to-user/create-contentToUser/resource';
 import { getContentToUserFunction } from './data/content/content-to-user/get-contentToUser/resource';
 import { getUserFavoritesFunction } from './data/content/content-to-user/get-userFavorites/resource';
@@ -25,7 +27,8 @@ const backend = defineBackend({
   auth,
   data,
   storage,
-  statistics,
+  contentStatistics,
+  userStatistics,
   createContentToUserFunction,
   getContentToUserFunction,
   getUserFavoritesFunction,
@@ -84,7 +87,9 @@ backend.storage.resources.bucket.addEventNotification(
 );
 
 const createVtt = backend.createVttFunction.resources.lambda;
-const statisticsQuery = backend.statistics.resources.lambda;
+// const statisticsQuery = backend.statistics.resources.lambda;
+const contentStatisticsQuery = backend.contentStatistics.resources.lambda;
+const userStatisticsQuery = backend.userStatistics.resources.lambda;
 const getcontentToUserQuery = backend.getContentToUserFunction.resources.lambda;
 const createContentToUserMutation =
   backend.createContentToUserFunction.resources.lambda;
@@ -144,12 +149,28 @@ const updateContentStatement = new iam.PolicyStatement({
   ],
 });
 
-const statisticsStatement = new iam.PolicyStatement({
-  sid: 'statistics',
+// const statisticsStatement = new iam.PolicyStatement({
+//   sid: 'statistics',
+//   actions: ['dynamodb:Scan'],
+//   resources: [
+//     `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
+//   ], //limiting the permissions to only Content table
+// });
+
+const contentStatisticsStatement = new iam.PolicyStatement({
+  sid: 'contentStatistics',
   actions: ['dynamodb:Scan'],
   resources: [
     `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
-  ], //limiting the permissions to only Content table
+  ],
+});
+
+const userStatisticsStatement = new iam.PolicyStatement({
+  sid: 'userStatistics',
+  actions: ['cognito-idp:ListUsersInGroup'],
+  resources: [
+    `arn:aws:cognito-idp:${config.REGION}:${config.ACCOUNT_ID}:userpool/${config.USER_POOL_ID}`,
+  ],
 });
 
 const createContentToUserStatement = new iam.PolicyStatement({
@@ -206,7 +227,9 @@ createVtt.addToRolePolicy(createVttStatement);
 getContentQuery.addToRolePolicy(getContentStatement);
 createContentMutation.addToRolePolicy(createContentStatement);
 updateContentMutation.addToRolePolicy(updateContentStatement);
-statisticsQuery.addToRolePolicy(statisticsStatement);
+// statisticsQuery.addToRolePolicy(statisticsStatement);
+contentStatisticsQuery.addToRolePolicy(contentStatisticsStatement);
+userStatisticsQuery.addToRolePolicy(userStatisticsStatement);
 createContentToUserMutation.addToRolePolicy(createContentToUserStatement);
 getcontentToUserQuery.addToRolePolicy(getContentToUserStatement);
 getUserFavoritesQuery.addToRolePolicy(getUserFavoritesStatement);
