@@ -6,5 +6,6 @@ export const userStatistics = defineFunction({
   environment: {
     USER_POOL_ID: config.USER_POOL_ID,
     REGION: config.REGION,
+    PAYMENTTOUSER_TABLE: config.PAYMENTTOUSER_TABLE,
   },
 });

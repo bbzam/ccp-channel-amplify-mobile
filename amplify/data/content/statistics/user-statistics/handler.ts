@@ -3,18 +3,54 @@ import {
   ListUsersInGroupCommand,
   ListUsersInGroupCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
+import {
+  DynamoDBDocumentClient,
+  ScanCommand,
+  ScanCommandOutput,
+} from '@aws-sdk/lib-dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 export const handler = async () => {
   const cognitoClient = new CognitoIdentityProviderClient({
     region: process.env.REGION,
   });
 
+  const ddbClient = new DynamoDBClient({});
+  const docClient = DynamoDBDocumentClient.from(ddbClient);
+
   try {
     const groups = ['USER', 'SUBSCRIBER'];
+
+    // Payment data fetch with pagination limit
+    const paymentPromise = (async () => {
+      const items: any[] = [];
+      let lastEvaluatedKey;
+      let pageCount = 0;
+      const maxPages = 10;
+
+      do {
+        const response: ScanCommandOutput = await docClient.send(
+          new ScanCommand({
+            TableName: process.env.PAYMENTTOUSER_TABLE,
+            ProjectionExpression: 'userId, subscriptionType',
+            Limit: 1000,
+            ExclusiveStartKey: lastEvaluatedKey,
+          })
+        );
+
+        if (response.Items) items.push(...response.Items);
+        lastEvaluatedKey = response.LastEvaluatedKey;
+        pageCount++;
+      } while (lastEvaluatedKey && pageCount < maxPages);
+
+      return { Items: items };
+    })();
 
     const groupPromises = groups.map(async (groupName) => {
       const users: any[] = [];
       let nextToken;
+      let pageCount = 0;
+      const maxPages = 5; // Limit pagination
 
       do {
         const response: ListUsersInGroupCommandOutput =
@@ -29,17 +65,31 @@ export const handler = async () => {
 
         if (response.Users) users.push(...response.Users);
         nextToken = response.NextToken;
-      } while (nextToken);
+        pageCount++;
+      } while (nextToken && pageCount < maxPages);
 
       return { groupName, users };
     });
 
-    const groupResults = await Promise.all(groupPromises);
+    const [groupResults, { Items: paymentData }] = await Promise.all([
+      Promise.all(groupPromises),
+      paymentPromise,
+    ]);
+
+    const subscriptionMap = new Set(
+      paymentData
+        ?.filter((item) => item.subscriptionType)
+        .map((item) => item.userId) || []
+    );
 
     const allUsers = new Map();
     const userStats = {
       totalUsers: 0,
-      groupCounts: {} as Record<string, number>,
+      groupCounts: {
+        USER: 0,
+        PAID_SUBSCRIBER: 0,
+        FREE_SUBSCRIBER: 0,
+      } as Record<string, number>,
       newRegistrations: { daily: 0, weekly: 0, monthly: 0 },
     };
 
@@ -51,7 +101,17 @@ export const handler = async () => {
     };
 
     groupResults.forEach(({ groupName, users }) => {
-      userStats.groupCounts[groupName] = users.length;
+      if (groupName === 'SUBSCRIBER') {
+        users.forEach((user) => {
+          if (subscriptionMap.has(user.Username)) {
+            userStats.groupCounts['PAID_SUBSCRIBER']++;
+          } else {
+            userStats.groupCounts['FREE_SUBSCRIBER']++;
+          }
+        });
+      } else {
+        userStats.groupCounts[groupName] = users.length;
+      }
 
       users.forEach((user) => {
         if (user.Username && !allUsers.has(user.Username)) {

@@ -51,6 +51,8 @@ export class UpdatePasswordComponent implements OnInit {
 
   updatePassForm!: FormGroup;
   readonly isLoading = signal(false);
+  isPasswordVisible: boolean = false;
+  isConfirmPasswordVisible: boolean = false;
 
   // Error message signals
   oldPasswordErrorMessage = signal('');
@@ -70,6 +72,14 @@ export class UpdatePasswordComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  togglePasswordVisibility(): void {
+    this.isPasswordVisible = !this.isPasswordVisible;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.isConfirmPasswordVisible = !this.isConfirmPasswordVisible;
+  }
 
   private createForm(): void {
     this.updatePassForm = this.fb.group({

@@ -1,3 +1,62 @@
+:host {
+  --mdc-outlined-text-field-label-text-color: var(--secondary);
+  --mdc-outlined-text-field-input-text-color: var(--secondary);
+  --mdc-outlined-text-field-outline-color: var(--gray);
+  --mdc-outlined-text-field-hover-outline-color: var(--secondary);
+  --mdc-outlined-text-field-focus-outline-color: var(--secondary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--secondary);
+}
+
+::ng-deep .form-field-container mat-form-field {
+  width: 100%;
+  min-width: 18em;
+
+  .mat-mdc-text-field-wrapper {
+    border-radius: 0.5em;
+  }
+
+  .mat-mdc-form-field-input-control input {
+    font-size: 0.875em;
+    padding: 0.7em;
+    color: var(--gray) !important;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-radius: 0.5em;
+    border-color: var(--gray) !important;
+  }
+
+  .mat-mdc-form-field-label {
+    color: var(--gray) !important;
+  }
+
+  &.mat-focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--gray) !important;
+      border-width: 2px !important;
+    }
+
+    .mat-mdc-form-field-label {
+      color: var(--gray) !important;
+    }
+  }
+}
+
+.close-button-container {
+  display: flex;
+  justify-content: flex-end;
+
+  .close-button {
+    color: var(--gray);
+    position: fixed;
+    z-index: 1;
+  }
+}
+
 .signin-main {
   /* background-color: var(--secondary); */
   color: var(--primary);
@@ -46,7 +105,6 @@
 
     .form-field-container {
       display: grid;
-      margin-bottom: 1em;
 
       h2 {
         color: var(--primary);
@@ -70,8 +128,11 @@
       select {
         font-size: 0.875em;
         min-width: 18em;
-        padding: 0.7em;
         border-radius: 0.5em;
+      }
+
+      input[type="file"] {
+        padding: 0.7em;
       }
 
       .progress {
@@ -134,8 +195,6 @@
       }
 
       .custom-field {
-        margin-bottom: 16px;
-
         label {
           display: block;
           margin-bottom: 4px;

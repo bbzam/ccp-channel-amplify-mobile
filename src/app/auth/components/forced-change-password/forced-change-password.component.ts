@@ -53,6 +53,8 @@ export class ForcedChangePasswordComponent implements OnInit {
 
   forcedChangedPassForm!: FormGroup;
   readonly isLoading = signal(false);
+  isPasswordVisible: boolean = false;
+  isConfirmPasswordVisible: boolean = false;
 
   // Error message signals
   passwordErrorMessage = signal('');
@@ -71,6 +73,14 @@ export class ForcedChangePasswordComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  togglePasswordVisibility(): void {
+    this.isPasswordVisible = !this.isPasswordVisible;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.isConfirmPasswordVisible = !this.isConfirmPasswordVisible;
+  }
 
   private createForm(): void {
     this.forcedChangedPassForm = this.fb.group({

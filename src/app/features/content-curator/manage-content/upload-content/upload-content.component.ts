@@ -27,6 +27,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { disallowCharacters } from '../../../../shared/utils/validators';
 import { SharedService } from '../../../../shared/shared.service';
+import { MatSelectModule } from '@angular/material/select';
 
 interface VideoMetadata {
   duration: number;
@@ -49,6 +50,7 @@ interface VideoMetadata {
     MatProgressBarModule,
     MatIconModule,
     MatTooltipModule,
+    MatSelectModule
   ],
   templateUrl: './upload-content.component.html',
   styleUrl: './upload-content.component.css',

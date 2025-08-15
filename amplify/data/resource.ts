@@ -302,6 +302,7 @@ const schema = a.schema({
       email: a.string().required(),
       birthdate: a.string().required(),
       role: a.string().required(),
+      paidUntil: a.string(),
     })
     .authorization((allow) => [allow.groups(['IT_ADMIN', 'SUPER_ADMIN'])])
     .handler(a.handler.function(addUser))
@@ -383,6 +384,7 @@ const schema = a.schema({
       email: a.string().required(),
       birthdate: a.string().required(),
       role: a.string().required(),
+      paidUntil: a.string(),
     })
     .authorization((allow) => [allow.groups(['IT_ADMIN', 'SUPER_ADMIN'])])
     .handler(a.handler.function(editUser))

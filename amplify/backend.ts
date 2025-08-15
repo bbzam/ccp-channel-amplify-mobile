@@ -18,6 +18,7 @@ import { onFullVideoUpload } from './storage/onUpload/onFullVideoUpload/resource
 import { createVttFunction } from './storage/create-vtt/resource';
 import { afterMediaConvertFunction } from './storage/after-mediaConvert/resource';
 import { createPaymentFunction } from './data/payment/create-payment/resource';
+import { listUsers } from './data/auth/list-users/resource';
 import { config } from './config';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { EventType } from 'aws-cdk-lib/aws-s3';
@@ -42,6 +43,7 @@ const backend = defineBackend({
   createVttFunction,
   afterMediaConvertFunction,
   createPaymentFunction,
+  listUsers,
 });
 
 backend.storage.resources.bucket.addEventNotification(
@@ -100,6 +102,7 @@ const createContentMutation = backend.createContentFunction.resources.lambda;
 const updateContentMutation = backend.updateContentFunction.resources.lambda;
 const afterMediaConvert = backend.afterMediaConvertFunction.resources.lambda;
 const createPaymentQuery = backend.createPaymentFunction.resources.lambda;
+const listUsersQuery = backend.listUsers.resources.lambda;
 
 const createVttStatement = new iam.PolicyStatement({
   sid: 'createVtt',
@@ -167,9 +170,10 @@ const contentStatisticsStatement = new iam.PolicyStatement({
 
 const userStatisticsStatement = new iam.PolicyStatement({
   sid: 'userStatistics',
-  actions: ['cognito-idp:ListUsersInGroup'],
+  actions: ['cognito-idp:ListUsersInGroup', 'dynamodb:Scan'],
   resources: [
     `arn:aws:cognito-idp:${config.REGION}:${config.ACCOUNT_ID}:userpool/${config.USER_POOL_ID}`,
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.PAYMENTTOUSER_TABLE}`,
   ],
 });
 
@@ -223,6 +227,14 @@ const createPaymentStatement = new iam.PolicyStatement({
   ],
 });
 
+const listUsersStatement = new iam.PolicyStatement({
+  sid: 'listUsersDynamoDB',
+  actions: ['dynamodb:Scan'],
+  resources: [
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.PAYMENTTOUSER_TABLE}`,
+  ],
+});
+
 createVtt.addToRolePolicy(createVttStatement);
 getContentQuery.addToRolePolicy(getContentStatement);
 createContentMutation.addToRolePolicy(createContentStatement);
@@ -236,3 +248,4 @@ getUserFavoritesQuery.addToRolePolicy(getUserFavoritesStatement);
 getContinueWatchQuery.addToRolePolicy(getContinueWatchStatement);
 afterMediaConvert.addToRolePolicy(afterMediaConvertStatement);
 createPaymentQuery.addToRolePolicy(createPaymentStatement);
+listUsersQuery.addToRolePolicy(listUsersStatement);

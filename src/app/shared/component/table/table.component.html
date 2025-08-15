@@ -18,9 +18,56 @@
         {{ column.header }}
       </th>
       <td mat-cell *matCellDef="let element">
+        <span [ngSwitch]="column.def">
+          <span *ngSwitchCase="'subscriptionType'">
+            {{
+              element[column.def] === "A"
+                ? "Annually"
+                : element[column.def] === "M"
+                ? "Monthly"
+                : element[column.def]
+            }}
+          </span>
+          <span *ngSwitchCase="'updatedAt'">{{
+            element[column.def] | date : "MMM d yyyy h:mm a"
+          }}</span>
+          <span *ngSwitchCase="'createdAt'">{{
+            element[column.def] | date : "MMM d yyyy h:mm a"
+          }}</span>
+          <span *ngSwitchCase="'custom:paidUntil'">
+            {{
+              element[column.def]
+                ? (element[column.def].split(" ")[0] | date : "MMM d yyyy")
+                : ""
+            }}
+          </span>
+          <span *ngSwitchCase="'status'">
+            {{
+              !element.vttUrl || !element.processedFullVideoUrl
+                ? "Processing"
+                : element[column.def] === false
+                ? "Scheduled"
+                : "Published"
+            }}
+          </span>
+          <span *ngSwitchCase="'Enabled'">
+            {{ element[column.def] === false ? "Inactive" : "Active" }}
+          </span>
+          <span *ngSwitchCase="'birthdate'">{{
+            element[column.def] | date : "MMMM d yyyy"
+          }}</span>
+          <span *ngSwitchDefault>{{ element[column.def] }}</span>
+        </span>
+      </td>
+
+      <!-- <td mat-cell *matCellDef="let element">
         {{
           column.def === "updatedAt" || column.def === "createdAt"
             ? (element[column.def] | date : "MMM d yyyy h:mm a")
+            : column.def === "custom:paidUntil"
+            ? element[column.def]
+              ? (element[column.def].split(" ")[0] | date : "MMM d yyyy")
+              : ""
             : column.def === "status"
             ? !element.vttUrl || !element.processedFullVideoUrl
               ? "Processing"
@@ -33,9 +80,15 @@
               : "Active"
             : column.def === "birthdate"
             ? (element[column.def] | date : "MMMM d yyyy")
+            : column.def === "subscriptionType"
+            ? element[column.def] === "A"
+              ? "Annually"
+              : element[column.def] === "M"
+              ? "Monthly"
+              : element[column.def]
             : element[column.def]
         }}
-      </td>
+      </td> -->
     </ng-container>
     }
 

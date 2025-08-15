@@ -95,6 +95,8 @@ export class DashboardTemplateComponent implements OnInit, AfterViewInit {
       this.contentStats = response.contentStats;
       this.userStats = response.userStats;
 
+      console.log('userStats', this.userStats);
+
       this.videoData = response.contentStats.topViewedContent;
 
       // Update bar chart with monthly stats

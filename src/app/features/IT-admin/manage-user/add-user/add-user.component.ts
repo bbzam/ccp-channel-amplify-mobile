@@ -53,6 +53,7 @@ export class AddUserComponent implements OnInit {
   emailErrorMessage = signal('');
   birthdateErrorMessage = signal('');
   roleErrorMessage = signal('');
+  paidUntilErrorMessage = signal('');
 
   // Form status computed value
   readonly formStatus = computed(() => ({
@@ -88,11 +89,19 @@ export class AddUserComponent implements OnInit {
       ],
       birthdate: ['', [Validators.required, disallowCharacters()]],
       role: ['', [Validators.required, disallowCharacters()]],
+      paidUntil: ['', [Validators.required, disallowCharacters()]],
     });
   }
 
   private setupValidationSubscriptions(): void {
-    const controls = ['firstname', 'lastname', 'email', 'birthdate', 'role'];
+    const controls = [
+      'firstname',
+      'lastname',
+      'email',
+      'birthdate',
+      'role',
+      'paidUntil',
+    ];
 
     controls.forEach((controlName) => {
       const control = this.createUserForm.get(controlName);
@@ -114,6 +123,7 @@ export class AddUserComponent implements OnInit {
       email: this.emailErrorMessage,
       birthdate: this.birthdateErrorMessage,
       role: this.roleErrorMessage,
+      paidUntil: this.paidUntilErrorMessage,
     };
 
     const signal = errorSignalMap[controlName];
@@ -159,6 +169,7 @@ export class AddUserComponent implements OnInit {
         email: formData.email,
         birthdate: formData.birthdate,
         role: formData.role,
+        paidUntil: `${formData.paidUntil} 00:00:00 UTC`,
       };
 
       const isSuccess = await this.featuresService.createUser(data);
