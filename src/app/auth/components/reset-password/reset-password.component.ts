@@ -51,6 +51,8 @@ export class ResetPasswordComponent implements OnInit {
 
   resetPassForm!: FormGroup;
   readonly isLoading = signal(false);
+  isPasswordVisible: boolean = false;
+  isConfirmPasswordVisible: boolean = false;
 
   // Error message signals
   codeErrorMessage = signal('');
@@ -70,6 +72,14 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  togglePasswordVisibility(): void {
+    this.isPasswordVisible = !this.isPasswordVisible;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.isConfirmPasswordVisible = !this.isConfirmPasswordVisible;
+  }
 
   private createForm(): void {
     this.resetPassForm = this.fb.group({

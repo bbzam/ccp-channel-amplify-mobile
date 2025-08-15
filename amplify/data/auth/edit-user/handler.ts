@@ -62,6 +62,14 @@ export const handler: Handler = async (event) => {
       'Missing required fields: firstname, lastname, and birthdate are required'
     );
   }
+
+  // Validate paidUntil required field in role SUBSCRIBER
+  if (['SUBSCRIBER'].includes(body.role) && !body.paidUntil) {
+    throw new Error(
+      'Failed adding Subscriber. Missing required field: Paid until is required'
+    );
+  }
+
   const command = new AdminUpdateUserAttributesCommand({
     Username: body.email,
     UserPoolId: userPoolId,
@@ -77,6 +85,10 @@ export const handler: Handler = async (event) => {
       {
         Name: 'birthdate',
         Value: body.birthdate,
+      },
+      {
+        Name: 'custom:paidUntil',
+        Value: body.paidUntil || '',
       },
     ],
   });

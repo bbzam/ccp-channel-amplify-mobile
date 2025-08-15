@@ -12,11 +12,15 @@
         <div class="sub-data">
           @if(userStats?.groupCounts){
           <div>
-            Guest Users: {{ formatNumber(userStats?.groupCounts?.USER || 0) }}
+            Paid Subscribers:
+            {{ formatNumber(userStats?.groupCounts?.PAID_SUBSCRIBER || 0) }}
           </div>
           <div>
-            Subscribers:
-            {{ formatNumber(userStats?.groupCounts?.SUBSCRIBER || 0) }}
+            Free Subscribers:
+            {{ formatNumber(userStats?.groupCounts?.FREE_SUBSCRIBER || 0) }}
+          </div>
+          <div>
+            Guest Users: {{ formatNumber(userStats?.groupCounts?.USER || 0) }}
           </div>
           } @if(userStats?.newRegistrations){
           <div>

@@ -105,6 +105,10 @@
           color: var(--primary);
         }
       }
+
+      .buttonSignIn {
+        margin-bottom: 1em;
+      }
     }
   }
 

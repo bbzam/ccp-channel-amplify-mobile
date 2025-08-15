@@ -28,6 +28,7 @@ import { ConfirmationDialogComponent } from '../../../../shared/dialogs/confirma
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { disallowCharacters } from '../../../../shared/utils/validators';
 import { SharedService } from '../../../../shared/shared.service';
+import { MatSelectModule } from '@angular/material/select';
 
 interface VideoMetadata {
   duration: number;
@@ -50,6 +51,7 @@ interface VideoMetadata {
     MatIconModule,
     MatTooltipModule,
     MatProgressBarModule,
+    MatSelectModule
   ],
   templateUrl: './view-content.component.html',
   styleUrl: './view-content.component.css',

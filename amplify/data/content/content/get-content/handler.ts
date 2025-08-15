@@ -43,23 +43,16 @@ export const handler = async (event: any) => {
         expressionAttributeNames['#status'] = 'status';
       }
 
-      if (keyword) {
-        filterExpression.push(
-          '(contains(title, :keyword) OR contains(description, :keyword))'
-        );
-        expressionAttributeValues[':keyword'] = keyword;
-      }
-
-      // New filterBy logic
-      if (filterBy) {
-        Object.entries(filterBy).forEach(([key, value]) => {
-          if (value !== undefined && value !== null) {
-            filterExpression.push(`#${key} = :${key}`);
-            expressionAttributeValues[`:${key}`] = value;
-            expressionAttributeNames[`#${key}`] = key;
-          }
-        });
-      }
+      // // For filterBy - keep case-sensitive for DynamoDB
+      // if (filterBy) {
+      //   Object.entries(filterBy).forEach(([key, value]) => {
+      //     if (value !== undefined && value !== null) {
+      //       filterExpression.push(`#${key} = :${key}`);
+      //       expressionAttributeValues[`:${key}`] = value;
+      //       expressionAttributeNames[`#${key}`] = key;
+      //     }
+      //   });
+      // }
 
       params.FilterExpression = filterExpression.join(' AND ');
       params.ExpressionAttributeValues = expressionAttributeValues;
@@ -73,6 +66,21 @@ export const handler = async (event: any) => {
     // Skip favorites if fields are specified
     if (fields && fields.length > 0) {
       return JSON.stringify(result.Items);
+    }
+
+    // Apply case-insensitive filtering after DynamoDB query
+    if (keyword && result.Items) {
+      const lowerKeyword = keyword.toLowerCase();
+      result.Items = result.Items.filter(
+        (item) =>
+          item.title?.toLowerCase().includes(lowerKeyword) ||
+          item.description?.toLowerCase().includes(lowerKeyword) ||
+          item.subCategory?.toLowerCase().includes(lowerKeyword) ||
+          item.director?.toLowerCase().includes(lowerKeyword) ||
+          item.writer?.toLowerCase().includes(lowerKeyword) ||
+          item.yearReleased?.toLowerCase().includes(lowerKeyword) ||
+          item.resolution?.toLowerCase().includes(lowerKeyword)
+      );
     }
 
     // Get user favorites

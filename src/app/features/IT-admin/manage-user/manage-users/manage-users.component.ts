@@ -23,8 +23,9 @@ export class ManageUsersComponent {
   keyword!: string;
 
   private allTabs: Tab[] = [
+    { label: 'PAID SUBSCRIBERS', role: 'PAID_SUBSCRIBER' },
+    { label: 'FREE SUBSCRIBERS', role: 'FREE_SUBSCRIBER' },
     { label: 'GUEST USERS', role: 'USER' },
-    { label: 'SUBSCRIBERS', role: 'SUBSCRIBER' },
     { label: 'CONTENT CURATORS', role: 'CONTENT_CREATOR' },
     { label: 'IT ADMINS', role: 'IT_ADMIN' },
     { label: 'SUPER ADMINS', role: 'SUPER_ADMIN' },
@@ -37,16 +38,30 @@ export class ManageUsersComponent {
     { def: 'family_name', header: 'Lastname', sortable: true },
     { def: 'birthdate', header: 'Birthdate', sortable: true },
     { def: 'email', header: 'Email', sortable: true },
+    { def: 'subscriptionType', header: 'Subscription Type', sortable: true },
+    { def: 'custom:paidUntil', header: 'Subscribed Until', sortable: true },
     { def: 'email_verified', header: 'Email Verified', sortable: true },
     { def: 'Enabled', header: 'Status', sortable: true },
   ];
 
-  displayedColumns = this.columns.map((c) => c.def);
+  get displayedColumns() {
+    const excludeColumns =
+      this.role === 'PAID_SUBSCRIBER'
+        ? []
+        : this.role === 'FREE_SUBSCRIBER'
+        ? ['subscriptionType']
+        : ['custom:paidUntil', 'subscriptionType'];
+
+    return this.columns
+      .filter((c) => !excludeColumns.includes(c.def))
+      .map((c) => c.def);
+  }
+
   tableData: any[] = [];
 
   ngOnInit(): void {
     this.setTabsBasedOnUserRole();
-    this.role = 'USER';
+    this.role = 'PAID_SUBSCRIBER';
     this.getAllUsers(this.role);
   }
 
@@ -83,12 +98,16 @@ export class ManageUsersComponent {
     this.featuresService.getAllUsers(role, limit, keyword).then((data: any) => {
       if (data) {
         this.tableData = data;
+        console.log(data);
       }
     });
   }
 
   handleRowClick(row: any): void {
-    row.role = this.role;
+    row.role =
+      this.role === 'PAID_SUBSCRIBER' || this.role === 'FREE_SUBSCRIBER'
+        ? 'SUBSCRIBER'
+        : this.role;
     this.dialog
       .open(ViewUserComponent, {
         data: row,

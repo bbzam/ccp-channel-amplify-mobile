@@ -65,6 +65,7 @@ export class ViewUserComponent implements OnInit {
   email_verified!: string;
   birthdate!: string;
   role!: string;
+  paidUntil!: string;
   Enabled!: boolean;
   UserStatus!: string;
   createdAt!: string;
@@ -76,6 +77,7 @@ export class ViewUserComponent implements OnInit {
   emailErrorMessage = signal('');
   birthdateErrorMessage = signal('');
   roleErrorMessage = signal('');
+  paidUntilErrorMessage = signal('');
 
   // Form status computed value
   readonly formStatus = computed(() => ({
@@ -90,6 +92,7 @@ export class ViewUserComponent implements OnInit {
     this.email = data.email;
     this.birthdate = data.birthdate;
     this.role = data.role;
+    this.paidUntil = data['custom:paidUntil']?.split(' ')[0] || '';
     this.Enabled = data.Enabled;
     this.createForm();
     this.setupValidationSubscriptions();
@@ -123,6 +126,10 @@ export class ViewUserComponent implements OnInit {
         { value: this.role, disabled: !this.isEditing() },
         [Validators.required, disallowCharacters()],
       ],
+      paidUntil: [
+        { value: this.paidUntil, disabled: !this.isEditing() },
+        [Validators.required, disallowCharacters()],
+      ],
     });
   }
 
@@ -138,7 +145,14 @@ export class ViewUserComponent implements OnInit {
   }
 
   private setupValidationSubscriptions(): void {
-    const controls = ['firstname', 'lastname', 'email', 'birthdate', 'role'];
+    const controls = [
+      'firstname',
+      'lastname',
+      'email',
+      'birthdate',
+      'role',
+      'paidUntil',
+    ];
 
     controls.forEach((controlName) => {
       const control = this.editUserForm.get(controlName);
@@ -160,6 +174,7 @@ export class ViewUserComponent implements OnInit {
       email: this.emailErrorMessage,
       birthdate: this.birthdateErrorMessage,
       role: this.roleErrorMessage,
+      paidUntil: this.paidUntilErrorMessage,
     };
 
     const signal = errorSignalMap[controlName];
@@ -205,6 +220,7 @@ export class ViewUserComponent implements OnInit {
         lastname: formData.lastname,
         birthdate: formData.birthdate,
         role: formData.role,
+        paidUntil: `${formData.paidUntil} 00:00:00 UTC`,
       };
       const isSuccess = await this.featuresService.updateUser(data);
       this.dialogRef.close(true);

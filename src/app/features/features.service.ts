@@ -181,6 +181,8 @@ export class FeaturesService {
             family_name: userAttributes.family_name,
             birthdate: userAttributes.birthdate,
             email_verified: userAttributes.email_verified,
+            subscriptionType: user.subscriptionType,
+            'custom:paidUntil': userAttributes['custom:paidUntil'],
             UserStatus: user.UserStatus,
             Enabled: user.Enabled,
             createdAt: user.UserCreateDate,

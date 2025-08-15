@@ -120,6 +120,26 @@
     </mat-form-field>
   </div>
 
+  @if (editUserForm.get('role')?.value === 'SUBSCRIBER') {
+  <div class="form-field-container">
+    <mat-form-field appearance="outline">
+      <mat-label>Paid Until</mat-label>
+      <input
+        id="paidUntil"
+        matInput
+        type="date"
+        placeholder="Enter date"
+        formControlName="paidUntil"
+        required
+        [disabled]="true"
+      />
+      @if (paidUntilErrorMessage()) {
+      <mat-error>{{ paidUntilErrorMessage() }}</mat-error>
+      }
+    </mat-form-field>
+  </div>
+  }
+
   <div class="action-buttons">
     <button
       class="buttonTertiary"

@@ -22,28 +22,24 @@
   <mat-divider></mat-divider>
   <form [formGroup]="uploadForm">
     <!-- Title -->
-    <div class="form-field-container">
-      <label for="title">Title</label>
+    <mat-form-field appearance="outline" class="form-field-container">
+      <mat-label>Title</mat-label>
       <input
         matInput
         type="text"
-        id="title"
-        name="title"
         formControlName="title"
         placeholder="Enter title"
       />
       @if (titleErrorMessage()) {
       <mat-error>{{ titleErrorMessage() }}</mat-error>
       }
-    </div>
+    </mat-form-field>
 
     <!-- Description -->
-    <div class="form-field-container">
-      <label for="description">Description</label>
+    <mat-form-field appearance="outline" class="form-field-container">
+      <mat-label>Description</mat-label>
       <textarea
         matInput
-        id="description"
-        name="description"
         formControlName="description"
         rows="4"
         placeholder="Enter description"
@@ -51,86 +47,73 @@
       @if(descriptionErrorMessage()) {
       <mat-error>{{ descriptionErrorMessage() }}</mat-error>
       }
-    </div>
+    </mat-form-field>
 
     <!-- Category -->
-    <div class="form-field-container">
-      <label for="category">Category</label>
-      <select
-        id="category"
-        name="category"
-        formControlName="category"
-        placeholder="Select category"
-      >
-        <option value="theater">Theater</option>
-        <option value="film">Film</option>
-        <option value="music">Music</option>
-        <option value="dance">Dance</option>
-        <option value="education">Education</option>
-        <option value="ccpspecials">CCP Specials</option>
-        <option value="ccpclassics">CCP Classics</option>
-      </select>
+    <mat-form-field appearance="outline" class="form-field-container">
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="category" placeholder="Select category">
+        <mat-option value="theater">Theater</mat-option>
+        <mat-option value="film">Film</mat-option>
+        <mat-option value="music">Music</mat-option>
+        <mat-option value="dance">Dance</mat-option>
+        <mat-option value="education">Education</mat-option>
+        <mat-option value="ccpspecials">CCP Specials</mat-option>
+        <mat-option value="ccpclassics">CCP Classics</mat-option>
+      </mat-select>
       @if(categoryErrorMessage()) {
       <mat-error>{{ categoryErrorMessage() }}</mat-error>
       }
-    </div>
+    </mat-form-field>
 
     <!-- Sub Category -->
-    <div class="form-field-container">
-      <label for="subCategory">Sub Category</label>
+    <mat-form-field appearance="outline" class="form-field-container">
+      <mat-label>Sub Category</mat-label>
       <input
         matInput
         type="text"
-        id="subCategory"
-        name="subCategory"
         formControlName="subCategory"
         placeholder="Enter Sub Category"
       />
       @if(subCategoryErrorMessage()) {
       <mat-error>{{ subCategoryErrorMessage() }}</mat-error>
       }
-    </div>
+    </mat-form-field>
 
     <!-- Director -->
-    <div class="form-field-container">
-      <label for="director">Director</label>
+    <mat-form-field appearance="outline" class="form-field-container">
+      <mat-label>Director</mat-label>
       <input
         matInput
         type="text"
-        id="director"
-        name="director"
         formControlName="director"
         placeholder="Enter director name"
       />
       @if(directorErrorMessage()) {
       <mat-error>{{ directorErrorMessage() }}</mat-error>
       }
-    </div>
+    </mat-form-field>
 
     <!-- Writer -->
-    <div class="form-field-container">
-      <label for="writer">Writer</label>
+    <mat-form-field appearance="outline" class="form-field-container">
+      <mat-label>Writer</mat-label>
       <input
         matInput
         type="text"
-        id="writer"
-        name="writer"
         formControlName="writer"
         placeholder="Enter writer name"
       />
       @if(writerErrorMessage()) {
-      <mat-error>{{ writerErrorMessage() }}</mat-error
-      >}
-    </div>
+      <mat-error>{{ writerErrorMessage() }}</mat-error>
+      }
+    </mat-form-field>
 
     <!-- Year Released -->
-    <div class="form-field-container">
-      <label for="yearReleased">Year Released</label>
+    <mat-form-field appearance="outline" class="form-field-container">
+      <mat-label>Year Released</mat-label>
       <input
         matInput
         type="number"
-        id="yearReleased"
-        name="yearReleased"
         formControlName="yearReleased"
         placeholder="Enter year released"
         min="1900"
@@ -139,19 +122,19 @@
       @if(yearReleasedErrorMessage()) {
       <mat-error>{{ yearReleasedErrorMessage() }}</mat-error>
       }
-    </div>
+    </mat-form-field>
 
     <!-- User Type -->
-    <div class="form-field-container">
-      <label for="userType">For which User Type?</label>
-      <select id="userType" name="userType" formControlName="userType">
-        <option value="free">Free</option>
-        <option value="subscriber">Subscriber</option>
-      </select>
+    <mat-form-field appearance="outline" class="form-field-container">
+      <mat-label>For which User Type?</mat-label>
+      <mat-select formControlName="userType">
+        <mat-option value="free">Free</mat-option>
+        <mat-option value="subscriber">Subscriber</mat-option>
+      </mat-select>
       @if(userTypeErrorMessage()) {
       <mat-error>{{ userTypeErrorMessage() }}</mat-error>
       }
-    </div>
+    </mat-form-field>
 
     <!-- Custom Fields -->
     <div class="form-field-container">
@@ -173,18 +156,25 @@
         {
         <div class="custom-field" [formGroupName]="$index">
           <div class="field">
-            <select formControlName="fieldId" style="flex: 1">
-              <option value="" disabled selected>Select a field name</option>
-              @for (field of getAvailableFields($index); track field.id) {
-              <option [value]="field.id">{{ field.fieldName }}</option>
-              }
-            </select>
-            <input
-              type="text"
-              formControlName="value"
-              placeholder="Enter value"
-              style="flex: 1"
-            />
+            <mat-form-field appearance="outline" style="flex: 1">
+              <mat-label>Field Name</mat-label>
+              <mat-select formControlName="fieldId">
+                @for (field of getAvailableFields($index); track field.id) {
+                <mat-option [value]="field.id">{{
+                  field.fieldName
+                }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="flex: 1">
+              <mat-label>Value</mat-label>
+              <input
+                matInput
+                type="text"
+                formControlName="value"
+                placeholder="Enter value"
+              />
+            </mat-form-field>
             @if (isEditing()) {
             <button
               type="button"
@@ -391,8 +381,8 @@
         class="form-control-file"
       />
       } @if (portraitErrorMessage()) {
-      <mat-error>{{ portraitErrorMessage() }}</mat-error
-      >} } @if (portraitFilePresignedURL) {
+      <mat-error>{{ portraitErrorMessage() }}</mat-error>
+      } } @if (portraitFilePresignedURL) {
       <img
         class="previewMedia"
         [src]="portraitFilePresignedURL"
@@ -490,8 +480,8 @@
         class="form-control-file"
       />
       } @if(previewErrorMessage()) {
-      <mat-error>{{ previewErrorMessage() }}</mat-error
-      >} } @if (previewFilePresignedURL) {
+      <mat-error>{{ previewErrorMessage() }}</mat-error>
+      } } @if (previewFilePresignedURL) {
       <video
         class="previewMedia"
         [src]="previewFilePresignedURL"
@@ -583,16 +573,8 @@
         class="form-control-file"
       />
       } @if(fullErrorMessage()) {
-      <mat-error>{{ fullErrorMessage() }}</mat-error
-      >} } @if (fullFilePresignedURL) {
-      <!-- <video
-        class="previewMedia"
-        [src]="fullFilePresignedURL"
-        alt="full-video"
-        controls
-        preload="metadata"
-      ></video> -->
-      }
+      <mat-error>{{ fullErrorMessage() }}</mat-error>
+      } }
     </div>
   </form>
 

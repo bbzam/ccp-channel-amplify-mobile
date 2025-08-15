@@ -69,7 +69,6 @@
     .form-field-container {
       display: grid;
       justify-content: center;
-      margin-bottom: 1em;
 
       h2 {
         color: var(--gray);
@@ -89,6 +88,10 @@
 
       .signingIn {
         background-color: var(--gray) !important;
+      }
+
+      .buttonSignIn {
+        margin-bottom: 1em;
       }
     }
   }

@@ -24,7 +24,9 @@
           autocomplete="off"
           required
         />
+        @if (codeErrorMessage()) {
         <mat-error>{{ codeErrorMessage() }}</mat-error>
+        }
       </mat-form-field>
     </div>
 

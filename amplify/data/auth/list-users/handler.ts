@@ -1,15 +1,19 @@
+import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import type { Schema } from '../../resource';
 import {
   CognitoIdentityProviderClient,
   ListUsersInGroupCommand,
   UserType,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 type Handler = Schema['listUsers']['functionHandler'];
 
 const ALLOWED_ROLES = [
   'USER',
   'SUBSCRIBER',
+  'PAID_SUBSCRIBER',
+  'FREE_SUBSCRIBER',
   'CONTENT_CREATOR',
   'IT_ADMIN',
   'SUPER_ADMIN',
@@ -17,7 +21,6 @@ const ALLOWED_ROLES = [
 
 type Role = (typeof ALLOWED_ROLES)[number];
 
-// Attributes to search through when filtering users
 const SEARCHABLE_ATTRIBUTES = [
   'email',
   'given_name',
@@ -25,37 +28,52 @@ const SEARCHABLE_ATTRIBUTES = [
   'custom:role',
 ];
 
+const mapToActualRole = (role: Role): string => {
+  return role === 'PAID_SUBSCRIBER' || role === 'FREE_SUBSCRIBER'
+    ? 'SUBSCRIBER'
+    : role;
+};
+
 export const handler: Handler = async (event) => {
   try {
+    const ddbClient = new DynamoDBClient({});
+    const docClient = DynamoDBDocumentClient.from(ddbClient);
     const { role, limit = 60, keyword } = event.arguments;
 
-    // Validate required environment variables
     if (!process.env.Region || !process.env.UserPoolId) {
       throw new Error('Missing required environment variables');
     }
 
-    // Type guard for role
     if (!role || !ALLOWED_ROLES.includes(role as Role)) {
       throw new Error(
         `Invalid role. Allowed roles are: ${ALLOWED_ROLES.join(', ')}`
       );
     }
 
-    // Ensure limit is within bounds
     const validLimit = Math.max(1, Math.min(Number(limit), 60));
+
+    // Start payment data fetch early
+    const paymentPromise = docClient.send(
+      new ScanCommand({
+        TableName: process.env.PAYMENTTOUSER_TABLE,
+      })
+    );
 
     const client = new CognitoIdentityProviderClient({
       region: process.env.Region,
     });
 
+    // Fetch users with controlled pagination
     const allUsers: UserType[] = [];
     let nextToken: string | undefined;
+    let pageCount = 0;
+    const maxPages = 10; // Prevent infinite loops
 
     try {
       do {
         const command = new ListUsersInGroupCommand({
           UserPoolId: process.env.UserPoolId,
-          GroupName: role,
+          GroupName: mapToActualRole(role as Role),
           Limit: validLimit,
           NextToken: nextToken,
         });
@@ -67,41 +85,53 @@ export const handler: Handler = async (event) => {
         }
 
         nextToken = response.NextToken;
-      } while (nextToken);
+        pageCount++;
+      } while (nextToken && pageCount < maxPages);
     } catch (cognitoError) {
       console.error('Cognito API error:', cognitoError);
       throw cognitoError;
     }
 
-    // Only filter if keyword is provided and not empty
+    // Filter by keyword
     const normalizedKeyword = keyword?.toLowerCase().trim();
-
     const filteredUsers = !normalizedKeyword
       ? allUsers
       : allUsers.filter((user) => {
-          // Check Username
           if (user.Username?.toLowerCase().includes(normalizedKeyword)) {
             return true;
           }
-
-          // Check in Attributes
           return user.Attributes?.some(
             (attr) =>
-              // Only search through relevant attributes
               SEARCHABLE_ATTRIBUTES.includes(attr.Name || '') &&
               attr.Value?.toLowerCase().includes(normalizedKeyword)
           );
         });
 
     console.info(
-      `Total users: ${allUsers.length}, Filtered users: ${
-        filteredUsers.length
-      }, Keyword: ${normalizedKeyword || 'none'}`
+      `Total users: ${allUsers.length}, Filtered users: ${filteredUsers.length}, Pages: ${pageCount}`
     );
 
+    // Get subscription data
+    const { Items: paymentData } = await paymentPromise;
+    const subscriptionMap = new Map(
+      paymentData?.map((item) => [item.userId, item.subscriptionType])
+    );
+
+    let finalUsers = filteredUsers.map((user) => ({
+      ...user,
+      subscriptionType: subscriptionMap.get(user.Username) || null,
+    }));
+
+    // Filter by subscription type
+    if (role === 'PAID_SUBSCRIBER') {
+      finalUsers = finalUsers.filter((user) => user.subscriptionType);
+    } else if (role === 'FREE_SUBSCRIBER') {
+      finalUsers = finalUsers.filter((user) => !user.subscriptionType);
+    }
+
     return {
-      Users: filteredUsers,
-      NextToken: null,
+      Users: finalUsers,
+      NextToken: pageCount >= maxPages ? nextToken : null,
     };
   } catch (error) {
     console.error('Error listing users:', error);

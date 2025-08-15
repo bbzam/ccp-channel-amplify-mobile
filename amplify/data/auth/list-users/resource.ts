@@ -6,5 +6,6 @@ export const listUsers = defineFunction({
   environment: {
     UserPoolId: config.USER_POOL_ID,
     Region: config.REGION,
+    PAYMENTTOUSER_TABLE: config.PAYMENTTOUSER_TABLE,
   },
 });
