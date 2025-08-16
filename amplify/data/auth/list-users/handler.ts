@@ -20,6 +20,7 @@ const ALLOWED_ROLES = [
 ] as const;
 
 type Role = (typeof ALLOWED_ROLES)[number];
+type ExtendedUserType = UserType & { subscriptionType?: string | null };
 
 const SEARCHABLE_ATTRIBUTES = [
   'email',
@@ -111,22 +112,27 @@ export const handler: Handler = async (event) => {
       `Total users: ${allUsers.length}, Filtered users: ${filteredUsers.length}, Pages: ${pageCount}`
     );
 
+    let finalUsers: ExtendedUserType[] =
+      mapToActualRole(role as Role) !== 'SUBSCRIBER' ? filteredUsers : [];
+
     // Get subscription data
-    const { Items: paymentData } = await paymentPromise;
-    const subscriptionMap = new Map(
-      paymentData?.map((item) => [item.userId, item.subscriptionType])
-    );
+    if (mapToActualRole(role as Role) === 'SUBSCRIBER') {
+      const { Items: paymentData } = await paymentPromise;
+      const subscriptionMap = new Map(
+        paymentData?.map((item) => [item.userId, item.subscriptionType])
+      );
 
-    let finalUsers = filteredUsers.map((user) => ({
-      ...user,
-      subscriptionType: subscriptionMap.get(user.Username) || null,
-    }));
+      finalUsers = filteredUsers.map((user) => ({
+        ...user,
+        subscriptionType: subscriptionMap.get(user.Username) || null,
+      }));
 
-    // Filter by subscription type
-    if (role === 'PAID_SUBSCRIBER') {
-      finalUsers = finalUsers.filter((user) => user.subscriptionType);
-    } else if (role === 'FREE_SUBSCRIBER') {
-      finalUsers = finalUsers.filter((user) => !user.subscriptionType);
+      // Filter by subscription type
+      if (role === 'PAID_SUBSCRIBER') {
+        finalUsers = finalUsers.filter((user) => user.subscriptionType);
+      } else if (role === 'FREE_SUBSCRIBER') {
+        finalUsers = finalUsers.filter((user) => !user.subscriptionType);
+      }
     }
 
     return {
