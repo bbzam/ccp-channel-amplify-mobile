@@ -18,6 +18,16 @@ export const subscribeNow = [
   },
 ];
 
+export const renewSubscription = [
+  {
+    title: 'Renew Your Subscription',
+    description:
+      'Continue enjoying exclusive CCP Channel content. Renew your subscription to keep access to our premium shows, movies, and originals.',
+    landscapeImageUrl:
+      'Thumbnails/Doc Resureccion_ Gagamutin ang Bayan/Banner.png',
+  },
+];
+
 export const featuredImages = [
   {
     name: 'My Boy Superman',

@@ -1,0 +1,39 @@
+<div class="reminder-dialog">
+  <div class="dialog-header">
+    <div class="icon-container">
+      <mat-icon [class]="iconClass">{{ icon }}</mat-icon>
+    </div>
+    <h2 mat-dialog-title>{{ title }}</h2>
+    <button mat-icon-button mat-dialog-close class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    <div class="reminder-card">
+      <div class="message-container">
+        <p class="primary-message">{{ primaryMessage }}</p>
+        <p class="secondary-message" [innerHTML]="secondaryMessage"></p>
+        @if (actionMessage) {
+        <p class="action-message">{{ actionMessage }}</p>
+        }
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    @if(cancelText) {
+    <button mat-stroked-button mat-dialog-close class="cancel-btn">
+      {{ cancelText }}
+    </button>
+    } @if (actionText) {
+    <button
+      mat-raised-button
+      class="action-btn"
+      (click)="renewSubscriptionOnClick()"
+    >
+      {{ actionText }}
+    </button>
+    }
+  </mat-dialog-actions>
+</div>

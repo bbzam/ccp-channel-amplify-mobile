@@ -1,10 +1,17 @@
-import { Component, ViewChild, ElementRef, inject } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { FeaturesService } from '../../features.service';
-import { subscribeNow } from '../../public-view/mock-data';
+import { renewSubscription, subscribeNow } from '../../public-view/mock-data';
 import { PaymentMethodsComponent } from '../payment-methods/payment-methods.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
@@ -12,10 +19,18 @@ import { PaymentMethodsComponent } from '../payment-methods/payment-methods.comp
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
 })
-export class HomePageComponent {
+export class HomePageComponent implements OnInit {
   banners = subscribeNow;
   readonly dialog = inject(MatDialog);
   readonly featuresService = inject(FeaturesService);
+  readonly route = inject(ActivatedRoute);
+
+  ngOnInit() {
+    this.route.queryParams.subscribe((params) => {
+      this.banners =
+        params['renew'] === 'true' ? renewSubscription : subscribeNow;
+    });
+  }
 
   get username(): string {
     return String(sessionStorage.getItem('username'));

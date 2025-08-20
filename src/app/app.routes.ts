@@ -141,6 +141,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'paywall',
+        loadComponent: () =>
+          import('./features/user/home-page/home-page.component').then(
+            (m) => m.HomePageComponent
+          ),
+      },
+      {
         path: 'theater',
         loadComponent: () =>
           import('./features/subscriber/theater/theater.component').then(
