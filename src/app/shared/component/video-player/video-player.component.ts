@@ -102,13 +102,16 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
 
     this.player = new shaka.Player(video);
 
+    // Get base64 encoded user ID
+    const userId = sessionStorage.getItem('userId');
+    const base64UserId = userId ? btoa(userId) : '';
+
     if ('Widevine' === this.drmType) {
       if (this.isAndroid()) {
         playerConfig = {
           drm: {
             servers: {
-              'com.widevine.alpha':
-                'https://widevine-dash.ezdrm.com/widevine-php/widevine-foreignkey.php?pX=E3A21C',
+              'com.widevine.alpha': `https://widevine-dash.ezdrm.com/proxy?pX=E3A21C&user_id=${base64UserId}`,
             },
             advanced: {
               'com.widevine.alpha': {
@@ -124,8 +127,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
         playerConfig = {
           drm: {
             servers: {
-              'com.widevine.alpha':
-                'https://widevine-dash.ezdrm.com/widevine-php/widevine-foreignkey.php?pX=E3A21C',
+              'com.widevine.alpha': `https://widevine-dash.ezdrm.com/proxy?pX=E3A21C&user_id=${base64UserId}`,
             },
           },
         };
@@ -145,8 +147,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
       playerConfig = {
         drm: {
           servers: {
-            'com.microsoft.playready':
-              'https://playready.ezdrm.com/cency/preauth.aspx?pX=803F3A',
+            'com.microsoft.playready': `https://playready.ezdrm.com/cency/preauth.aspx?pX=803F3A&user_id=${base64UserId}`,
           },
         },
       };

@@ -22,9 +22,13 @@ import { SigninComponent } from './components/signin/signin.component';
 import { ForcedChangePasswordComponent } from './components/forced-change-password/forced-change-password.component';
 import { ConfirmationDialogComponent } from '../shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { FeaturesService } from '../features/features.service';
+import { ReminderDialogComponent } from '../shared/dialogs/reminder-dialog/reminder-dialog.component';
+import { generateClient } from 'aws-amplify/api';
+import { Schema } from '../../../amplify/data/resource';
 
 interface CognitoIdTokenPayload {
   'cognito:groups'?: string[];
+  'custom:paidUntil'?: string;
 }
 
 @Injectable({
@@ -36,6 +40,7 @@ export class AuthServiceService {
   readonly router = inject(Router);
   readonly sharedService = inject(SharedService);
   readonly featuresService = inject(FeaturesService);
+  private readonly client = generateClient<Schema>();
 
   constructor() {}
 
@@ -43,7 +48,12 @@ export class AuthServiceService {
     try {
       const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
       const payload = idToken?.payload as CognitoIdTokenPayload;
-      const userRole = payload['cognito:groups']?.[0];
+      const userRole = payload?.['cognito:groups']?.[0];
+      const paidUntil = String(payload?.['custom:paidUntil']);
+      const email = String(idToken?.payload['email']);
+
+      console.log(payload?.['custom:paidUntil']);
+
       if (!accessToken || !idToken) {
         this.handleLogout();
         return false;
@@ -51,12 +61,13 @@ export class AuthServiceService {
       this.setSessionData(idToken);
       switch (userRole) {
         case 'USER':
-          this.router.navigate(['/user']);
+          this.router.navigate(['/user'], {
+            queryParams: { renew: paidUntil ? true : false },
+          });
           this.sharedService.hideLoader();
           break;
         case 'SUBSCRIBER':
-          this.router.navigate(['/subscriber']);
-          this.sharedService.hideLoader();
+          this.checkSubscriptionExpiry(paidUntil, email);
           break;
         case 'CONTENT_CREATOR':
           this.router.navigate(['/content-curator']);
@@ -82,18 +93,70 @@ export class AuthServiceService {
     }
   }
 
+  private checkSubscriptionExpiry(paidUntil: string, email: string): void {
+    const paidUntilDate = new Date(paidUntil);
+    const daysDiff = Math.ceil(
+      (paidUntilDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    );
+    if (daysDiff > 0 && daysDiff < 3) {
+      console.log(`You have ${daysDiff} days remaining on your current plan.`);
+      this.dialog
+        .open(ReminderDialogComponent, {
+          data: {
+            type: 'warning',
+            title: 'Subscription Reminder',
+            primaryMessage: 'Your subscription expires soon!',
+            secondaryMessage: `You have <strong>${daysDiff} days</strong> remaining on your current plan.`,
+            actionMessage:
+              'Renew now to continue enjoying uninterrupted access to all features.',
+            cancelText: 'Not now',
+            actionText: 'Renew Subscription',
+          },
+          disableClose: true,
+        })
+        .afterClosed()
+        .subscribe((close: boolean) => {
+          if (!close) {
+            this.router.navigate(['/subscriber']);
+          }
+        });
+    } else if (daysDiff > 3) {
+      this.router.navigate(['/subscriber']);
+    } else if (daysDiff <= 0) {
+      this.client.mutations.unsubscribeUser({
+        email: email,
+      });
+      this.logout();
+      this.dialog.open(ReminderDialogComponent, {
+        data: {
+          type: 'error',
+          title: 'Subscription Expired',
+          primaryMessage: 'Your subscription has expired!',
+          secondaryMessage:
+            'Please renew your subscription to continue enjoying all features.',
+          actionMessage:
+            'Login and renew now to continue enjoying uninterrupted access.',
+        },
+        disableClose: true,
+      });
+    }
+    this.sharedService.hideLoader();
+  }
+
   private setSessionData(idToken: any) {
     sessionStorage.setItem('userId', String(idToken?.payload['sub']));
-    sessionStorage.setItem('auth', String(idToken));
+    sessionStorage.setItem('auth', String(idToken) || '');
     sessionStorage.setItem(
       'username',
-      `${idToken?.payload['given_name']} ${idToken?.payload['family_name']}`
+      `${idToken?.payload['given_name'] || ''} ${
+        idToken?.payload['family_name'] || ''
+      }`
     );
     sessionStorage.setItem('email', String(idToken?.payload['email']));
     sessionStorage.setItem('isLoggedIn', 'true');
     sessionStorage.setItem(
       'role',
-      String(idToken?.payload['cognito:groups'][0])
+      String(idToken?.payload?.['cognito:groups']?.[0] || '')
     );
     this.isLoggedIn = true;
   }

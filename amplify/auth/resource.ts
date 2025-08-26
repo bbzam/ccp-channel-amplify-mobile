@@ -8,6 +8,7 @@ import { disableUser } from '../data/auth/disable-user/resource';
 import { enableUser } from '../data/auth/enable-user/resource';
 import { listUser } from '../data/auth/list-user/resource';
 import { statistics } from '../data/content/statistics/resource';
+import { unsubscribeUser } from '../data/auth/unsubscribe-user/resource';
 
 /**
  * Define and configure your auth resource
@@ -132,7 +133,7 @@ export const auth = defineAuth({
     'custom:paidUntil': {
       dataType: 'DateTime',
       mutable: true,
-    }
+    },
   },
   groups: ['USER', 'SUBSCRIBER', 'CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN'],
   triggers: {
@@ -151,6 +152,9 @@ export const auth = defineAuth({
         'listGroupsForUser',
         'removeUserFromGroup',
       ]),
+    allow
+      .resource(unsubscribeUser)
+      .to(['addUserToGroup', 'removeUserFromGroup']),
     allow.resource(disableUser).to(['disableUser']),
     allow.resource(enableUser).to(['enableUser']),
     allow.resource(listUser).to(['getUser']),

@@ -16,6 +16,7 @@ import { getContentFunction } from './content/content/get-content/resource';
 import { createPaymentFunction } from './payment/create-payment/resource';
 import { userStatistics } from './content/statistics/user-statistics/resource';
 import { contentStatistics } from './content/statistics/content-statistics/resource';
+import { unsubscribeUser } from './auth/unsubscribe-user/resource';
 
 const schema = a.schema({
   Content: a
@@ -388,6 +389,15 @@ const schema = a.schema({
     })
     .authorization((allow) => [allow.groups(['IT_ADMIN', 'SUPER_ADMIN'])])
     .handler(a.handler.function(editUser))
+    .returns(a.json()),
+
+  unsubscribeUser: a
+    .mutation()
+    .arguments({
+      email: a.string().required(),
+    })
+    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
+    .handler(a.handler.function(unsubscribeUser))
     .returns(a.json()),
 
   disableUser: a
