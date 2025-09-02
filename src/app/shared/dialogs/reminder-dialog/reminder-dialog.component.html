@@ -4,7 +4,11 @@
       <mat-icon [class]="iconClass">{{ icon }}</mat-icon>
     </div>
     <h2 mat-dialog-title>{{ title }}</h2>
-    <button mat-icon-button mat-dialog-close class="close-btn">
+    <button
+      mat-icon-button
+      class="close-btn"
+      (click)="renewSubscriptionOnClick()"
+    >
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -23,7 +27,7 @@
 
   <mat-dialog-actions class="dialog-actions">
     @if(cancelText) {
-    <button mat-stroked-button mat-dialog-close class="cancel-btn">
+    <button mat-stroked-button class="cancel-btn" (click)="cancelOnClick()">
       {{ cancelText }}
     </button>
     } @if (actionText) {

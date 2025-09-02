@@ -16,6 +16,7 @@ export interface ReminderDialogData {
   actionMessage?: string;
   cancelText?: string;
   actionText?: string;
+  actionType?: string;
 }
 
 @Component({
@@ -31,6 +32,7 @@ export class ReminderDialogComponent {
   actionMessage?: string;
   cancelText?: string;
   actionText?: string;
+  actionType?: string;
   icon: string;
   iconClass: string;
   buttonColor: string;
@@ -45,6 +47,7 @@ export class ReminderDialogComponent {
     this.actionMessage = data.actionMessage;
     this.cancelText = data.cancelText || 'Okay';
     this.actionText = data.actionText;
+    this.actionType = data.actionType;
 
     const typeConfig = {
       warning: { icon: 'warning', class: 'warning-icon', color: 'accent' },
@@ -65,8 +68,9 @@ export class ReminderDialogComponent {
 
   renewSubscriptionOnClick() {
     this.dialogRe.close(true);
-    this.router.navigate(['/subscriber/paywall'], {
-      queryParams: { renew: true },
-    });
+  }
+
+  cancelOnClick() {
+    this.dialogRe.close(false);
   }
 }

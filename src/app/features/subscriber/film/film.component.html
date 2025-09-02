@@ -49,6 +49,16 @@ continueWatching.length) {
     }
   </div>
   }
+
+  <!-- Custom Tag Categories -->
+  @for (tag of customTags; track tag.name) {
+  <div class="frc" [attr.data-category]="tag.name.toLowerCase()">
+    <div class="label-wrapper">
+      <h1 class="label">{{ tag.name }}</h1>
+    </div>
+    <app-recommended [recommended]="tag.content" />
+  </div>
+  }
 </div>
 } @else {
 <div class="noData">

@@ -28,6 +28,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { disallowCharacters } from '../../../../shared/utils/validators';
 import { SharedService } from '../../../../shared/shared.service';
 import { MatSelectModule } from '@angular/material/select';
+import { IdleTimerService } from '../../../../auth/idle-timer.service';
 
 interface VideoMetadata {
   duration: number;
@@ -50,7 +51,7 @@ interface VideoMetadata {
     MatProgressBarModule,
     MatIconModule,
     MatTooltipModule,
-    MatSelectModule
+    MatSelectModule,
   ],
   templateUrl: './upload-content.component.html',
   styleUrl: './upload-content.component.css',
@@ -101,6 +102,7 @@ export class UploadContentComponent {
   private readonly dialogRef = inject(MatDialogRef<UploadContentComponent>);
   private readonly featureService = inject(FeaturesService);
   private readonly sharedService = inject(SharedService);
+  private readonly idleTimerService = inject(IdleTimerService);
   private readonly location = inject(Location);
   private readonly fb = inject(FormBuilder);
   private readonly dialog = inject(MatDialog);
@@ -556,6 +558,7 @@ export class UploadContentComponent {
               this.uploadProgress[dictionary] = Math.round(
                 (transferredBytes / totalBytes) * 100
               );
+              this.idleTimerService.handleActivity();
             }
           },
         },

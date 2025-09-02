@@ -93,7 +93,10 @@ export class AuthServiceService {
     }
   }
 
-  private checkSubscriptionExpiry(paidUntil: string, email: string): void {
+  private async checkSubscriptionExpiry(
+    paidUntil: string,
+    email: string
+  ): Promise<void> {
     const paidUntilDate = new Date(paidUntil);
     const daysDiff = Math.ceil(
       (paidUntilDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
@@ -111,34 +114,51 @@ export class AuthServiceService {
               'Renew now to continue enjoying uninterrupted access to all features.',
             cancelText: 'Not now',
             actionText: 'Renew Subscription',
+            actionType: 'SUBSCRIPTION_EXPIRING',
           },
           disableClose: true,
         })
         .afterClosed()
-        .subscribe((close: boolean) => {
-          if (!close) {
-            this.router.navigate(['/subscriber']);
-          }
+        .subscribe((isRenew: boolean) => {
+          this.router.navigate(
+            isRenew ? ['/subscriber/paywall'] : ['/subscriber'],
+            {
+              ...(isRenew && { queryParams: { renew: true } }),
+            }
+          );
         });
     } else if (daysDiff > 3) {
       this.router.navigate(['/subscriber']);
     } else if (daysDiff <= 0) {
-      this.client.mutations.unsubscribeUser({
+      await this.client.mutations.unsubscribeUser({
         email: email,
       });
-      this.logout();
-      this.dialog.open(ReminderDialogComponent, {
-        data: {
-          type: 'error',
-          title: 'Subscription Expired',
-          primaryMessage: 'Your subscription has expired!',
-          secondaryMessage:
-            'Please renew your subscription to continue enjoying all features.',
-          actionMessage:
-            'Login and renew now to continue enjoying uninterrupted access.',
-        },
-        disableClose: true,
+      await this.refreshUserSession();
+      this.router.navigate(['/user'], {
+        queryParams: { renew: true },
       });
+      this.dialog
+        .open(ReminderDialogComponent, {
+          data: {
+            type: 'error',
+            title: 'Subscription Expired',
+            primaryMessage: 'Your subscription has expired!',
+            secondaryMessage:
+              'Please renew your subscription to continue enjoying all features.',
+            actionMessage:
+              'Login and renew now to continue enjoying uninterrupted access.',
+            cancelText: 'Not now',
+            actionText: 'Renew Subscription',
+            actionType: 'SUBSCRIPTION_EXPIRED',
+          },
+          disableClose: true,
+        })
+        .afterClosed()
+        .subscribe((isRenew: boolean) => {
+          if (!isRenew) {
+            this.logout();
+          }
+        });
     }
     this.sharedService.hideLoader();
   }
@@ -159,6 +179,25 @@ export class AuthServiceService {
       String(idToken?.payload?.['cognito:groups']?.[0] || '')
     );
     this.isLoggedIn = true;
+  }
+
+  async refreshUserSession(): Promise<string[] | null> {
+    try {
+      const session = await fetchAuthSession({ forceRefresh: true });
+      const idToken = session.tokens?.idToken;
+
+      if (!idToken) {
+        this.handleLogout();
+        return null;
+      }
+
+      this.setSessionData(idToken);
+      const payload = idToken?.payload as CognitoIdTokenPayload;
+      return payload?.['cognito:groups'] || null;
+    } catch (error) {
+      this.handleError(error);
+      return null;
+    }
   }
 
   private handleLogout() {

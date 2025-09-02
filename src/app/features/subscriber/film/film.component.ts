@@ -26,6 +26,7 @@ export class FilmComponent implements OnInit {
   recommended: any[] = [];
   continueWatching: any[] = [];
   allContents: any[] = [];
+  customTags: { name: string; content: any[] }[] = [];
   category: string = 'film';
 
   readonly isLoading = signal(false);
@@ -42,6 +43,35 @@ export class FilmComponent implements OnInit {
       this.isLoading.set(true);
       // First get all contents
       const data = await this.featuresService.getAllContents(currentTab, true);
+
+      // Get contents grouped by tags
+      this.customTags =
+        await this.featuresService.listContentsByCategoryGroupedByTag(
+          currentTab
+        );
+
+      // Process customTags content items to add presigned URLs
+      this.customTags = await Promise.all(
+        this.customTags.map(async (tag) => ({
+          ...tag,
+          content: await Promise.all(
+            tag.content.map(async (content: any) => {
+              const [urlPortrait, urlPreviewVideo] = await Promise.all([
+                this.featuresService.getFileUrl(content.portraitImageUrl),
+                this.featuresService.getFileUrl(content.previewVideoUrl),
+              ]);
+
+              return {
+                ...content,
+                portraitImagePresignedUrl: urlPortrait,
+                previewVideoPresignedUrl: urlPreviewVideo,
+              };
+            })
+          ),
+        }))
+      );
+
+      console.log('Contents grouped by tags:', this.customTags);
 
       // Process all content items to add presigned URLs for portrait and preview video only
       this.allContents = await Promise.all(

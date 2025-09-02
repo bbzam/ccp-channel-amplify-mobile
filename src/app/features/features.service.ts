@@ -338,6 +338,43 @@ export class FeaturesService {
     }
   }
 
+  async listContentsByCategoryGroupedByTag(category: string) {
+    // 1. Get all contents for the given category
+    const { data: contents } = await this.client.models.Content.list({
+      filter: { category: { eq: category } },
+    });
+
+    if (!contents || contents.length === 0) return [];
+
+    // Build a lookup { contentId: contentObject }
+    const contentMap = new Map(contents.map((c) => [c.id, c]));
+
+    // 2. Get all tags
+    const { data: tags } = await this.client.models.tags.list();
+
+    // 3. Group contents by tag name and return in template format
+    const customTags: { name: string; content: Schema['Content']['type'][] }[] =
+      [];
+
+    for (const tag of tags) {
+      if (!tag.selectedContent || !tag.tag) continue;
+
+      const tagContentIds = tag.selectedContent.split(',');
+      const matchingContents = tagContentIds
+        .map((id) => contentMap.get(id))
+        .filter((c) => !!c);
+
+      if (matchingContents.length > 0) {
+        customTags.push({
+          name: tag.tag,
+          content: matchingContents,
+        });
+      }
+    }
+
+    return customTags;
+  }
+
   async getUserFavorites(): Promise<any> {
     try {
       this.sharedService.showLoader('Fetching favorites...');
