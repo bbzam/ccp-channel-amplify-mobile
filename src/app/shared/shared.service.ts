@@ -196,15 +196,20 @@ export class SharedService {
   async getAllCustomFields(keyword?: string): Promise<any> {
     try {
       const { data } = await this.client.models.customFields.list({
-        filter: {
-          ...(keyword && {
-            fieldName: {
-              contains: keyword,
-            },
-          }),
-        },
+        // filter: {
+        //   ...(keyword && {
+        //     fieldName: {
+        //       contains: keyword,
+        //     },
+        //   }),
+        // },
       });
       if (data) {
+        if (keyword) {
+          return data.filter((data) =>
+            data.fieldName?.toLowerCase().includes(keyword.toLowerCase())
+          );
+        }
         return data;
       }
     } catch (error) {
@@ -235,11 +240,6 @@ export class SharedService {
     try {
       const { data } = await this.client.models.tags.list({
         filter: {
-          ...(id && {
-            id: {
-              contains: id,
-            },
-          }),
           ...(isVisible !== undefined && {
             isVisible: {
               eq: isVisible,
@@ -248,6 +248,11 @@ export class SharedService {
         },
       });
       if (data) {
+        if (id) {
+          return data.filter((tag) =>
+            tag.tag?.toLowerCase().includes(id.toLowerCase())
+          );
+        }
         return data;
       }
     } catch (error) {

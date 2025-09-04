@@ -63,11 +63,6 @@ export const handler = async (event: any) => {
 
     const result = await docClient.send(new ScanCommand(params));
 
-    // Skip favorites if fields are specified
-    if (fields && fields.length > 0) {
-      return JSON.stringify(result.Items);
-    }
-
     // Apply case-insensitive filtering after DynamoDB query
     if (keyword && result.Items) {
       const lowerKeyword = keyword.toLowerCase();
@@ -81,6 +76,11 @@ export const handler = async (event: any) => {
           item.yearReleased?.toLowerCase().includes(lowerKeyword) ||
           item.resolution?.toLowerCase().includes(lowerKeyword)
       );
+    }
+
+    // Skip favorites if fields are specified
+    if (fields && fields.length > 0) {
+      return JSON.stringify(result.Items);
     }
 
     // Get user favorites

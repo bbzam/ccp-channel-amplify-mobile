@@ -15,6 +15,8 @@ export class IdleTimerService {
   private timeoutId: any;
   private warningTimeoutId: any;
   private isActive: boolean = false;
+  private dialogRef: any;
+  private countdownInterval: any;
   private readonly timeoutDuration = 15 * 60 * 1000; // 15 minutes
   private readonly warningDuration = 13 * 60 * 1000; // 13 minutes (2 min warning)
 
@@ -201,31 +203,40 @@ export class IdleTimerService {
    */
   private showWarningDialog() {
     console.log('IdleTimerService: Opening warning dialog');
-    this.dialog
-      .open(ReminderDialogComponent, {
-        data: {
-          type: 'warning',
-          title: 'Session Timeout Warning',
-          primaryMessage: 'You will be logged out in 2 minutes!',
-          secondaryMessage: 'Click "Stay Logged In" to continue your session.',
-          actionMessage: 'Your session will expire due to inactivity.',
-          cancelText: 'Logout Now',
-          actionText: 'Stay Logged In',
-          actionType: 'SESSION_WARNING',
-        },
-        disableClose: true,
-      })
-      .afterClosed()
-      .subscribe((stayLoggedIn: boolean) => {
-        console.log(
-          `IdleTimerService: Dialog closed, stay logged in: ${stayLoggedIn}`
-        );
-        if (stayLoggedIn) {
-          this.handleActivity();
-        } else {
-          this.logout();
-        }
-      });
+    const warningTime = (this.timeoutDuration - this.warningDuration) / 1000; // 15 seconds
+    let remainingSeconds = warningTime;
+
+    this.dialogRef = this.dialog.open(ReminderDialogComponent, {
+      data: {
+        type: 'warning',
+        title: 'Session Timeout Warning',
+        primaryMessage: `You will be logged out in ${remainingSeconds} seconds!`,
+        secondaryMessage: 'Click "Stay Logged In" to continue your session.',
+        actionMessage: 'Your session will expire due to inactivity.',
+        cancelText: 'Logout Now',
+        actionText: 'Stay Logged In',
+        actionType: 'SESSION_WARNING',
+      },
+      disableClose: true,
+    });
+
+    this.countdownInterval = setInterval(() => {
+      remainingSeconds--;
+      if (remainingSeconds > 0 && this.dialogRef) {
+        this.dialogRef.componentInstance.primaryMessage = `You will be logged out in ${remainingSeconds} seconds!`;
+      } else {
+        clearInterval(this.countdownInterval);
+      }
+    }, 1000);
+
+    this.dialogRef.afterClosed().subscribe((stayLoggedIn: boolean) => {
+      clearInterval(this.countdownInterval);
+      if (stayLoggedIn) {
+        this.handleActivity();
+      } else {
+        this.logout();
+      }
+    });
   }
 
   /**
@@ -233,6 +244,13 @@ export class IdleTimerService {
    */
   private async logout() {
     console.log('IdleTimerService: Logging out user');
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
+    if (this.dialogRef) {
+      this.dialogRef.close();
+      this.dialogRef = null;
+    }
     try {
       this.authService.logout();
     } catch (err) {

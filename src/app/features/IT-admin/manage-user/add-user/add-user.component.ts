@@ -17,6 +17,7 @@ import {
   allowMax100,
   disallowCharacters,
   emailValidator,
+  minimumAge,
 } from '../../../../shared/utils/validators';
 import { MatDividerModule } from '@angular/material/divider';
 import { FeaturesService } from '../../../features.service';
@@ -87,7 +88,10 @@ export class AddUserComponent implements OnInit {
         '',
         [Validators.required, emailValidator(), disallowCharacters()],
       ],
-      birthdate: ['', [Validators.required, disallowCharacters()]],
+      birthdate: [
+        '',
+        [Validators.required, disallowCharacters(), minimumAge()],
+      ],
       role: ['', [Validators.required, disallowCharacters()]],
       paidUntil: ['', [Validators.required, disallowCharacters()]],
     });
@@ -136,6 +140,8 @@ export class AddUserComponent implements OnInit {
       signal.set(errorMessages.DISALLOWEDCHARACTERS);
     } else if (control.hasError('invalidEmailAddress')) {
       signal.set(errorMessages.INVALIDEMAIL);
+    } else if (control.hasError('underAge')) {
+      signal.set(errorMessages.UNDERAGE);
     } else if (control.hasError('notNumeric')) {
       signal.set(errorMessages.ONLYNUMERICAL);
     } else if (control.hasError('notMax3')) {

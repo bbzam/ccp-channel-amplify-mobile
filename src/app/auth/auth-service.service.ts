@@ -146,7 +146,7 @@ export class AuthServiceService {
             secondaryMessage:
               'Please renew your subscription to continue enjoying all features.',
             actionMessage:
-              'Login and renew now to continue enjoying uninterrupted access.',
+              'Renew now to continue enjoying uninterrupted access.',
             cancelText: 'Not now',
             actionText: 'Renew Subscription',
             actionType: 'SUBSCRIPTION_EXPIRED',

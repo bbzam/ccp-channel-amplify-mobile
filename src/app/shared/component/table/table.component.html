@@ -110,6 +110,16 @@
             element[column.def] | date : "MMMM d yyyy"
           }}</span>
           <span *ngSwitchDefault>{{ element[column.def] }}</span>
+          <span
+            *ngSwitchCase="'isVisible'"
+            [class]="
+              element[column.def] === false
+                ? 'status-badge negative'
+                : 'status-badge positive'
+            "
+          >
+            {{ element[column.def] === false ? "Hidden" : "Visible" }}
+          </span>
         </span>
       </td>
 
