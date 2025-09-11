@@ -70,6 +70,7 @@ export const handler = async (event: any) => {
         (item) =>
           item.title?.toLowerCase().includes(lowerKeyword) ||
           item.description?.toLowerCase().includes(lowerKeyword) ||
+          item.category?.toLowerCase().includes(lowerKeyword) ||
           item.subCategory?.toLowerCase().includes(lowerKeyword) ||
           item.director?.toLowerCase().includes(lowerKeyword) ||
           item.writer?.toLowerCase().includes(lowerKeyword) ||

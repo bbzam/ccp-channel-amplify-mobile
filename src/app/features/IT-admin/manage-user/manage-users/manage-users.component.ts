@@ -72,12 +72,20 @@ export class ManageUsersComponent {
     switch (currentUserRole) {
       case 'CONTENT_CREATOR':
         this.tabs = this.allTabs.filter((tab) =>
-          ['USER', 'SUBSCRIBER'].includes(tab.role)
+          ['USER', 'SUBSCRIBER', 'PAID_SUBSCRIBER', 'FREE_SUBSCRIBER'].includes(
+            tab.role
+          )
         );
         break;
       case 'IT_ADMIN':
         this.tabs = this.allTabs.filter((tab) =>
-          ['USER', 'SUBSCRIBER', 'CONTENT_CREATOR'].includes(tab.role)
+          [
+            'USER',
+            'SUBSCRIBER',
+            'PAID_SUBSCRIBER',
+            'FREE_SUBSCRIBER',
+            'CONTENT_CREATOR',
+          ].includes(tab.role)
         );
         break;
       case 'SUPER_ADMIN':

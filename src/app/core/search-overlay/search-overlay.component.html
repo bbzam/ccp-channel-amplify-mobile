@@ -1,0 +1,60 @@
+<div class="search-overlay" [class.active]="isOpen" (click)="closeSearch()">
+  <div class="search-container" (click)="$event.stopPropagation()">
+    <div class="search-header">
+      <mat-form-field appearance="outline" class="search-input">
+        <mat-label>Search content...</mat-label>
+        <input
+          matInput
+          [(ngModel)]="searchQuery"
+          (input)="onSearchInput()"
+          #searchInput
+          placeholder="Type to search"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <button mat-icon-button (click)="closeSearch()" class="close-btn">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    @if (searchResults.length > 0) {
+    <div class="search-results">
+      @for (result of searchResults; track result['id']) {
+      <div class="result-item" (click)="selectResult(result)">
+        <img
+          [src]="result['portraitImagePresignedUrl']"
+          [alt]="result['title']"
+          class="result-image"
+        />
+        <div class="result-content">
+          <h4>{{ result["title"] }}</h4>
+          <p>{{ result["description"] }}</p>
+          <div class="metadata">
+            <span class="result-category">{{ result["category"] }}</span>
+            @if (result['yearReleased']) {
+            <span class="metadata-item">{{ result["yearReleased"] }}</span>
+            } @if (result['resolution']) {
+            <span class="metadata-item">{{ result["resolution"] }}</span>
+            } @if (result['runtime']) {
+            <span class="metadata-item">{{
+              transform(result["runtime"])
+            }}</span>
+            }
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    } @if (searchQuery && searchResults.length === 0) {
+    <div class="no-results">
+      <mat-icon>search_off</mat-icon>
+      <p>No results found for "{{ searchQuery }}"</p>
+    </div>
+    } @else if (searchInput && searchResults.length === 0) {
+    <div class="no-results">
+      <mat-icon>search_off</mat-icon>
+      <p>Type to search a title</p>
+    </div>
+    }
+  </div>
+</div>

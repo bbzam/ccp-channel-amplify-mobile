@@ -1,6 +1,15 @@
 <div class="super-main">
-  <mat-drawer-container autosize class="main-layout">
-    <mat-drawer #drawer mode="side" [opened]="true" class="sidenav">
+  <mat-drawer-container
+    autosize
+    class="main-layout"
+    [hasBackdrop]="(hasBackdrop$ | async) ?? false"
+  >
+    <mat-drawer
+      #drawer
+      [mode]="(mode$ | async) ?? 'side'"
+      [opened]="(opened$ | async) ?? true"
+      class="sidenav"
+    >
       <app-sidenav2 />
     </mat-drawer>
     <div class="content">

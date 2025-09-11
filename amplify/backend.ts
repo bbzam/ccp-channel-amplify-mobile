@@ -3,8 +3,8 @@ import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { storage } from './storage/resource';
 // import { statistics } from './data/content/statistics/resource';
-import { userStatistics } from './data/content/statistics/user-statistics/resource';
-import { contentStatistics } from './data/content/statistics/content-statistics/resource';
+// import { userStatistics } from './data/content/statistics/user-statistics/resource';
+// import { contentStatistics } from './data/content/statistics/content-statistics/resource';
 import { createContentToUserFunction } from './data/content/content-to-user/create-contentToUser/resource';
 import { getContentToUserFunction } from './data/content/content-to-user/get-contentToUser/resource';
 import { getUserFavoritesFunction } from './data/content/content-to-user/get-userFavorites/resource';
@@ -19,6 +19,16 @@ import { createVttFunction } from './storage/create-vtt/resource';
 import { afterMediaConvertFunction } from './storage/after-mediaConvert/resource';
 import { createPaymentFunction } from './data/payment/create-payment/resource';
 import { listUsers } from './data/auth/list-users/resource';
+import { groupCountsFunction } from './data/content/statistics/user-statistics/group-counts/resource';
+import { totalUsersFunction } from './data/content/statistics/user-statistics/total-users/resource';
+import { newRegistrationsFunction } from './data/content/statistics/user-statistics/new-registrations/resource';
+import { totalContentFunction } from './data/content/statistics/content-statistics/total-content/resource';
+import { topViewedContentFunction } from './data/content/statistics/content-statistics/top-viewed-content/resource';
+import { contentByCategoryFunction } from './data/content/statistics/content-statistics/content-by-category/resource';
+import { leastViewedContentFunction } from './data/content/statistics/content-statistics/least-viewed-content/resource';
+import { averageViewsFunction } from './data/content/statistics/content-statistics/average-views/resource';
+import { recentContentFunction } from './data/content/statistics/content-statistics/recent-content/resource';
+import { monthlyStatsFunction } from './data/content/statistics/content-statistics/monthly-stats/resource';
 import { config } from './config';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { EventType } from 'aws-cdk-lib/aws-s3';
@@ -28,8 +38,8 @@ const backend = defineBackend({
   auth,
   data,
   storage,
-  contentStatistics,
-  userStatistics,
+  // contentStatistics,
+  // userStatistics,
   createContentToUserFunction,
   getContentToUserFunction,
   getUserFavoritesFunction,
@@ -44,6 +54,16 @@ const backend = defineBackend({
   afterMediaConvertFunction,
   createPaymentFunction,
   listUsers,
+  groupCountsFunction,
+  totalUsersFunction,
+  newRegistrationsFunction,
+  totalContentFunction,
+  topViewedContentFunction,
+  contentByCategoryFunction,
+  leastViewedContentFunction,
+  averageViewsFunction,
+  recentContentFunction,
+  monthlyStatsFunction,
 });
 
 backend.storage.resources.bucket.addEventNotification(
@@ -90,8 +110,20 @@ backend.storage.resources.bucket.addEventNotification(
 
 const createVtt = backend.createVttFunction.resources.lambda;
 // const statisticsQuery = backend.statistics.resources.lambda;
-const contentStatisticsQuery = backend.contentStatistics.resources.lambda;
-const userStatisticsQuery = backend.userStatistics.resources.lambda;
+// const contentStatisticsQuery = backend.contentStatistics.resources.lambda;
+// const userStatisticsQuery = backend.userStatistics.resources.lambda;
+const totalContentQuery = backend.totalContentFunction.resources.lambda;
+const topViewedContentQuery = backend.topViewedContentFunction.resources.lambda;
+const contentByCategoryQuery =
+  backend.contentByCategoryFunction.resources.lambda;
+const leastViewedContentQuery =
+  backend.leastViewedContentFunction.resources.lambda;
+const averageViewsQuery = backend.averageViewsFunction.resources.lambda;
+const recentContentQuery = backend.recentContentFunction.resources.lambda;
+const monthlyStatsQuery = backend.monthlyStatsFunction.resources.lambda;
+const groupCountsQuery = backend.groupCountsFunction.resources.lambda;
+const totalUsersQuery = backend.totalUsersFunction.resources.lambda;
+const newRegistrationsQuery = backend.newRegistrationsFunction.resources.lambda;
 const getcontentToUserQuery = backend.getContentToUserFunction.resources.lambda;
 const createContentToUserMutation =
   backend.createContentToUserFunction.resources.lambda;
@@ -160,20 +192,53 @@ const updateContentStatement = new iam.PolicyStatement({
 //   ], //limiting the permissions to only Content table
 // });
 
-const contentStatisticsStatement = new iam.PolicyStatement({
-  sid: 'contentStatistics',
+// const contentStatisticsStatement = new iam.PolicyStatement({
+//   sid: 'contentStatistics',
+//   actions: ['dynamodb:Scan'],
+//   resources: [
+//     `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
+//   ],
+// });
+
+// const userStatisticsStatement = new iam.PolicyStatement({
+//   sid: 'userStatistics',
+//   actions: ['cognito-idp:ListUsersInGroup', 'dynamodb:Scan'],
+//   resources: [
+//     `arn:aws:cognito-idp:${config.REGION}:${config.ACCOUNT_ID}:userpool/${config.USER_POOL_ID}`,
+//     `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.PAYMENTTOUSER_TABLE}`,
+//   ],
+// });
+
+const contentStatsStatement = new iam.PolicyStatement({
+  sid: 'contentStats',
   actions: ['dynamodb:Scan'],
   resources: [
     `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
   ],
 });
 
-const userStatisticsStatement = new iam.PolicyStatement({
-  sid: 'userStatistics',
+const groupCountsStatement = new iam.PolicyStatement({
+  sid: 'groupCounts',
   actions: ['cognito-idp:ListUsersInGroup', 'dynamodb:Scan'],
   resources: [
     `arn:aws:cognito-idp:${config.REGION}:${config.ACCOUNT_ID}:userpool/${config.USER_POOL_ID}`,
     `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.PAYMENTTOUSER_TABLE}`,
+  ],
+});
+
+const totalUsersStatement = new iam.PolicyStatement({
+  sid: 'totalUsers',
+  actions: ['cognito-idp:ListUsersInGroup'],
+  resources: [
+    `arn:aws:cognito-idp:${config.REGION}:${config.ACCOUNT_ID}:userpool/${config.USER_POOL_ID}`,
+  ],
+});
+
+const newRegistrationsStatement = new iam.PolicyStatement({
+  sid: 'newRegistrations',
+  actions: ['cognito-idp:ListUsersInGroup'],
+  resources: [
+    `arn:aws:cognito-idp:${config.REGION}:${config.ACCOUNT_ID}:userpool/${config.USER_POOL_ID}`,
   ],
 });
 
@@ -240,8 +305,18 @@ getContentQuery.addToRolePolicy(getContentStatement);
 createContentMutation.addToRolePolicy(createContentStatement);
 updateContentMutation.addToRolePolicy(updateContentStatement);
 // statisticsQuery.addToRolePolicy(statisticsStatement);
-contentStatisticsQuery.addToRolePolicy(contentStatisticsStatement);
-userStatisticsQuery.addToRolePolicy(userStatisticsStatement);
+// contentStatisticsQuery.addToRolePolicy(contentStatisticsStatement);
+// userStatisticsQuery.addToRolePolicy(userStatisticsStatement);
+totalContentQuery.addToRolePolicy(contentStatsStatement);
+topViewedContentQuery.addToRolePolicy(contentStatsStatement);
+contentByCategoryQuery.addToRolePolicy(contentStatsStatement);
+leastViewedContentQuery.addToRolePolicy(contentStatsStatement);
+averageViewsQuery.addToRolePolicy(contentStatsStatement);
+recentContentQuery.addToRolePolicy(contentStatsStatement);
+monthlyStatsQuery.addToRolePolicy(contentStatsStatement);
+groupCountsQuery.addToRolePolicy(groupCountsStatement);
+totalUsersQuery.addToRolePolicy(totalUsersStatement);
+newRegistrationsQuery.addToRolePolicy(newRegistrationsStatement);
 createContentToUserMutation.addToRolePolicy(createContentToUserStatement);
 getcontentToUserQuery.addToRolePolicy(getContentToUserStatement);
 getUserFavoritesQuery.addToRolePolicy(getUserFavoritesStatement);
