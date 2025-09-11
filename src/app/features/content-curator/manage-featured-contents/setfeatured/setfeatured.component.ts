@@ -33,6 +33,7 @@ export class SetfeaturedComponent {
   featuredData: ContentItem[] = [];
   featuredIds: string[] = [];
   currentTab!: string;
+  keyword!: string;
   tabs: Tab[] = [
     { label: 'ALL', category: 'all' },
     { label: 'THEATER', category: 'theater' },
@@ -53,19 +54,28 @@ export class SetfeaturedComponent {
   async onTabChanged(category: string): Promise<void> {
     this.hasChanges = false;
     this.currentTab = category;
-    await this.getAllContents(category === 'all' ? '' : category);
+    await this.getAllContents(category === 'all' ? '' : category, this.keyword);
     await this.getAllFeatured(category);
   }
 
   getAllContents(category: string, keyword?: string) {
     const fields = ['id', 'title'];
+    this.keyword = keyword || '';
     return this.featuresService
       .getAllContents(category, true, fields, keyword)
       .then((data: any) => {
         if (data) {
           this.contents = data;
+          console.log(this.contents);
         }
       });
+  }
+
+  onSearch(keyword: string) {
+    this.getAllContents(
+      this.currentTab === 'all' ? '' : this.currentTab,
+      keyword
+    );
   }
 
   async getAllFeatured(currentTab: string) {

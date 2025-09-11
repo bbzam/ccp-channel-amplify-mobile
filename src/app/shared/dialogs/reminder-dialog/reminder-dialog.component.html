@@ -4,7 +4,11 @@
       <mat-icon [class]="iconClass">{{ icon }}</mat-icon>
     </div>
     <h2 mat-dialog-title>{{ title }}</h2>
-    <button mat-icon-button mat-dialog-close class="close-btn">
+    <button
+      mat-icon-button
+      class="close-btn"
+      (click)="renewSubscriptionOnClick()"
+    >
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -18,15 +22,21 @@
         <p class="action-message">{{ actionMessage }}</p>
         }
       </div>
+      @if (actionType === 'SUBSCRIPTION_EXPIRED') {
+      <div class="subscription-highlight" (click)="renewSubscriptionOnClick()">
+        <mat-icon class="subscription-icon">card_membership</mat-icon>
+        <span class="subscription-text">Renew Subscription</span>
+      </div>
+      }
     </div>
   </mat-dialog-content>
 
   <mat-dialog-actions class="dialog-actions">
     @if(cancelText) {
-    <button mat-stroked-button mat-dialog-close class="cancel-btn">
+    <button mat-stroked-button class="cancel-btn" (click)="cancelOnClick()">
       {{ cancelText }}
     </button>
-    } @if (actionText) {
+    } @if (actionText && actionType !== 'SUBSCRIPTION_EXPIRED') {
     <button
       mat-raised-button
       class="action-btn"

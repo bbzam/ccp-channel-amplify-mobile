@@ -7,7 +7,7 @@ import {
   Renderer2,
 } from '@angular/core';
 import { Amplify } from 'aws-amplify';
-import outputs from '../../amplify_outputs.json'
+import outputs from '../../amplify_outputs.json';
 import {
   AmplifyAuthenticatorModule,
   AuthenticatorService,
@@ -20,6 +20,7 @@ import { ItAdminComponent } from './features/IT-admin/it-admin/it-admin.componen
 import { SuperAdminComponent } from './features/super-admin/super-admin/super-admin.component';
 import { LoaderComponent } from './shared/component/loader/loader.component';
 import { SharedService } from './shared/shared.service';
+import { IdleTimerService } from './auth/idle-timer.service';
 
 @Component({
   selector: 'app-root',
@@ -43,6 +44,7 @@ export class AppComponent implements OnInit {
   readonly router = inject(Router);
   readonly authService = inject(AuthServiceService);
   readonly sharedService = inject(SharedService);
+  readonly idleTimer = inject(IdleTimerService);
 
   // Disable right-click for the entire app
   @HostListener('contextmenu', ['$event'])
@@ -76,16 +78,16 @@ export class AppComponent implements OnInit {
 
   private detectScreenRecording() {
     // setInterval(() => {
-      // Check if user is recording screen
-      navigator.mediaDevices
-        .getDisplayMedia({ video: false })
-        .then(() => {
-          alert('Screen recording detected! This is not allowed.');
-          location.reload();
-        })
-        .catch(() => {
-          /* No recording detected */
-        });
+    // Check if user is recording screen
+    navigator.mediaDevices
+      .getDisplayMedia({ video: false })
+      .then(() => {
+        alert('Screen recording detected! This is not allowed.');
+        location.reload();
+      })
+      .catch(() => {
+        /* No recording detected */
+      });
     // }, 5000);
   }
 

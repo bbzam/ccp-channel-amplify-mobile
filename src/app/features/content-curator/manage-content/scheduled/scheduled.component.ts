@@ -23,6 +23,7 @@ export class ScheduledComponent {
   keyword!: string;
 
   tabs: Tab[] = [
+    { label: 'ALL', category: '' },
     { label: 'THEATER', category: 'theater' },
     { label: 'FILM', category: 'film' },
     { label: 'MUSIC', category: 'music' },
@@ -48,8 +49,8 @@ export class ScheduledComponent {
   tableData: any[] = [];
 
   ngOnInit(): void {
-    this.getAllContents('theater');
-    this.currentTab = 'theater';
+    this.getAllContents('');
+    this.currentTab = '';
   }
 
   onTabChanged(category: string): void {

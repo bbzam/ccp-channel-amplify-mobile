@@ -38,10 +38,11 @@ export class ManageUsersComponent {
     { def: 'family_name', header: 'Lastname', sortable: true },
     { def: 'birthdate', header: 'Birthdate', sortable: true },
     { def: 'email', header: 'Email', sortable: true },
-    { def: 'subscriptionType', header: 'Subscription Type', sortable: true },
     { def: 'custom:paidUntil', header: 'Subscribed Until', sortable: true },
+    { def: 'subscriptionType', header: 'Subscription Type', sortable: true },
     { def: 'email_verified', header: 'Email Verified', sortable: true },
-    { def: 'Enabled', header: 'Status', sortable: true },
+    { def: 'UserStatus', header: 'Account Status', sortable: true },
+    { def: 'Enabled', header: 'Enabled', sortable: true },
   ];
 
   get displayedColumns() {
@@ -71,12 +72,20 @@ export class ManageUsersComponent {
     switch (currentUserRole) {
       case 'CONTENT_CREATOR':
         this.tabs = this.allTabs.filter((tab) =>
-          ['USER', 'SUBSCRIBER'].includes(tab.role)
+          ['USER', 'SUBSCRIBER', 'PAID_SUBSCRIBER', 'FREE_SUBSCRIBER'].includes(
+            tab.role
+          )
         );
         break;
       case 'IT_ADMIN':
         this.tabs = this.allTabs.filter((tab) =>
-          ['USER', 'SUBSCRIBER', 'CONTENT_CREATOR'].includes(tab.role)
+          [
+            'USER',
+            'SUBSCRIBER',
+            'PAID_SUBSCRIBER',
+            'FREE_SUBSCRIBER',
+            'CONTENT_CREATOR',
+          ].includes(tab.role)
         );
         break;
       case 'SUPER_ADMIN':

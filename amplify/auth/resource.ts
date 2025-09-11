@@ -7,7 +7,7 @@ import { editUser } from '../data/auth/edit-user/resource';
 import { disableUser } from '../data/auth/disable-user/resource';
 import { enableUser } from '../data/auth/enable-user/resource';
 import { listUser } from '../data/auth/list-user/resource';
-import { statistics } from '../data/content/statistics/resource';
+// import { statistics } from '../data/content/statistics/resource';
 import { unsubscribeUser } from '../data/auth/unsubscribe-user/resource';
 
 /**
@@ -158,6 +158,6 @@ export const auth = defineAuth({
     allow.resource(disableUser).to(['disableUser']),
     allow.resource(enableUser).to(['enableUser']),
     allow.resource(listUser).to(['getUser']),
-    allow.resource(statistics).to(['listUsersInGroup']),
+    // allow.resource(statistics).to(['listUsersInGroup']),
   ],
 });

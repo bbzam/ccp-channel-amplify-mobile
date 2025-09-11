@@ -1,11 +1,5 @@
 <div class="search-button">
-  <input
-    matInput
-    (keyup)="applyFilter($event)"
-    placeholder="Search"
-    #input
-    [disabled]="!contents.length && !featured.length"
-  />
+  <input matInput (keyup)="applyFilter($event)" placeholder="Search" #input />
   <button
     mat-icon-button
     (click)="save()"

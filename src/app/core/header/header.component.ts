@@ -21,6 +21,15 @@ import { filter } from 'rxjs';
 import { AuthServiceService } from '../../auth/auth-service.service';
 import { FeaturesService } from '../../features/features.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { SearchOverlayComponent } from '../search-overlay/search-overlay.component';
+import { MoreInfoComponent } from '../../shared/dialogs/more-info/more-info.component';
+
+export interface SearchResult {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+}
 
 @Component({
   selector: 'app-header',
@@ -33,6 +42,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatMenuModule,
     MatDividerModule,
     MatTooltipModule,
+    SearchOverlayComponent,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
@@ -41,6 +51,7 @@ export class HeaderComponent implements OnInit {
   isScrolled: boolean = false;
   currentRoute: string = '';
   path: string = '/landing-page';
+  isSearchOpen: boolean = false;
 
   @Output() menuClicked = new EventEmitter<void>();
   readonly dialog = inject(MatDialog);
@@ -64,6 +75,12 @@ export class HeaderComponent implements OnInit {
     this.isScrolled = window.scrollY > 0;
   }
 
+  @HostListener('document:keydown.escape') onEscapeKey(): void {
+    if (this.isSearchOpen) {
+      this.closeSearch();
+    }
+  }
+
   get isAuthenticated(): boolean {
     const isLoggedIn = sessionStorage.getItem('isLoggedIn');
     const auth = sessionStorage.getItem('auth');
@@ -82,6 +99,30 @@ export class HeaderComponent implements OnInit {
 
   get email(): string {
     return String(sessionStorage.getItem('email'));
+  }
+
+  openSearch(): void {
+    this.isSearchOpen = true;
+  }
+
+  closeSearch(): void {
+    this.isSearchOpen = false;
+  }
+
+  async onSearchResultSelected(result: any): Promise<void> {
+    const previewVideoPresignedUrl = await this.featuresService.getFileUrl(
+      result.previewVideoUrl
+    );
+
+    const updatedResult = {
+      ...result,
+      previewVideoPresignedUrl,
+    };
+
+    this.dialog
+      .open(MoreInfoComponent, { data: { data: updatedResult } })
+      .afterClosed()
+      .subscribe(() => {});
   }
 
   logout() {

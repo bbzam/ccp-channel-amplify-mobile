@@ -19,7 +19,16 @@
       </th>
       <td mat-cell *matCellDef="let element">
         <span [ngSwitch]="column.def">
-          <span *ngSwitchCase="'subscriptionType'">
+          <span
+            *ngSwitchCase="'subscriptionType'"
+            [class]="
+              element[column.def] === 'A'
+                ? 'status-badge positive'
+                : element[column.def] === 'M'
+                ? 'status-badge warning'
+                : 'status-badge neutral'
+            "
+          >
             {{
               element[column.def] === "A"
                 ? "Annually"
@@ -41,7 +50,16 @@
                 : ""
             }}
           </span>
-          <span *ngSwitchCase="'status'">
+          <span
+            *ngSwitchCase="'status'"
+            [class]="
+              !element.vttUrl || !element.processedFullVideoUrl
+                ? 'status-badge warning'
+                : element[column.def] === false
+                ? 'status-badge neutral'
+                : 'status-badge positive'
+            "
+          >
             {{
               !element.vttUrl || !element.processedFullVideoUrl
                 ? "Processing"
@@ -50,13 +68,58 @@
                 : "Published"
             }}
           </span>
-          <span *ngSwitchCase="'Enabled'">
+          <span
+            *ngSwitchCase="'email_verified'"
+            [class]="
+              element[column.def]
+                ? 'status-badge positive'
+                : 'status-badge warning'
+            "
+          >
+            {{ element[column.def] ? "Verified" : "Unverified" }}
+          </span>
+          <span
+            *ngSwitchCase="'UserStatus'"
+            [class]="
+              element[column.def] === 'CONFIRMED'
+                ? 'status-badge positive'
+                : element[column.def] === 'FORCE_CHANGE_PASSWORD'
+                ? 'status-badge warning'
+                : 'status-badge neutral'
+            "
+          >
+            {{
+              element[column.def] === "CONFIRMED"
+                ? "Confirmed"
+                : element[column.def] === "FORCE_CHANGE_PASSWORD"
+                ? "Password Reset Required"
+                : "Pending Confirmation"
+            }}
+          </span>
+          <span
+            *ngSwitchCase="'Enabled'"
+            [class]="
+              element[column.def] === false
+                ? 'status-badge negative'
+                : 'status-badge positive'
+            "
+          >
             {{ element[column.def] === false ? "Inactive" : "Active" }}
           </span>
           <span *ngSwitchCase="'birthdate'">{{
             element[column.def] | date : "MMMM d yyyy"
           }}</span>
           <span *ngSwitchDefault>{{ element[column.def] }}</span>
+          <span
+            *ngSwitchCase="'isVisible'"
+            [class]="
+              element[column.def] === false
+                ? 'status-badge negative'
+                : 'status-badge positive'
+            "
+          >
+            {{ element[column.def] === false ? "Hidden" : "Visible" }}
+          </span>
         </span>
       </td>
 

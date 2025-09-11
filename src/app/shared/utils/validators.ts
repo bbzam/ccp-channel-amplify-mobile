@@ -82,6 +82,29 @@ export function emailValidator(): (
   };
 }
 
+//validator to check if user is 18 years or older
+export function minimumAge(): (
+  control: AbstractControl
+) => ValidationErrors | null {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) return null;
+
+    const birthDate = new Date(control.value);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age < 18 ? { underAge: true } : null;
+  };
+}
+
 //validator for cellphone number that will accept only numerical, minimum of 10, and max of 12.
 export function cellphoneNumberValidator(): (
   control: AbstractControl

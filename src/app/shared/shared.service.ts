@@ -30,28 +30,62 @@ export class SharedService {
 
   async getStatistics(): Promise<any> {
     try {
-      this.showLoader('Fetching content...');
-      const [contentStats, userStats] = await Promise.all([
-        this.client.queries.contentStatistics({}),
-        this.client.queries.userStatistics({}),
+      this.showLoader('Fetching statistics...');
+
+      // Call separate content statistics functions
+      const [
+        totalContent,
+        topViewedContent,
+        contentByCategory,
+        leastViewedContent,
+        averageViews,
+        recentContent,
+        monthlyStats,
+        // User statistics functions
+        totalUsers,
+        groupCounts,
+        newRegistrations,
+      ] = await Promise.all([
+        this.client.queries.totalContentFunction({}),
+        this.client.queries.topViewedContentFunction({}),
+        this.client.queries.contentByCategoryFunction({}),
+        this.client.queries.leastViewedContentFunction({}),
+        this.client.queries.averageViewsFunction({}),
+        this.client.queries.recentContentFunction({}),
+        this.client.queries.monthlyStatsFunction({}),
+        this.client.queries.totalUsersFunction({}),
+        this.client.queries.groupCountsFunction({}),
+        this.client.queries.newRegistrationsFunction({}),
       ]);
 
-      const contentData = contentStats?.data
-        ? typeof contentStats.data === 'string'
-          ? JSON.parse(contentStats.data)
-          : contentStats.data
-        : {};
-      const userData = userStats?.data
-        ? typeof userStats.data === 'string'
-          ? JSON.parse(userStats.data)
-          : userStats.data
-        : {};
+      const parseData = (result: any) =>
+        result?.data
+          ? typeof result.data === 'string'
+            ? JSON.parse(result.data)
+            : result.data
+          : {};
+
+      const contentStats = {
+        ...parseData(totalContent),
+        ...parseData(topViewedContent),
+        ...parseData(contentByCategory),
+        ...parseData(leastViewedContent),
+        ...parseData(averageViews),
+        ...parseData(recentContent),
+        ...parseData(monthlyStats),
+      };
+
+      const userStats = {
+        ...parseData(totalUsers),
+        ...parseData(groupCounts),
+        ...parseData(newRegistrations),
+      };
 
       this.hideLoader();
 
       return {
-        contentStats: contentData,
-        userStats: userData,
+        contentStats,
+        userStats,
       };
     } catch (error) {
       this.hideLoader();
@@ -196,15 +230,20 @@ export class SharedService {
   async getAllCustomFields(keyword?: string): Promise<any> {
     try {
       const { data } = await this.client.models.customFields.list({
-        filter: {
-          ...(keyword && {
-            fieldName: {
-              contains: keyword,
-            },
-          }),
-        },
+        // filter: {
+        //   ...(keyword && {
+        //     fieldName: {
+        //       contains: keyword,
+        //     },
+        //   }),
+        // },
       });
       if (data) {
+        if (keyword) {
+          return data.filter((data) =>
+            data.fieldName?.toLowerCase().includes(keyword.toLowerCase())
+          );
+        }
         return data;
       }
     } catch (error) {
@@ -235,11 +274,6 @@ export class SharedService {
     try {
       const { data } = await this.client.models.tags.list({
         filter: {
-          ...(id && {
-            id: {
-              contains: id,
-            },
-          }),
           ...(isVisible !== undefined && {
             isVisible: {
               eq: isVisible,
@@ -248,6 +282,11 @@ export class SharedService {
         },
       });
       if (data) {
+        if (id) {
+          return data.filter((tag) =>
+            tag.tag?.toLowerCase().includes(id.toLowerCase())
+          );
+        }
         return data;
       }
     } catch (error) {

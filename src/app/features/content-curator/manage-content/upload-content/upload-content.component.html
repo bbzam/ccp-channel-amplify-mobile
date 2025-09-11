@@ -305,7 +305,7 @@
       />
       @if (portraitErrorMessage()) {
       <mat-error>{{ portraitErrorMessage() }}</mat-error>
-      >} } @if (portraitFileURL) {
+      } } @if (portraitFileURL) {
       <img class="previewMedia" [src]="portraitFileURL" alt="poster-img" />
       @if (uploadProgress['portrait']) {
       <div class="progress">
@@ -391,7 +391,7 @@
       />
       @if(previewErrorMessage()) {
       <mat-error>{{ previewErrorMessage() }}</mat-error>
-      >} } @if (previewFileURL) {
+      } } @if (previewFileURL) {
       <video
         class="previewMedia"
         [src]="previewFileURL"
@@ -481,7 +481,7 @@
       />
       @if(fullErrorMessage()) {
       <mat-error>{{ fullErrorMessage() }}</mat-error>
-      >} } @if (fullFileURL) {
+      } } @if (fullFileURL) {
       <video
         class="previewMedia"
         [src]="fullFileURL"

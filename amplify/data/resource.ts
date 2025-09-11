@@ -5,7 +5,7 @@ import { editUser } from './auth/edit-user/resource';
 import { disableUser } from './auth/disable-user/resource';
 import { enableUser } from './auth/enable-user/resource';
 import { listUser } from './auth/list-user/resource';
-import { statistics } from './content/statistics/resource';
+// import { statistics } from './content/statistics/resource';
 import { getContentToUserFunction } from './content/content-to-user/get-contentToUser/resource';
 import { createContentToUserFunction } from './content/content-to-user/create-contentToUser/resource';
 import { getUserFavoritesFunction } from './content/content-to-user/get-userFavorites/resource';
@@ -17,6 +17,16 @@ import { createPaymentFunction } from './payment/create-payment/resource';
 import { userStatistics } from './content/statistics/user-statistics/resource';
 import { contentStatistics } from './content/statistics/content-statistics/resource';
 import { unsubscribeUser } from './auth/unsubscribe-user/resource';
+import { totalUsersFunction } from './content/statistics/user-statistics/total-users/resource';
+import { groupCountsFunction } from './content/statistics/user-statistics/group-counts/resource';
+import { newRegistrationsFunction } from './content/statistics/user-statistics/new-registrations/resource';
+import { totalContentFunction } from './content/statistics/content-statistics/total-content/resource';
+import { topViewedContentFunction } from './content/statistics/content-statistics/top-viewed-content/resource';
+import { contentByCategoryFunction } from './content/statistics/content-statistics/content-by-category/resource';
+import { leastViewedContentFunction } from './content/statistics/content-statistics/least-viewed-content/resource';
+import { averageViewsFunction } from './content/statistics/content-statistics/average-views/resource';
+import { recentContentFunction } from './content/statistics/content-statistics/recent-content/resource';
+import { monthlyStatsFunction } from './content/statistics/content-statistics/monthly-stats/resource';
 
 const schema = a.schema({
   Content: a
@@ -318,22 +328,114 @@ const schema = a.schema({
   //   .handler(a.handler.function(statistics))
   //   .returns(a.json()),
 
-  userStatistics: a
+  // userStatistics: a
+  //   .query()
+  //   .arguments({})
+  //   .authorization((allow) => [
+  //     allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+  //   ])
+  //   .handler(a.handler.function(userStatistics))
+  //   .returns(a.json()),
+
+  // contentStatistics: a
+  //   .query()
+  //   .arguments({})
+  //   .authorization((allow) => [
+  //     allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+  //   ])
+  //   .handler(a.handler.function(contentStatistics))
+  //   .returns(a.json()),
+
+  // User statistics functions
+  totalUsersFunction: a
     .query()
     .arguments({})
     .authorization((allow) => [
       allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
     ])
-    .handler(a.handler.function(userStatistics))
+    .handler(a.handler.function(totalUsersFunction))
     .returns(a.json()),
 
-  contentStatistics: a
+  groupCountsFunction: a
     .query()
     .arguments({})
     .authorization((allow) => [
       allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
     ])
-    .handler(a.handler.function(contentStatistics))
+    .handler(a.handler.function(groupCountsFunction))
+    .returns(a.json()),
+
+  newRegistrationsFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(newRegistrationsFunction))
+    .returns(a.json()),
+
+  // Content statistics functions
+  totalContentFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(totalContentFunction))
+    .returns(a.json()),
+
+  topViewedContentFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(topViewedContentFunction))
+    .returns(a.json()),
+
+  contentByCategoryFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(contentByCategoryFunction))
+    .returns(a.json()),
+
+  leastViewedContentFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(leastViewedContentFunction))
+    .returns(a.json()),
+
+  averageViewsFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(averageViewsFunction))
+    .returns(a.json()),
+
+  recentContentFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(recentContentFunction))
+    .returns(a.json()),
+
+  monthlyStatsFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(monthlyStatsFunction))
     .returns(a.json()),
 
   listUser: a

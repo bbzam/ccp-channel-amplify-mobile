@@ -35,9 +35,17 @@
         <mat-icon>arrow_back</mat-icon>
       </button>
       } -->
-      <!-- <button class="search" mat-icon-button matTooltip="Search">
+
+      @if (role === 'SUBSCRIBER') {
+      <button
+        class="search"
+        mat-icon-button
+        matTooltip="Search"
+        (click)="openSearch()"
+      >
         <mat-icon>search</mat-icon>
-      </button> -->
+      </button>
+      }
       <button
         class="search"
         mat-icon-button
@@ -93,3 +101,10 @@
     }
   </div>
 </header>
+
+<app-search-overlay
+  [isOpen]="isSearchOpen"
+  (closeSearchEvent)="closeSearch()"
+  (searchResultSelected)="onSearchResultSelected($event)"
+>
+</app-search-overlay>
