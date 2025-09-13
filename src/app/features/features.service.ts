@@ -349,14 +349,16 @@ export class FeaturesService {
     // Build a lookup { contentId: contentObject }
     const contentMap = new Map(contents.map((c) => [c.id, c]));
 
-    // 2. Get all tags
+    // 2. Get all tags and sort by order
     const { data: tags } = await this.client.models.tags.list();
+    const sortedTags =
+      tags?.sort((a, b) => (a.order || 999) - (b.order || 999)) || [];
 
     // 3. Group contents by tag name and return in template format
     const customTags: { name: string; content: Schema['Content']['type'][] }[] =
       [];
 
-    for (const tag of tags) {
+    for (const tag of sortedTags) {
       if (!tag.selectedContent || !tag.tag) continue;
 
       const tagContentIds = tag.selectedContent.split(',');

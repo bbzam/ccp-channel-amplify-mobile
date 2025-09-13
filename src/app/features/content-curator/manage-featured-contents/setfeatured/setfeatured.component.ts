@@ -47,8 +47,12 @@ export class SetfeaturedComponent {
 
   async ngOnInit(): Promise<void> {
     this.currentTab = this.tabs[0].category;
-    await this.getAllContents(this.currentTab === 'all' ? '' : this.currentTab); // Wait for contents to load first
-    await this.getAllFeatured(this.currentTab); // Then get featured
+    await this.getAllContents(this.currentTab === 'all' ? '' : this.currentTab);
+    await this.getAllFeatured(this.currentTab);
+    // Filter contents after featured items are loaded
+    this.contents = this.contents.filter(
+      (content) => !this.featured.some((selected) => selected.id === content.id)
+    );
   }
 
   async onTabChanged(category: string): Promise<void> {
@@ -56,6 +60,10 @@ export class SetfeaturedComponent {
     this.currentTab = category;
     await this.getAllContents(category === 'all' ? '' : category, this.keyword);
     await this.getAllFeatured(category);
+    // Filter contents after featured items are loaded
+    this.contents = this.contents.filter(
+      (content) => !this.featured.some((selected) => selected.id === content.id)
+    );
   }
 
   getAllContents(category: string, keyword?: string) {
@@ -65,7 +73,10 @@ export class SetfeaturedComponent {
       .getAllContents(category, true, fields, keyword)
       .then((data: any) => {
         if (data) {
-          this.contents = data;
+          this.contents = data.filter(
+            (content: any) =>
+              !this.featured.some((selected) => selected.id === content.id)
+          );
           console.log(this.contents);
         }
       });
@@ -110,7 +121,9 @@ export class SetfeaturedComponent {
 
   onItemsChanged(event: { options: ContentItem[]; contents: ContentItem[] }) {
     this.featured = event.options;
-    this.contents = event.contents;
+    this.contents = event.contents.filter(
+      (content) => !event.options.some((selected) => selected.id === content.id)
+    );
     this.featuredIds = this.featured.map((item) => item.id);
     this.hasChanges = true;
   }

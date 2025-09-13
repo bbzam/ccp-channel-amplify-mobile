@@ -66,24 +66,23 @@ export class SetFeaturedComponent implements OnInit, OnChanges {
   featuredIds: string[] = [];
   private searchTimeout: any;
 
-  updateAvailableItems() {
-    // Filter out items that are already in the featured list
-    this.contents = this.contents.filter(
-      (item) =>
-        !this.featured.some((featuredItem) => featuredItem.id === item.id)
-    );
-  }
+  // updateAvailableItems() {
+  //   // Filter out items that are already in the featured list
+  //   this.contents = this.contents.filter(
+  //     (item) =>
+  //       !this.featured.some((featuredItem) => featuredItem.id === item.id)
+  //   );
+  // }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['contents'] || changes['featured']) {
-      this.updateAvailableItems();
+    if (changes['featured']) {
+      this.featuredIds = this.featured?.map((item) => item.id) || [];
     }
   }
 
   ngOnInit() {
-    this.updateAvailableItems();
     // Initialize featuredIds with current featured items
-    this.featuredIds = this.featured.map((item) => item.id);
+    this.featuredIds = this.featured?.map((item) => item.id) || [];
   }
 
   drop(event: CdkDragDrop<ContentItem[], ContentItem[]>) {
@@ -101,12 +100,8 @@ export class SetFeaturedComponent implements OnInit, OnChanges {
         event.currentIndex
       );
 
-      // Update featuredIds based on the current state of featured array
       this.featuredIds = this.featured.map((item) => item.id);
       this.hasChanges = true;
-
-      // Update the available items list after transfer
-      this.updateAvailableItems();
     }
 
     // Emit the updated arrays
