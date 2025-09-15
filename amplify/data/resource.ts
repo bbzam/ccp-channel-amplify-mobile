@@ -163,6 +163,7 @@ const schema = a.schema({
   customFields: a
     .model({
       fieldName: a.string().required(),
+      order: a.integer(),
     })
     .authorization((allow) => [
       allow
@@ -277,6 +278,7 @@ const schema = a.schema({
       tag: a.string(),
       isVisible: a.boolean(),
       selectedContent: a.string(),
+      order: a.integer(),
     })
     .authorization((allow) => [
       allow.groups(['SUBSCRIBER']).to(['read']),

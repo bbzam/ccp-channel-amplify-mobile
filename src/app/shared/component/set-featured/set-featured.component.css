@@ -3,87 +3,204 @@
   align-items: center;
   flex-wrap: wrap;
   justify-content: space-between;
+  margin-top: 1em;
 
   input {
     font-size: 0.875em;
     min-width: 40%;
-    padding: 0.5em;
-    border-radius: 0.5em;
-    border-color: var(--gray);
-    margin: 1.5em 0 1em;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    margin: 0;
+    background: #ffffff;
+    transition: border-color 0.2s ease;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(102, 13, 33, 0.1);
   }
 
   button {
     background-color: var(--primary);
+    padding: 12px;
+    transition: all 0.2s ease;
 
     mat-icon {
       color: var(--tertiary);
     }
   }
-  button:hover {
+
+  button:hover:not([disabled]) {
     background-color: var(--primary-hovered);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 13, 33, 0.2);
   }
 
   button[disabled] {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
+    background-color: #6c757d;
+  }
+
+  .unsaved-changes {
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(102, 13, 33, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(102, 13, 33, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(102, 13, 33, 0);
   }
 }
 
 .main-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 1em;
+  gap: 24px;
 }
 
 .container {
   flex-grow: 1;
-  flex-basis: 40%;
-  width: 100%;
+  flex-basis: 45%;
+  min-width: 300px;
+
+  h2 {
+    color: var(--secondary);
+    font-size: 1.3em;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--primary);
+  }
 }
 
 .list {
-  border: solid 1px #ccc;
+  border: 1px solid #dee2e6;
   height: 100%;
-  background: white;
-  border-radius: 4px;
+  background: #f8f9fa;
+  border-radius: 12px;
   overflow: hidden;
   display: block;
+  transition: all 0.2s ease;
+}
+
+.list:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(102, 13, 33, 0.1);
 }
 
 .box {
-  padding: 20px 10px;
-  border-bottom: solid 1px #ccc;
-  color: rgba(0, 0, 0, 0.87);
+  padding: 16px 20px;
+  border-bottom: 1px solid #e9ecef;
+  color: var(--secondary);
   display: flex;
   flex-direction: row;
   align-items: center;
+  gap: 12px;
   box-sizing: border-box;
   cursor: move;
-  background: white;
-  font-size: 1em;
+  background: #ffffff;
+  font-size: 0.95em;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.box:hover {
+  background: #f8f9fa;
+  transform: translateX(4px);
+  border-left: 4px solid var(--primary);
+  padding-left: 16px;
+}
+
+.box mat-icon {
+  color: #6c757d;
+  font-size: 20px;
+  transition: color 0.2s ease;
+}
+
+.box:hover mat-icon {
+  color: var(--primary);
+}
+
+.box span {
+  flex: 1;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cdk-drag-preview {
   box-sizing: border-box;
-  border-radius: 4px;
-  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
-    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  background: #ffffff;
+  border: 2px solid var(--primary);
+  transform: rotate(2deg);
 }
 
 .cdk-drag-placeholder {
-  opacity: 0;
+  opacity: 0.4;
+  background: rgba(102, 13, 33, 0.1);
+  border: 2px dashed var(--primary);
+  border-radius: 8px;
 }
 
 .cdk-drag-animating {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .box:last-child {
-  border: none;
+  border-bottom: none;
 }
 
 .list.cdk-drop-list-dragging .box:not(.cdk-drag-placeholder) {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.list.cdk-drop-list-receiving {
+  background: rgba(102, 13, 33, 0.05);
+  border-color: var(--primary);
+}
+
+/* Empty state styling */
+.list:empty::after {
+  content: "Drop items here";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #6c757d;
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .container {
+    flex-basis: 100%;
+  }
+
+  .search-button {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .search-button input {
+    min-width: 100%;
+  }
 }

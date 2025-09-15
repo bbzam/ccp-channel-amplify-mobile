@@ -19,6 +19,8 @@ import { NgClass } from '@angular/common';
 import { filter } from 'rxjs';
 import { AuthServiceService } from '../../auth/auth-service.service';
 import { FeaturesService } from '../../features/features.service';
+import { SearchOverlayComponent } from '../search-overlay/search-overlay.component';
+import { MoreInfoComponent } from '../../shared/dialogs/more-info/more-info.component';
 
 @Component({
   selector: 'app-sidenav',
@@ -30,6 +32,7 @@ import { FeaturesService } from '../../features/features.service';
     MatCardModule,
     MatDividerModule,
     NgClass,
+    SearchOverlayComponent,
   ],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.css',
@@ -37,6 +40,8 @@ import { FeaturesService } from '../../features/features.service';
 export class SidenavComponent implements OnInit {
   navItems: any[] = navItems;
   currentRoute!: string;
+  isSearchOpen: boolean = false;
+
   readonly router = inject(Router);
   readonly activatedRoute = inject(ActivatedRoute);
   readonly dialog = inject(MatDialog);
@@ -44,7 +49,6 @@ export class SidenavComponent implements OnInit {
   readonly featuresService = inject(FeaturesService);
 
   ngOnInit(): void {
-    // Get the initial route and listen for route changes
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
@@ -57,6 +61,12 @@ export class SidenavComponent implements OnInit {
     const width = window.innerWidth;
     if (width >= 1025) {
       this.closeToggleDrawer();
+    }
+  }
+
+  @HostListener('document:keydown.escape') onEscapeKey(): void {
+    if (this.isSearchOpen) {
+      this.closeSearch();
     }
   }
 
@@ -73,7 +83,7 @@ export class SidenavComponent implements OnInit {
   }
 
   toggleDrawer() {
-    this.drawer.toggle(); // Toggle the drawer visibility
+    this.drawer.toggle();
   }
 
   closeToggleDrawer() {
@@ -83,6 +93,31 @@ export class SidenavComponent implements OnInit {
   navigate(routeLink: string) {
     this.drawer.close();
     this.router.navigate([routeLink]);
+  }
+
+  openSearch(): void {
+    this.drawer.close();
+    this.isSearchOpen = true;
+  }
+
+  closeSearch(): void {
+    this.isSearchOpen = false;
+  }
+
+  async onSearchResultSelected(result: any): Promise<void> {
+    const previewVideoPresignedUrl = await this.featuresService.getFileUrl(
+      result.previewVideoUrl
+    );
+
+    const updatedResult = {
+      ...result,
+      previewVideoPresignedUrl,
+    };
+
+    this.dialog
+      .open(MoreInfoComponent, { data: { data: updatedResult } })
+      .afterClosed()
+      .subscribe(() => {});
   }
 
   settingOnClick() {

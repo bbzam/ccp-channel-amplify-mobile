@@ -39,7 +39,6 @@ export class SettagComponent implements OnInit {
 
   private async loadTags(): Promise<void> {
     try {
-      // await this.getAllContents();
       this.tagData = await this.sharedService.getAllTags();
     } catch (error) {
       this.tagData = [];
@@ -49,19 +48,35 @@ export class SettagComponent implements OnInit {
   async onTagChanged(tagId: string): Promise<void> {
     this.hasChanges = false;
     this.currentTag = tagId;
+    this.tag = [];
+
     await this.getAllContents();
     await this.getAllTags(tagId);
+
+    // Filter out already selected items from contents
+    this.contents = this.contents.filter(
+      (content) => !this.tag.some((selected) => selected.id === content.id)
+    );
   }
 
-  getAllContents(keyword?: string) {
+  async getAllContents(keyword?: string): Promise<void> {
     const fields = ['id', 'title'];
-    return this.featuresService
-      .getAllContents('', true, fields, keyword)
-      .then((data: any) => {
-        if (data) {
-          this.contents = data;
-        }
-      });
+    try {
+      const data = await this.featuresService.getAllContents(
+        '',
+        true,
+        fields,
+        keyword
+      );
+      if (data) {
+        this.contents = data.filter(
+          (content: any) =>
+            !this.tag.some((selected) => selected.id === content.id)
+        );
+      }
+    } catch (error) {
+      this.contents = [];
+    }
   }
 
   async getAllTags(currentTagId: string) {
@@ -90,7 +105,9 @@ export class SettagComponent implements OnInit {
 
   onItemsChanged(event: { options: ContentItem[]; contents: ContentItem[] }) {
     this.tag = event.options;
-    this.contents = event.contents;
+    this.contents = event.contents.filter(
+      (content) => !event.options.some((selected) => selected.id === content.id)
+    );
     this.hasChanges = true;
   }
 

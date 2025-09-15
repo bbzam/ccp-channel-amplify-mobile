@@ -13,7 +13,6 @@ import {
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MoreInfoComponent } from '../../dialogs/more-info/more-info.component';
-import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { FeaturesService } from '../../../features/features.service';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -37,6 +36,8 @@ export class ContinueWatchingComponent
   startIndex: number = 0;
   itemsToShow: number = 8;
   private observer: IntersectionObserver | null = null;
+  private hoverTimeouts = new Map<HTMLVideoElement, NodeJS.Timeout>();
+
   isFirefox: boolean = false;
 
   ngOnInit(): void {
@@ -52,61 +53,78 @@ export class ContinueWatchingComponent
           const video = entry.target as HTMLVideoElement;
 
           if (!entry.isIntersecting) {
-            video.pause();
-            video.currentTime = 0;
+            this.pauseVideo(video);
           } else {
-            // Only load video when needed
-            if (!video.src && entry.target.getAttribute('data-src')) {
-              video.src = entry.target.getAttribute('data-src')!;
-            }
-
-            setTimeout(() => {
-              video.currentTime = 5;
-              video.play().catch(() => {});
-            }, 2000); // 2s delay
+            this.setupVideoHover(video);
           }
         });
       },
-      { threshold: 0 }
+      { threshold: 0.1, rootMargin: '50px' }
     );
 
-    // Start observing each video
-    this.videos.forEach((videoRef) => {
-      this.observer?.observe(videoRef.nativeElement);
-    });
-
-    // Handle changes to the videos QueryList
-    this.videos.changes.subscribe((videos: QueryList<ElementRef>) => {
-      videos.forEach((videoRef) => {
-        this.observer?.observe(videoRef.nativeElement);
-      });
-    });
+    this.observeVideos();
+    this.videos.changes.subscribe(() => this.observeVideos());
   }
 
   ngOnDestroy(): void {
-    if (this.observer) {
-      this.observer.disconnect();
-      this.observer = null;
-    }
+    this.hoverTimeouts.forEach((timeout) => clearTimeout(timeout));
+    this.hoverTimeouts.clear();
+    this.observer?.disconnect();
   }
 
-  constructor() {}
+  private observeVideos(): void {
+    this.videos.forEach((videoRef) => {
+      this.observer?.observe(videoRef.nativeElement);
+    });
+  }
+
+  private setupVideoHover(video: HTMLVideoElement): void {
+    const card = video.closest('.card') as HTMLElement;
+
+    // Check if already set up to avoid duplicate listeners
+    if (video.dataset['hoverSetup']) return;
+    video.dataset['hoverSetup'] = 'true';
+
+    const handleMouseEnter = () => {
+      if (!video.src && video.dataset['src']) {
+        video.src = video.dataset['src'];
+      }
+
+      const timeout = setTimeout(() => {
+        video.currentTime = 5;
+        video.play().catch(() => {});
+      }, 300);
+
+      this.hoverTimeouts.set(video, timeout);
+    };
+
+    const handleMouseLeave = () => {
+      const timeout = this.hoverTimeouts.get(video);
+      if (timeout) {
+        clearTimeout(timeout);
+        this.hoverTimeouts.delete(video);
+      }
+      this.pauseVideo(video);
+    };
+
+    card.addEventListener('mouseenter', handleMouseEnter);
+    card.addEventListener('mouseleave', handleMouseLeave);
+  }
+
+  private pauseVideo(video: HTMLVideoElement): void {
+    video.pause();
+    video.currentTime = 0;
+  }
 
   @HostListener('window:resize') updateItemsToShow(): void {
     const width = window.innerWidth;
-    if (width <= 480) {
-      this.itemsToShow = 2; // Mobile view
-    } else if (width >= 481 && width <= 767) {
-      this.itemsToShow = 3; // Small tablets to larger tablets
-    } else if (width >= 768 && width <= 1119) {
-      this.itemsToShow = 5; // Small desktop and larger tablets
-    } else if (width >= 1120 && width <= 1439) {
-      this.itemsToShow = 7; // Medium desktop
-    } else if (width >= 1440 && width <= 1919) {
-      this.itemsToShow = 8; // Large desktop
-    } else if (width >= 1920) {
-      this.itemsToShow = 9; // Ultra-wide desktop
-    }
+    if (width <= 480) this.itemsToShow = 1;
+    else if (width <= 767) this.itemsToShow = 3;
+    else if (width <= 1119) this.itemsToShow = 5;
+    else if (width <= 1439) this.itemsToShow = 7;
+    else if (width <= 1919) this.itemsToShow = 8;
+    else this.itemsToShow = 9;
+
     this.updateVisibleItems();
   }
 
@@ -119,34 +137,18 @@ export class ContinueWatchingComponent
 
     let timeParts: string[] = [];
 
-    if (hours > 0) {
-      timeParts.push(`${hours}h`);
-    }
-    if (minutes > 0) {
-      timeParts.push(`${minutes}m`);
-    }
-    if (seconds > 0 || timeParts.length === 0) {
-      timeParts.push(`${seconds}s`);
-    }
+    if (hours > 0) timeParts.push(`${hours}h`);
+    if (minutes > 0) timeParts.push(`${minutes}m`);
+    if (seconds > 0 || timeParts.length === 0) timeParts.push(`${seconds}s`);
 
     return timeParts.join(' ');
   }
 
   moreInfo(item: any) {
-    // // Get presigned URL directly
-    // this.featuresService
-    //   .getFileUrl(item.portraitImageUrl)
-    //   .then((urlPortrait) => {
-    //     const updatedItem = {
-    //       ...item,
-    //       portraitImagePresignedUrl: urlPortrait,
-    //     };
-
     this.dialog
       .open(MoreInfoComponent, { data: { data: item } })
       .afterClosed()
-      .subscribe((data) => {});
-    // });
+      .subscribe(() => {});
   }
 
   updateVisibleItems(): void {
@@ -163,7 +165,7 @@ export class ContinueWatchingComponent
 
     const progress = (Number(item.pauseTime) / Number(item.runtime)) * 100;
 
-    return Math.min(Math.max(progress, 0), 100); // Ensure value is between 0-100
+    return Math.min(Math.max(progress, 0), 100);
   }
 
   nextPage(): void {

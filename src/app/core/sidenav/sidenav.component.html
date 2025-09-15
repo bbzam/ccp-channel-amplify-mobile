@@ -43,6 +43,9 @@
     <mat-card>
       <mat-card-content>
         @if (role === 'SUBSCRIBER') {
+        <button mat-button color="primary" (click)="openSearch()">
+          <mat-icon>search</mat-icon><span>Search</span>
+        </button>
         <button mat-button color="primary" (click)="favoritesOnClick()">
           <mat-icon>add_circle</mat-icon><span>Favourites</span>
         </button>
@@ -57,3 +60,10 @@
     </mat-card>
   </mat-drawer>
 </mat-drawer-container>
+
+<app-search-overlay
+  [isOpen]="isSearchOpen"
+  (closeSearchEvent)="closeSearch()"
+  (searchResultSelected)="onSearchResultSelected($event)"
+>
+</app-search-overlay>

@@ -195,6 +195,19 @@ export class SharedService {
     }
   }
 
+  async batchUpdateTags(updates: any[]) {
+    try {
+      const promises = updates.map((update) =>
+        this.client.models.tags.update(update)
+      );
+      await Promise.all(promises);
+      this.handleSuccess('Tag order updated successfully!');
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+
   async updateCustomField(data: any) {
     try {
       const result = await this.client.models.customFields.update(data);
@@ -205,6 +218,19 @@ export class SharedService {
           'An error occurred while updating custom field. Please try again'
         );
       }
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+
+  async batchUpdateCustomFields(updates: any[]) {
+    try {
+      const promises = updates.map((update) =>
+        this.client.models.customFields.update(update)
+      );
+      await Promise.all(promises);
+      this.handleSuccess('Custom field order updated successfully!');
     } catch (error) {
       this.handleError(error);
       throw error;
@@ -229,22 +255,15 @@ export class SharedService {
 
   async getAllCustomFields(keyword?: string): Promise<any> {
     try {
-      const { data } = await this.client.models.customFields.list({
-        // filter: {
-        //   ...(keyword && {
-        //     fieldName: {
-        //       contains: keyword,
-        //     },
-        //   }),
-        // },
-      });
+      const { data } = await this.client.models.customFields.list({});
       if (data) {
-        if (keyword) {
-          return data.filter((data) =>
-            data.fieldName?.toLowerCase().includes(keyword.toLowerCase())
-          );
-        }
-        return data;
+        let result = keyword
+          ? data.filter((field) =>
+              field.fieldName?.toLowerCase().includes(keyword.toLowerCase())
+            )
+          : data;
+
+        return result.sort((a, b) => (a.order || 999) - (b.order || 999));
       }
     } catch (error) {
       this.handleError(error);
@@ -282,12 +301,13 @@ export class SharedService {
         },
       });
       if (data) {
-        if (id) {
-          return data.filter((tag) =>
-            tag.tag?.toLowerCase().includes(id.toLowerCase())
-          );
-        }
-        return data;
+        let result = id
+          ? data.filter((tag) =>
+              tag.tag?.toLowerCase().includes(id.toLowerCase())
+            )
+          : data;
+
+        return result.sort((a, b) => (a.order || 999) - (b.order || 999));
       }
     } catch (error) {
       this.handleError(error);
