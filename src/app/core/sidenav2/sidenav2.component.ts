@@ -1,9 +1,11 @@
 import { NgClass } from '@angular/common';
 import {
   Component,
+  EventEmitter,
   HostListener,
   inject,
   OnInit,
+  Output,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -37,6 +39,7 @@ import { InputComponent } from '../../shared/component/input/input.component';
   styleUrl: './sidenav2.component.css',
 })
 export class Sidenav2Component implements OnInit {
+  @Output() menuClicked = new EventEmitter<void>();
   @ViewChild('drawer') drawer!: MatDrawer;
   readonly router = inject(Router);
   readonly dialog = inject(MatDialog);
@@ -87,6 +90,7 @@ export class Sidenav2Component implements OnInit {
   }
 
   navigate(routeLink: string) {
+    this.menuClicked.emit();
     this.router.navigate([routeLink]);
   }
 
@@ -96,6 +100,7 @@ export class Sidenav2Component implements OnInit {
   }
 
   uploadNewContent() {
+    this.menuClicked.emit();
     this.dialog
       .open(UploadContentComponent, {
         disableClose: true,
@@ -106,6 +111,7 @@ export class Sidenav2Component implements OnInit {
   }
 
   addNewUser() {
+    this.menuClicked.emit();
     this.dialog
       .open(AddUserComponent, { disableClose: true, panelClass: 'dialog2' })
       .afterClosed()
@@ -113,6 +119,7 @@ export class Sidenav2Component implements OnInit {
   }
 
   async addCustomFields(): Promise<void> {
+    this.menuClicked.emit();
     const content = {
       inputType: 'text',
       title: 'Add Custom Field',
@@ -137,6 +144,7 @@ export class Sidenav2Component implements OnInit {
   }
 
   async createTag(): Promise<void> {
+    this.menuClicked.emit();
     const content = {
       inputType: 'text',
       title: 'Create a Tag',

@@ -42,7 +42,7 @@ export const handler: CustomMessageTriggerHandler = async (
         'Welcome!',
         `Your user name is ${event.request.usernameParameter}`,
         event.request.codeParameter,
-        'This is your temporary password. Please change it upon your first login.'
+        'This is your temporary password (valid for 7 days). Please change it upon your first login.'
       );
       event.response.emailSubject = 'Your temporary password';
     }

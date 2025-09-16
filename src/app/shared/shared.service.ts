@@ -32,20 +32,7 @@ export class SharedService {
     try {
       this.showLoader('Fetching statistics...');
 
-      // Call separate content statistics functions
-      const [
-        totalContent,
-        topViewedContent,
-        contentByCategory,
-        leastViewedContent,
-        averageViews,
-        recentContent,
-        monthlyStats,
-        // User statistics functions
-        totalUsers,
-        groupCounts,
-        newRegistrations,
-      ] = await Promise.all([
+      const results = await Promise.allSettled([
         this.client.queries.totalContentFunction({}),
         this.client.queries.topViewedContentFunction({}),
         this.client.queries.contentByCategoryFunction({}),
@@ -65,21 +52,19 @@ export class SharedService {
             : result.data
           : {};
 
-      const contentStats = {
-        ...parseData(totalContent),
-        ...parseData(topViewedContent),
-        ...parseData(contentByCategory),
-        ...parseData(leastViewedContent),
-        ...parseData(averageViews),
-        ...parseData(recentContent),
-        ...parseData(monthlyStats),
-      };
+      const contentStats = {};
+      const userStats = {};
 
-      const userStats = {
-        ...parseData(totalUsers),
-        ...parseData(groupCounts),
-        ...parseData(newRegistrations),
-      };
+      results.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          const data = parseData(result.value);
+          if (index < 7) {
+            Object.assign(contentStats, data);
+          } else {
+            Object.assign(userStats, data);
+          }
+        }
+      });
 
       this.hideLoader();
 

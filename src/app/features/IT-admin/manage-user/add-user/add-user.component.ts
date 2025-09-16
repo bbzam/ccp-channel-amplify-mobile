@@ -93,8 +93,25 @@ export class AddUserComponent implements OnInit {
         [Validators.required, disallowCharacters(), minimumAge()],
       ],
       role: ['', [Validators.required, disallowCharacters()]],
-      paidUntil: ['', [Validators.required, disallowCharacters()]],
+      paidUntil: ['', [disallowCharacters()]],
     });
+
+    // Watch for role changes
+    this.createUserForm
+      .get('role')
+      ?.valueChanges.pipe(takeUntilDestroyed())
+      .subscribe((role) => {
+        const paidUntilControl = this.createUserForm.get('paidUntil');
+        if (role === 'SUBSCRIBER') {
+          paidUntilControl?.setValidators([
+            Validators.required,
+            disallowCharacters(),
+          ]);
+        } else {
+          paidUntilControl?.setValidators([disallowCharacters()]);
+        }
+        paidUntilControl?.updateValueAndValidity();
+      });
   }
 
   private setupValidationSubscriptions(): void {
@@ -175,7 +192,10 @@ export class AddUserComponent implements OnInit {
         email: formData.email,
         birthdate: formData.birthdate,
         role: formData.role,
-        paidUntil: `${formData.paidUntil} 00:00:00 UTC`,
+        paidUntil:
+          formData.role === 'SUBSCRIBER'
+            ? `${formData.paidUntil} 00:00:00 UTC`
+            : '',
       };
 
       const isSuccess = await this.featuresService.createUser(data);

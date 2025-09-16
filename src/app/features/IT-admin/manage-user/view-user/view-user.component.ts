@@ -128,9 +128,26 @@ export class ViewUserComponent implements OnInit {
       ],
       paidUntil: [
         { value: this.paidUntil, disabled: !this.isEditing() },
-        [Validators.required, disallowCharacters()],
+        [disallowCharacters()],
       ],
     });
+
+    // Watch for role changes
+    this.editUserForm
+      .get('role')
+      ?.valueChanges.pipe(takeUntilDestroyed())
+      .subscribe((role) => {
+        const paidUntilControl = this.editUserForm.get('paidUntil');
+        if (role === 'SUBSCRIBER') {
+          paidUntilControl?.setValidators([
+            Validators.required,
+            disallowCharacters(),
+          ]);
+        } else {
+          paidUntilControl?.setValidators([disallowCharacters()]);
+        }
+        paidUntilControl?.updateValueAndValidity();
+      });
   }
 
   toggleEditMode() {
@@ -220,7 +237,10 @@ export class ViewUserComponent implements OnInit {
         lastname: formData.lastname,
         birthdate: formData.birthdate,
         role: formData.role,
-        paidUntil: `${formData.paidUntil} 00:00:00 UTC`,
+        paidUntil:
+          formData.role === 'SUBSCRIBER'
+            ? `${formData.paidUntil} 00:00:00 UTC`
+            : '',
       };
       const isSuccess = await this.featuresService.updateUser(data);
       this.dialogRef.close(true);
