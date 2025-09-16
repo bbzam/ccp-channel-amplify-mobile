@@ -4,15 +4,14 @@
     <li class="nav-item">
       <a
         [routerLink]="item.routeLink"
-        routerLinkActive="active"
-        [class.active]="item.routeLink === currentRoute"
+        [class.active]="isActiveRoute(item.routeLink)"
       >
         <span
           class="label"
-          [ngClass]="{ 'focus-label': item.routeLink === currentRoute }"
+          [ngClass]="{ 'focus-label': isActiveRoute(item.routeLink) }"
           >{{ item.label }}</span
         >
-        @if (item.routeLink === currentRoute) {
+        @if (isActiveRoute(item.routeLink)) {
         <span class="dot" [class.focus-dot]="isScrolled"></span>
         }
       </a>

@@ -3,7 +3,7 @@ import { ErrorMessageDialogComponent } from '../shared/dialogs/error-message-dia
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ContentMetadata } from './features.model';
-import { generateClient, post } from 'aws-amplify/api';
+import { generateClient } from 'aws-amplify/api';
 import { SuccessMessageDialogComponent } from '../shared/dialogs/success-message-dialog/success-message-dialog.component';
 import { Schema } from '../../../amplify/data/resource';
 import { getUrl } from 'aws-amplify/storage';
@@ -14,10 +14,8 @@ import { SharedService } from '../shared/shared.service';
 })
 export class FeaturesService {
   private readonly dialog = inject(MatDialog);
-  private readonly router = inject(Router);
   private readonly client = generateClient<Schema>();
   private readonly sharedService = inject(SharedService);
-  private contentCache: Map<string, any[]> = new Map();
 
   constructor() {}
 
@@ -213,7 +211,6 @@ export class FeaturesService {
         typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
 
       if (parsedResult?.success) {
-        this.clearContentCache();
         this.sharedService.hideLoader();
         return parsedResult;
       } else {
@@ -243,7 +240,6 @@ export class FeaturesService {
         typeof result.data === 'string' ? JSON.parse(result.data) : result.data;
 
       if (parsedResult?.success) {
-        this.clearContentCache();
         this.sharedService.hideLoader();
         return parsedResult;
       } else {
@@ -268,31 +264,9 @@ export class FeaturesService {
         }
       );
 
-      this.clearContentCache();
       return result;
     } catch (error) {
       throw error;
-    }
-  }
-
-  private clearContentCache(
-    category?: string,
-    status?: boolean,
-    keyword?: string
-  ): void {
-    if (
-      category !== undefined ||
-      status !== undefined ||
-      keyword !== undefined
-    ) {
-      // Clear specific cache entry if parameters are provided
-      const cacheKey = `${category || ''}-${
-        status === undefined ? '' : status
-      }-${keyword || ''}`;
-      this.contentCache.delete(cacheKey);
-    } else {
-      // Clear the entire cache if no parameters are provided
-      this.contentCache.clear();
     }
   }
 
@@ -303,14 +277,6 @@ export class FeaturesService {
     keyword?: string,
     filterBy?: {}
   ): Promise<any> {
-    const cacheKey = `${category}-${status}-${keyword || ''}-${JSON.stringify(
-      filterBy || {}
-    )}`;
-
-    if (this.contentCache.has(cacheKey)) {
-      return this.contentCache.get(cacheKey);
-    }
-
     try {
       this.sharedService.showLoader('Fetching content...');
 
@@ -322,14 +288,11 @@ export class FeaturesService {
         filterBy,
       });
 
-      if (result.data && typeof result.data === 'string') {
-        const parsedData = JSON.parse(result.data);
-        this.contentCache.set(cacheKey, parsedData);
-        this.sharedService.hideLoader();
-        return parsedData;
-      }
-
       this.sharedService.hideLoader();
+
+      if (result.data && typeof result.data === 'string') {
+        return JSON.parse(result.data);
+      }
 
       return result.data;
     } catch (error) {

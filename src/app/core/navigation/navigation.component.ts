@@ -17,14 +17,17 @@ import { filter } from 'rxjs';
 })
 export class NavigationComponent implements OnInit {
   isScrolled: boolean = false;
-  navItems:any[] = navItems;
-  currentRoute!: string;
+  navItems: any[] = navItems;
+  currentRoute: string = '';
 
   readonly router = inject(Router);
   readonly activatedRoute = inject(ActivatedRoute);
 
   ngOnInit(): void {
-    // Get the initial route and listen for route changes
+    // Set initial route
+    this.currentRoute = this.router.url;
+
+    // Listen for route changes
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
@@ -32,9 +35,14 @@ export class NavigationComponent implements OnInit {
       });
   }
 
-  constructor() {}
-
   @HostListener('window:scroll') onWindowScroll(): void {
     this.isScrolled = window.scrollY > 0;
+  }
+
+  isActiveRoute(routeLink: string): boolean {
+    if (routeLink === '/subscriber') {
+      return this.currentRoute === '/subscriber';
+    }
+    return this.currentRoute.startsWith(routeLink);
   }
 }

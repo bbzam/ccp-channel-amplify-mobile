@@ -118,7 +118,7 @@ export class ContinueWatchingComponent
 
   @HostListener('window:resize') updateItemsToShow(): void {
     const width = window.innerWidth;
-    if (width <= 480) this.itemsToShow = 1;
+    if (width <= 480) this.itemsToShow = 2;
     else if (width <= 767) this.itemsToShow = 3;
     else if (width <= 1119) this.itemsToShow = 5;
     else if (width <= 1439) this.itemsToShow = 7;
