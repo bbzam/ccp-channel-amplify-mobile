@@ -190,40 +190,165 @@ body {
 
   .frc {
     min-height: 21em;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
 
     .label-wrapper {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background: rgba(102, 13, 33, 0.1);
+      backdrop-filter: blur(15px);
+      border-radius: 12px;
+      border: 1px solid rgba(102, 13, 33, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-      .see-more {
-        display: flex;
-        align-items: center;
-        margin-right: 2em;
-        cursor: pointer;
-        /* opacity: 0; */
-        color: var(--gray);
-        font-size: 1em;
-        /* transition: opacity 0.4s ease-in-out; */
-        /* visibility: hidden; */
+      &:hover {
+        background: rgba(102, 13, 33, 0.15);
+        border-color: rgba(102, 13, 33, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(102, 13, 33, 0.3);
       }
 
       .label {
-        color: var(--gray);
-        line-height: 0;
+        color: var(--tertiary);
+        line-height: 1.2;
         display: flex;
         align-content: center;
         align-items: center;
         flex-wrap: wrap;
-        margin-left: 1.5em;
-        font-size: 1.5em;
+        margin: 0;
+        font-size: 1.8em;
+        font-weight: 700;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+        letter-spacing: -0.02em;
+        position: relative;
+
+        &::after {
+          content: "";
+          position: absolute;
+          bottom: -4px;
+          left: 0;
+          width: 0;
+          height: 3px;
+          background: linear-gradient(90deg, var(--accent), var(--primary));
+          border-radius: 2px;
+          transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+      }
+
+      .see-more {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        color: var(--gray);
+        font-size: 0.9em;
+        font-weight: 500;
+        padding: 0 1.2rem;
+        border-radius: 25px;
+        background: rgba(102, 13, 33, 0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(102, 13, 33, 0.25);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        button {
+          background: transparent;
+          border: none;
+          color: inherit;
+          border-radius: 50%;
+          transition: all 0.3s ease;
+
+          mat-icon {
+            transition: transform 0.3s ease;
+          }
+        }
+
+        &:hover {
+          color: var(--accent);
+          background: rgba(151, 122, 0, 0.2);
+          border-color: rgba(151, 122, 0, 0.4);
+          transform: translateX(4px);
+          box-shadow: 0 4px 16px rgba(151, 122, 0, 0.3);
+
+          button mat-icon {
+            transform: translateX(2px);
+          }
+        }
+      }
+
+      &:hover .label::after {
+        width: 60px;
       }
     }
+  }
 
-    .label-wrapper:hover .see-more {
-      color: var(--accent);
-      /* opacity: 1;
-      visibility: visible; */
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .frc {
+      padding: 0 0.5rem;
+      margin-bottom: 1.5rem;
+
+      .label-wrapper {
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+
+        .label {
+          font-size: 1.4em;
+        }
+
+        .see-more {
+          align-self: flex-end;
+          font-size: 0.85em;
+          padding: 0 1rem;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .frc .label-wrapper {
+      .label {
+        font-size: 1.2em;
+      }
+
+      .see-more {
+        font-size: 0.8em;
+        padding: 0 0.8rem;
+      }
+    }
+  }
+
+  /* Enhanced animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .frc {
+    animation: fadeInUp 0.6s ease-out forwards;
+
+    &:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0.2s;
+    }
+    &:nth-child(4) {
+      animation-delay: 0.3s;
+    }
+    &:nth-child(5) {
+      animation-delay: 0.4s;
+    }
+    &:nth-child(6) {
+      animation-delay: 0.5s;
     }
   }
 }
