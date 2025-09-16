@@ -74,6 +74,17 @@ export class TableComponent {
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+
+    // Custom sort accessor for status column
+    this.dataSource.sortingDataAccessor = (data, sortHeaderId) => {
+      if (sortHeaderId === 'status') {
+        if (!data.vttUrl || !data.processedFullVideoUrl) {
+          return 0; // Processing
+        }
+        return data.status === false ? 1 : 2; // Scheduled: 1, Published: 2
+      }
+      return data[sortHeaderId];
+    };
   }
 
   ngOnChanges(changes: any) {

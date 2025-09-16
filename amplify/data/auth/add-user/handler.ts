@@ -65,36 +65,53 @@ export const handler: Handler = async (event: any) => {
     );
   }
 
+  function formatDateForCognito(dateValue: string): string {
+    if (!dateValue) return '';
+
+    const date = new Date(dateValue);
+    if (isNaN(date.getTime())) {
+      throw new Error('Invalid date format for paidUntil');
+    }
+
+    return date.toISOString().split('T')[0]; // Returns yyyy-MM-dd format
+  }
+
+  const userAttributes = [
+    {
+      Name: 'given_name',
+      Value: body.firstname,
+    },
+    {
+      Name: 'family_name',
+      Value: body.lastname,
+    },
+    {
+      Name: 'email_verified',
+      Value: 'true',
+    },
+    {
+      Name: 'email',
+      Value: body.email,
+    },
+    {
+      Name: 'birthdate',
+      Value: body.birthdate,
+    },
+  ];
+
+  // Only add paidUntil if it exists and format it properly
+  if (body.paidUntil) {
+    userAttributes.push({
+      Name: 'custom:paidUntil',
+      Value: formatDateForCognito(body.paidUntil),
+    });
+  }
+
   const tempPassword = generateTemporaryPassword();
   const command = new AdminCreateUserCommand({
     Username: event.arguments.email,
     UserPoolId: userPoolId,
-    UserAttributes: [
-      {
-        Name: 'given_name',
-        Value: body.firstname,
-      },
-      {
-        Name: 'family_name',
-        Value: body.lastname,
-      },
-      {
-        Name: 'email_verified',
-        Value: 'true',
-      },
-      {
-        Name: 'email',
-        Value: body.email,
-      },
-      {
-        Name: 'birthdate',
-        Value: body.birthdate,
-      },
-      {
-        Name: 'custom:paidUntil',
-        Value: body.paidUntil,
-      },
-    ],
+    UserAttributes: userAttributes,
     TemporaryPassword: tempPassword,
     ForceAliasCreation: false,
     DesiredDeliveryMediums: ['EMAIL'],
