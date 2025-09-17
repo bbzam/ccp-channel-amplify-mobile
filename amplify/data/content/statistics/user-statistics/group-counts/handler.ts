@@ -24,7 +24,10 @@ export const handler = async () => {
       const response: ScanCommandOutput = await docClient.send(
         new ScanCommand({
           TableName: process.env.PAYMENTTOUSER_TABLE,
-          ProjectionExpression: 'userId, subscriptionType, status',
+          ProjectionExpression: 'userId, subscriptionType, #status',
+          ExpressionAttributeNames: {
+            '#status': 'status',
+          },
           ExclusiveStartKey: lastEvaluatedKey,
         })
       );
