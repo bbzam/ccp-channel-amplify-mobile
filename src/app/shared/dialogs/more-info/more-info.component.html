@@ -61,31 +61,45 @@
             <p>{{ transform(item.runtime) }}</p>
             }
           </div>
-          <div class="metadata-director-writer">
-            @if (item.director) {
-            <p class="director">Directed by {{ item.director }}</p>
-            } @if (item.writer) {
-            <p class="writer">Written by {{ item.writer }}</p>
-            }
-          </div>
-          @if (parsedCustomFields.length) {
           <div class="custom-fields">
-            @for (field of parsedCustomFields; track $index) { @if
-            (field.value?.toString().trim()) {
+            <!-- <div class="metadata-director-writer">
+              @if (item.director) {
+              <p class="director">Directed by {{ item.director }}</p>
+              } @if (item.writer) {
+              <p class="writer">Written by {{ item.writer }}</p>
+              }
+            </div> -->
+
+            <div class="custom-field">
+              <span class="field-name">Directed by:</span>
+              <span class="field-value">{{ item.director }}</span>
+            </div>
+
+            <div class="custom-field">
+              <span class="field-name">Written by:</span>
+              <span class="field-value">{{ item.writer }}</span>
+            </div>
+            @if (parsedCustomFields.length) { @for (field of parsedCustomFields;
+            track $index) { @if (field.value?.toString().trim()) {
             <div class="custom-field">
               <span class="field-name">{{ field.name }}:</span>
               <span class="field-value">{{ field.value }}</span>
             </div>
-            } }
+            } } }
+            <div class="custom-field">
+              <span class="field-name">Description:</span>
+              <span class="field-value">{{ item.description }}</span>
+            </div>
+            <!-- <p class="description">{{ item.description }}</p> -->
           </div>
-          }
-          <p class="description">{{ item.description }}</p>
           <div class="actions">
             <div class="watch">
               <button
                 class="buttonMS"
                 mat-icon-button
-                (click)="watchVideo(item.processedFullVideoUrl, item.vttUrl, item.id)"
+                (click)="
+                  watchVideo(item.processedFullVideoUrl, item.vttUrl, item.id)
+                "
               >
                 <div>WATCH</div>
                 <mat-icon matSuffix>play_arrow</mat-icon>
