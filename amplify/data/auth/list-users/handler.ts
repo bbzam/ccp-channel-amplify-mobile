@@ -79,7 +79,7 @@ export const handler: Handler = async (event) => {
         ddbClient.send(
           new ScanCommand({
             TableName: process.env.PAYMENTTOUSER_TABLE,
-            ProjectionExpression: 'userId, subscriptionType',
+            ProjectionExpression: 'userId, subscriptionType, status',
             FilterExpression: 'attribute_exists(subscriptionType)',
           })
         )
@@ -118,6 +118,12 @@ export const handler: Handler = async (event) => {
       ]) || []
     );
 
+    const paidSubscriberSet = new Set(
+      paymentData?.Items?.filter((item: any) => item.status === 'S').map(
+        (item: any) => item.userId
+      ) || []
+    );
+
     let finalUsers: ExtendedUserType[] = users.map((user: UserType) => ({
       ...user,
       subscriptionType: subscriptionMap.get(user.Username) || null,
@@ -125,9 +131,13 @@ export const handler: Handler = async (event) => {
 
     // Apply subscription filter
     if (role === 'PAID_SUBSCRIBER') {
-      finalUsers = finalUsers.filter((user) => user.subscriptionType);
+      finalUsers = finalUsers.filter((user) =>
+        paidSubscriberSet.has(user.Username)
+      );
     } else if (role === 'FREE_SUBSCRIBER') {
-      finalUsers = finalUsers.filter((user) => !user.subscriptionType);
+      finalUsers = finalUsers.filter(
+        (user) => !paidSubscriberSet.has(user.Username)
+      );
     }
 
     return { Users: finalUsers, NextToken: cognitoResponse.NextToken };
