@@ -79,7 +79,10 @@ export const handler: Handler = async (event) => {
         ddbClient.send(
           new ScanCommand({
             TableName: process.env.PAYMENTTOUSER_TABLE,
-            ProjectionExpression: 'userId, subscriptionType, status',
+            ProjectionExpression: 'userId, subscriptionType, #status',
+            ExpressionAttributeNames: {
+              '#status': 'status',
+            },
             FilterExpression: 'attribute_exists(subscriptionType)',
           })
         )
