@@ -24,7 +24,7 @@ export const handler = async () => {
       const response: ScanCommandOutput = await docClient.send(
         new ScanCommand({
           TableName: process.env.PAYMENTTOUSER_TABLE,
-          ProjectionExpression: 'userId, subscriptionType',
+          ProjectionExpression: 'userId, subscriptionType, status',
           ExclusiveStartKey: lastEvaluatedKey,
         })
       );
@@ -34,7 +34,7 @@ export const handler = async () => {
 
     const subscriptionMap = new Set(
       paymentData
-        .filter((item) => item.subscriptionType)
+        .filter((item) => item.subscriptionType && item.status === 'S')
         .map((item) => item.userId)
     );
 

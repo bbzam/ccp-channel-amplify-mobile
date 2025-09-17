@@ -33,13 +33,7 @@ export class SharedService {
       this.showLoader('Fetching statistics...');
 
       const results = await Promise.allSettled([
-        this.client.queries.totalContentFunction({}),
-        this.client.queries.topViewedContentFunction({}),
-        this.client.queries.contentByCategoryFunction({}),
-        this.client.queries.leastViewedContentFunction({}),
-        this.client.queries.averageViewsFunction({}),
-        this.client.queries.recentContentFunction({}),
-        this.client.queries.monthlyStatsFunction({}),
+        this.client.queries.contentStatistics({}),
         this.client.queries.totalUsersFunction({}),
         this.client.queries.groupCountsFunction({}),
         this.client.queries.newRegistrationsFunction({}),
@@ -58,7 +52,7 @@ export class SharedService {
       results.forEach((result, index) => {
         if (result.status === 'fulfilled') {
           const data = parseData(result.value);
-          if (index < 7) {
+          if (index === 0) {
             Object.assign(contentStats, data);
           } else {
             Object.assign(userStats, data);

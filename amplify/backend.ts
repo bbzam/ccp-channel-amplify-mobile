@@ -4,7 +4,7 @@ import { data } from './data/resource';
 import { storage } from './storage/resource';
 // import { statistics } from './data/content/statistics/resource';
 // import { userStatistics } from './data/content/statistics/user-statistics/resource';
-// import { contentStatistics } from './data/content/statistics/content-statistics/resource';
+import { contentStatistics } from './data/content/statistics/content-statistics/resource';
 import { createContentToUserFunction } from './data/content/content-to-user/create-contentToUser/resource';
 import { getContentToUserFunction } from './data/content/content-to-user/get-contentToUser/resource';
 import { getUserFavoritesFunction } from './data/content/content-to-user/get-userFavorites/resource';
@@ -38,7 +38,7 @@ const backend = defineBackend({
   auth,
   data,
   storage,
-  // contentStatistics,
+  contentStatistics,
   // userStatistics,
   createContentToUserFunction,
   getContentToUserFunction,
@@ -110,7 +110,7 @@ backend.storage.resources.bucket.addEventNotification(
 
 const createVtt = backend.createVttFunction.resources.lambda;
 // const statisticsQuery = backend.statistics.resources.lambda;
-// const contentStatisticsQuery = backend.contentStatistics.resources.lambda;
+const contentStatisticsQuery = backend.contentStatistics.resources.lambda;
 // const userStatisticsQuery = backend.userStatistics.resources.lambda;
 const totalContentQuery = backend.totalContentFunction.resources.lambda;
 const topViewedContentQuery = backend.topViewedContentFunction.resources.lambda;
@@ -192,13 +192,13 @@ const updateContentStatement = new iam.PolicyStatement({
 //   ], //limiting the permissions to only Content table
 // });
 
-// const contentStatisticsStatement = new iam.PolicyStatement({
-//   sid: 'contentStatistics',
-//   actions: ['dynamodb:Scan'],
-//   resources: [
-//     `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
-//   ],
-// });
+const contentStatisticsStatement = new iam.PolicyStatement({
+  sid: 'contentStatistics',
+  actions: ['dynamodb:Scan'],
+  resources: [
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
+  ],
+});
 
 // const userStatisticsStatement = new iam.PolicyStatement({
 //   sid: 'userStatistics',
@@ -305,7 +305,7 @@ getContentQuery.addToRolePolicy(getContentStatement);
 createContentMutation.addToRolePolicy(createContentStatement);
 updateContentMutation.addToRolePolicy(updateContentStatement);
 // statisticsQuery.addToRolePolicy(statisticsStatement);
-// contentStatisticsQuery.addToRolePolicy(contentStatisticsStatement);
+contentStatisticsQuery.addToRolePolicy(contentStatisticsStatement);
 // userStatisticsQuery.addToRolePolicy(userStatisticsStatement);
 totalContentQuery.addToRolePolicy(contentStatsStatement);
 topViewedContentQuery.addToRolePolicy(contentStatsStatement);
