@@ -338,14 +338,14 @@ const schema = a.schema({
   //   .handler(a.handler.function(userStatistics))
   //   .returns(a.json()),
 
-  // contentStatistics: a
-  //   .query()
-  //   .arguments({})
-  //   .authorization((allow) => [
-  //     allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
-  //   ])
-  //   .handler(a.handler.function(contentStatistics))
-  //   .returns(a.json()),
+  contentStatistics: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
+    ])
+    .handler(a.handler.function(contentStatistics))
+    .returns(a.json()),
 
   // User statistics functions
   totalUsersFunction: a
