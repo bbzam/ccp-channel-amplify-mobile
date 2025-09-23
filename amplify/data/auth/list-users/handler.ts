@@ -61,16 +61,25 @@ export const handler: Handler = async (event) => {
   const normalizedKeyword = keyword?.toLowerCase();
 
   try {
-    // Parallel execution
-    const cognitoPromise = cognitoClient.send(
-      new ListUsersInGroupCommand({
-        UserPoolId: process.env.UserPoolId,
-        GroupName: mapToActualRole(role as Role),
-        Limit: validLimit,
-      })
-    );
+    // Get all users with pagination
+    let allUsers: UserType[] = [];
+    let nextToken: string | undefined;
 
-    const promises: Promise<any>[] = [cognitoPromise];
+    do {
+      const response = await cognitoClient.send(
+        new ListUsersInGroupCommand({
+          UserPoolId: process.env.UserPoolId,
+          GroupName: mapToActualRole(role as Role),
+          Limit: 60,
+          NextToken: nextToken,
+        })
+      );
+
+      allUsers = allUsers.concat(response.Users || []);
+      nextToken = response.NextToken;
+    } while (nextToken);
+
+    const promises: Promise<any>[] = [];
     if (isSubscriberRole) {
       promises.push(
         ddbClient.send(
@@ -86,10 +95,9 @@ export const handler: Handler = async (event) => {
     }
 
     const results = await Promise.all(promises);
-    const cognitoResponse = results[0];
-    const paymentData = results[1];
+    const paymentData = results[0];
 
-    let users = cognitoResponse.Users || [];
+    let users = allUsers;
 
     if (normalizedKeyword) {
       users = users.filter(
@@ -104,38 +112,60 @@ export const handler: Handler = async (event) => {
     }
 
     if (!isSubscriberRole) {
-      return { Users: users, NextToken: cognitoResponse.NextToken };
+      return { Users: users };
     }
 
-    const subscriptionMap = new Map(
-      paymentData?.Items?.map((item: any) => [
-        item.userId,
-        item.subscriptionType,
-      ]) || []
-    );
+    const subscriptionMap = new Map();
+    const paidSubscriberSet = new Set();
 
-    const paidSubscriberSet = new Set(
-      paymentData?.Items?.filter((item: any) => item.status === 'S').map(
-        (item: any) => item.userId
-      ) || []
-    );
+    if (paymentData?.Items) {
+      paymentData.Items.forEach((item: any) => {
+        if (item.userId && item.subscriptionType) {
+          subscriptionMap.set(item.userId, item.subscriptionType);
+        }
+        if (item.userId && item.status === 'S') {
+          paidSubscriberSet.add(item.userId);
+        }
+      });
+    }
 
-    let finalUsers: ExtendedUserType[] = users.map((user: UserType) => ({
-      ...user,
-      subscriptionType: subscriptionMap.get(user.Username) || null,
-    }));
+    // Replace the user matching logic (lines 108-130) with:
+    let finalUsers: ExtendedUserType[] = users.map((user: UserType) => {
+      const userEmail = user.Attributes?.find(
+        (attr) => attr.Name === 'email'
+      )?.Value;
+      const userId = user.Username;
+
+      return {
+        ...user,
+        subscriptionType:
+          subscriptionMap.get(userId) || subscriptionMap.get(userEmail) || null,
+      };
+    });
 
     if (role === 'PAID_SUBSCRIBER') {
-      finalUsers = finalUsers.filter((user) =>
-        paidSubscriberSet.has(user.Username)
-      );
+      finalUsers = finalUsers.filter((user) => {
+        const userEmail = user.Attributes?.find(
+          (attr) => attr.Name === 'email'
+        )?.Value;
+        return (
+          paidSubscriberSet.has(user.Username) ||
+          paidSubscriberSet.has(userEmail)
+        );
+      });
     } else if (role === 'FREE_SUBSCRIBER') {
-      finalUsers = finalUsers.filter(
-        (user) => !paidSubscriberSet.has(user.Username)
-      );
+      finalUsers = finalUsers.filter((user) => {
+        const userEmail = user.Attributes?.find(
+          (attr) => attr.Name === 'email'
+        )?.Value;
+        return (
+          !paidSubscriberSet.has(user.Username) &&
+          !paidSubscriberSet.has(userEmail)
+        );
+      });
     }
 
-    return { Users: finalUsers, NextToken: cognitoResponse.NextToken };
+    return { Users: finalUsers };
   } catch (error) {
     console.error('Error listing users:', error);
     throw error instanceof Error
