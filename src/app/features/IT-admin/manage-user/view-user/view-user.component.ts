@@ -94,6 +94,7 @@ export class ViewUserComponent implements OnInit {
     this.role = data.role;
     this.paidUntil = data['custom:paidUntil']?.split(' ')[0] || '';
     this.Enabled = data.Enabled;
+    this.UserStatus = data.UserStatus;
     this.createForm();
     this.setupValidationSubscriptions();
   }
@@ -243,6 +244,19 @@ export class ViewUserComponent implements OnInit {
             : '',
       };
       const isSuccess = await this.featuresService.updateUser(data);
+      this.dialogRef.close(true);
+    } catch (error) {
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async resendInvitationOnClick(): Promise<void> {
+    try {
+      const data = {
+        email: this.email,
+      };
+      const isSuccess = await this.featuresService.resendInvitation(data);
       this.dialogRef.close(true);
     } catch (error) {
     } finally {

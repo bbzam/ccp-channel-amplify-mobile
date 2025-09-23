@@ -29,6 +29,11 @@ import { leastViewedContentFunction } from './data/content/statistics/content-st
 import { averageViewsFunction } from './data/content/statistics/content-statistics/average-views/resource';
 import { recentContentFunction } from './data/content/statistics/content-statistics/recent-content/resource';
 import { monthlyStatsFunction } from './data/content/statistics/content-statistics/monthly-stats/resource';
+import { getCountersFunction } from './data/content/counter/get-counter/resource';
+import { addUser } from './data/auth/add-user/resource';
+import { editUser } from './data/auth/edit-user/resource';
+import { unsubscribeUser } from './data/auth/unsubscribe-user/resource';
+import { postConfirmation } from './auth/post-confirmation/resource';
 import { config } from './config';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { EventType } from 'aws-cdk-lib/aws-s3';
@@ -64,6 +69,11 @@ const backend = defineBackend({
   averageViewsFunction,
   recentContentFunction,
   monthlyStatsFunction,
+  getCountersFunction,
+  addUser,
+  editUser,
+  postConfirmation,
+  unsubscribeUser,
 });
 
 backend.storage.resources.bucket.addEventNotification(
@@ -135,6 +145,11 @@ const updateContentMutation = backend.updateContentFunction.resources.lambda;
 const afterMediaConvert = backend.afterMediaConvertFunction.resources.lambda;
 const createPaymentQuery = backend.createPaymentFunction.resources.lambda;
 const listUsersQuery = backend.listUsers.resources.lambda;
+const getCountersQuery = backend.getCountersFunction.resources.lambda;
+const addUserMutation = backend.addUser.resources.lambda;
+const editUserMutation = backend.editUser.resources.lambda;
+const unsubscribeUserMutation = backend.unsubscribeUser.resources.lambda;
+const postConfirmationMutation = backend.postConfirmation.resources.lambda;
 
 const createVttStatement = new iam.PolicyStatement({
   sid: 'createVtt',
@@ -208,6 +223,14 @@ const contentStatisticsStatement = new iam.PolicyStatement({
 //     `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.PAYMENTTOUSER_TABLE}`,
 //   ],
 // });
+
+const getCountersStatement = new iam.PolicyStatement({
+  sid: 'getCounters',
+  actions: ['dynamodb:Scan'],
+  resources: [
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.COUNTER_TABLE}`,
+  ],
+});
 
 const contentStatsStatement = new iam.PolicyStatement({
   sid: 'contentStats',
@@ -300,6 +323,38 @@ const listUsersStatement = new iam.PolicyStatement({
   ],
 });
 
+const addUserStatement = new iam.PolicyStatement({
+  sid: 'addUser',
+  actions: ['dynamodb:UpdateItem'],
+  resources: [
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.COUNTER_TABLE}`,
+  ],
+});
+
+const editUserStatement = new iam.PolicyStatement({
+  sid: 'editUser',
+  actions: ['dynamodb:UpdateItem'],
+  resources: [
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.COUNTER_TABLE}`,
+  ],
+});
+
+const unsubscribeUserStatement = new iam.PolicyStatement({
+  sid: 'unsubscribeUser',
+  actions: ['dynamodb:UpdateItem'],
+  resources: [
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.COUNTER_TABLE}`,
+  ],
+});
+
+const postConfirmationStatement = new iam.PolicyStatement({
+  sid: 'postConfirmation',
+  actions: ['dynamodb:UpdateItem'],
+  resources: [
+    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.COUNTER_TABLE}`,
+  ],
+});
+
 createVtt.addToRolePolicy(createVttStatement);
 getContentQuery.addToRolePolicy(getContentStatement);
 createContentMutation.addToRolePolicy(createContentStatement);
@@ -324,3 +379,8 @@ getContinueWatchQuery.addToRolePolicy(getContinueWatchStatement);
 afterMediaConvert.addToRolePolicy(afterMediaConvertStatement);
 createPaymentQuery.addToRolePolicy(createPaymentStatement);
 listUsersQuery.addToRolePolicy(listUsersStatement);
+getCountersQuery.addToRolePolicy(getCountersStatement);
+addUserMutation.addToRolePolicy(addUserStatement);
+editUserMutation.addToRolePolicy(editUserStatement);
+unsubscribeUserMutation.addToRolePolicy(unsubscribeUserStatement);
+postConfirmationMutation.addToRolePolicy(postConfirmationStatement);

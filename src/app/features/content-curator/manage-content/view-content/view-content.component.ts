@@ -149,6 +149,47 @@ export class ViewContentComponent {
     this.loadCustomFields();
   }
 
+  triggerFileInput(inputId: string) {
+    const input = document.getElementById(inputId) as HTMLInputElement;
+    input?.click();
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onDrop(event: DragEvent, type: string) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const mockEvent = { target: { files: [file] } };
+
+      switch (type) {
+        case 'landscape':
+          this.onLandscapeImageSelected(mockEvent);
+          break;
+        case 'portrait':
+          this.onPortraitImageSelected(mockEvent);
+          break;
+        case 'preview':
+          this.onPreviewVideoSelected(mockEvent);
+          break;
+        case 'full':
+          this.onFullVideoSelected(mockEvent);
+          break;
+      }
+    }
+  }
+
   private setDefaultValue(data: any) {
     this.id = data.id;
     this.inputTitle = data.title;
@@ -763,11 +804,38 @@ export class ViewContentComponent {
               this.uploadForm.get(controlName)?.reset();
             }
 
+            // Clear all related variables
             (this as any)[variable] = null;
             (this as any)[presignedVariable] = null;
+
+            // Clear upload progress and keys
+            const type = variable.replace('FileURL', '').toLowerCase();
+            delete this.uploadProgress[type];
+
+            // Clear the media keys
+            if (type === 'landscape') {
+              this.landscapeImageKey = '';
+              this.resetFileInput('landscapeImage');
+            } else if (type === 'portrait') {
+              this.portraitImageKey = '';
+              this.resetFileInput('portraitImage');
+            } else if (type === 'preview') {
+              this.previewVideoKey = '';
+              this.resetFileInput('previewVideo');
+            } else if (type === 'full') {
+              this.fullVideoKey = '';
+              this.resetFileInput('fullVideo');
+            }
           }
         });
     } catch (error) {}
+  }
+
+  private resetFileInput(inputId: string) {
+    const fileInput = document.getElementById(inputId) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 
   async uploadMedia(

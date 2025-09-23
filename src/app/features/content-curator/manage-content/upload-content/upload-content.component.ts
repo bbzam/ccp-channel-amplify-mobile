@@ -248,6 +248,47 @@ export class UploadContentComponent {
     }
   }
 
+  triggerFileInput(inputId: string) {
+    const input = document.getElementById(inputId) as HTMLInputElement;
+    input?.click();
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onDrop(event: DragEvent, type: string) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      const mockEvent = { target: { files: [file] } };
+
+      switch (type) {
+        case 'landscape':
+          this.onLandscapeImageSelected(mockEvent);
+          break;
+        case 'portrait':
+          this.onPortraitImageSelected(mockEvent);
+          break;
+        case 'preview':
+          this.onPreviewVideoSelected(mockEvent);
+          break;
+        case 'full':
+          this.onFullVideoSelected(mockEvent);
+          break;
+      }
+    }
+  }
+
   schedulePublish() {}
 
   async backButton() {

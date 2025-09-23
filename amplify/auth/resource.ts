@@ -9,6 +9,7 @@ import { enableUser } from '../data/auth/enable-user/resource';
 import { listUser } from '../data/auth/list-user/resource';
 // import { statistics } from '../data/content/statistics/resource';
 import { unsubscribeUser } from '../data/auth/unsubscribe-user/resource';
+import { resendInvitation } from '../data/auth/resend-invitation/resource';
 
 /**
  * Define and configure your auth resource
@@ -158,6 +159,7 @@ export const auth = defineAuth({
     allow.resource(disableUser).to(['disableUser']),
     allow.resource(enableUser).to(['enableUser']),
     allow.resource(listUser).to(['getUser']),
+    allow.resource(resendInvitation).to(['createUser']),
     // allow.resource(statistics).to(['listUsersInGroup']),
   ],
 });

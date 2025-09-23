@@ -3,8 +3,13 @@ import {
   CognitoIdentityProviderClient,
   AdminAddUserToGroupCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
 export const handler = async (event: PostConfirmationTriggerEvent) => {
+  const dynamoClient = new DynamoDBClient({});
+  const docClient = DynamoDBDocumentClient.from(dynamoClient);
+
   try {
     // Only add to group if this is a sign-up confirmation, not password reset
     if (event.triggerSource === 'PostConfirmation_ConfirmSignUp') {
@@ -21,6 +26,23 @@ export const handler = async (event: PostConfirmationTriggerEvent) => {
 
       const client = new CognitoIdentityProviderClient();
 
+      await docClient.send(
+        new UpdateCommand({
+          TableName: process.env.COUNTER_TABLE,
+          Key: { counterName: 'totalAllUsers' },
+          UpdateExpression:
+            'SET #counter = if_not_exists(#counter, :zero) + :inc',
+          ExpressionAttributeNames: {
+            '#counter': 'counter',
+          },
+          ExpressionAttributeValues: {
+            ':zero': 0,
+            ':inc': 1,
+          },
+          ReturnValues: 'UPDATED_NEW',
+        })
+      );
+
       // You'll need to use AWS SDK to add the user to the group
       const command = new AdminAddUserToGroupCommand({
         GroupName: params.GroupName,
@@ -28,6 +50,23 @@ export const handler = async (event: PostConfirmationTriggerEvent) => {
         UserPoolId: event.userPoolId,
       });
       const response = await client.send(command);
+
+      await docClient.send(
+        new UpdateCommand({
+          TableName: process.env.COUNTER_TABLE,
+          Key: { counterName: `total${params.GroupName}s` },
+          UpdateExpression:
+            'SET #counter = if_not_exists(#counter, :zero) + :inc',
+          ExpressionAttributeNames: {
+            '#counter': 'counter',
+          },
+          ExpressionAttributeValues: {
+            ':zero': 0,
+            ':inc': 1,
+          },
+          ReturnValues: 'UPDATED_NEW',
+        })
+      );
 
       console.log(`User ${userName} has been added to group ${groupName}`);
     }

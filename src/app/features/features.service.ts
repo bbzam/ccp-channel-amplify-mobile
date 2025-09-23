@@ -97,6 +97,22 @@ export class FeaturesService {
     }
   }
 
+  async resendInvitation(data: any): Promise<any> {
+    try {
+      const result = await this.client.mutations.resendInvitation(data);
+      if (!result.errors) {
+        this.handleSuccess('Invitation resent successfully!');
+      } else {
+        this.handleError(
+          'An error occurred while resending invitation. Please try again'
+        );
+      }
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async updateUser(data: any): Promise<any> {
     try {
       const result = await this.client.mutations.editUser(data);
@@ -304,7 +320,12 @@ export class FeaturesService {
   async listContentsByCategoryGroupedByTag(category: string) {
     // 1. Get all contents for the given category
     const { data: contents } = await this.client.models.Content.list({
-      filter: { category: { eq: category } },
+      filter: {
+        category: { eq: category },
+        status: { eq: true },
+        processedFullVideoUrl: { attributeExists: true },
+        vttUrl: { attributeExists: true },
+      },
     });
 
     if (!contents || contents.length === 0) return [];

@@ -194,12 +194,16 @@
     </div>
 
     <!-- Landscape Image -->
-    <div class="form-field-container">
-      <label for="landscapeImage">Landscape Image</label>
+    <div class="form-field-container upload-section">
+      <label for="landscapeImage" class="upload-label">
+        <mat-icon>landscape</mat-icon>
+        Landscape Image
+      </label>
       @if (landscapeFileURL || (landscapeImageKey && uploadProgress['landscape']
       === 100)) {
       <div class="existing-file">
-        <div>
+        <div class="file-info">
+          <mat-icon>image</mat-icon>
           <span>
             {{
               (landscapeFileURL ? landscapeFileURL.split("/").pop() : "") ||
@@ -208,9 +212,9 @@
           </span>
         </div>
         @if (!buttonDisabled() || uploadProgress['landscape'] === 100) {
-        <!-- <button
+        <button
           mat-icon-button
-          matTooltip="remove"
+          matTooltip="Remove file"
           (click)="
             deleteMedia(
               landscapeFileURL,
@@ -220,11 +224,16 @@
           "
         >
           <mat-icon>delete</mat-icon>
-        </button> -->
+        </button>
         }
       </div>
-      } @else { @if (uploadProgress['landscape']) {
+      } @else if (uploadProgress['landscape'] && uploadProgress['landscape'] > 0
+      && uploadProgress['landscape'] < 100) {
       <div class="progress">
+        <div class="progress-header">
+          <mat-icon>cloud_upload</mat-icon>
+          <span>Uploading landscape image...</span>
+        </div>
         <mat-progress-bar
           mode="determinate"
           [value]="uploadProgress['landscape']"
@@ -272,33 +281,48 @@
         </div>
       </div>
       } @else {
-      <input
-        matInput
-        type="file"
-        id="landscapeImage"
-        formControlName="landscapeimage"
-        (change)="onLandscapeImageSelected($event)"
-        accept="image/*"
-        class="form-control-file"
-      />
+      <div
+        class="upload-area"
+        (click)="triggerFileInput('landscapeImage')"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event, 'landscape')"
+      >
+        <input
+          type="file"
+          #landscapeFileInput
+          id="landscapeImage"
+          formControlName="landscapeimage"
+          (change)="onLandscapeImageSelected($event)"
+          accept="image/*"
+          class="form-control-file"
+        />
+      </div>
+
       } @if (landscapeErrorMessage()) {
       <mat-error>{{ landscapeErrorMessage() }}</mat-error>
-      } } @if (landscapeFilePresignedURL) {
-      <img
-        class="previewMedia"
-        [src]="landscapeFilePresignedURL"
-        alt="banner-img"
-      />
+      } @if (landscapeFilePresignedURL) {
+      <div class="preview-container">
+        <img
+          class="previewMedia"
+          [src]="landscapeFilePresignedURL"
+          alt="Landscape preview"
+        />
+      </div>
       }
     </div>
 
     <!-- Portrait Image -->
-    <div class="form-field-container">
-      <label for="portraitImage">Portrait Image</label>
+    <div class="form-field-container upload-section">
+      <label for="portraitImage" class="upload-label">
+        <mat-icon>portrait</mat-icon>
+        Portrait Image
+      </label>
       @if (portraitFileURL || (portraitImageKey && uploadProgress['portrait']
       === 100)) {
       <div class="existing-file">
-        <div>
+        <div class="file-info">
+          <mat-icon>image</mat-icon>
           <span>
             {{
               (portraitFileURL ? portraitFileURL.split("/").pop() : "") ||
@@ -307,9 +331,9 @@
           </span>
         </div>
         @if (!buttonDisabled() || uploadProgress['portrait'] === 100) {
-        <!-- <button
+        <button
           mat-icon-button
-          matTooltip="remove"
+          matTooltip="Remove file"
           (click)="
             deleteMedia(
               portraitFileURL,
@@ -319,11 +343,16 @@
           "
         >
           <mat-icon>delete</mat-icon>
-        </button> -->
+        </button>
         }
       </div>
-      } @else { @if (uploadProgress['portrait']) {
+      } @else if (uploadProgress['portrait'] && uploadProgress['portrait'] > 0
+      && uploadProgress['portrait'] < 100) {
       <div class="progress">
+        <div class="progress-header">
+          <mat-icon>cloud_upload</mat-icon>
+          <span>Uploading portrait image...</span>
+        </div>
         <mat-progress-bar
           mode="determinate"
           [value]="uploadProgress['portrait']"
@@ -371,33 +400,47 @@
         </div>
       </div>
       } @else {
-      <input
-        matInput
-        type="file"
-        id="portraitImage"
-        formControlName="portraitimage"
-        (change)="onPortraitImageSelected($event)"
-        accept="image/*"
-        class="form-control-file"
-      />
+      <div
+        class="upload-area"
+        (click)="triggerFileInput('portraitImage')"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event, 'portrait')"
+      >
+        <input
+          type="file"
+          #portraitFileInput
+          id="portraitImage"
+          formControlName="portraitimage"
+          (change)="onPortraitImageSelected($event)"
+          accept="image/*"
+          class="form-control-file"
+        />
+      </div>
       } @if (portraitErrorMessage()) {
       <mat-error>{{ portraitErrorMessage() }}</mat-error>
-      } } @if (portraitFilePresignedURL) {
-      <img
-        class="previewMedia"
-        [src]="portraitFilePresignedURL"
-        alt="poster-img"
-      />
+      } @if (portraitFilePresignedURL) {
+      <div class="preview-container">
+        <img
+          class="previewMedia"
+          [src]="portraitFilePresignedURL"
+          alt="Portrait preview"
+        />
+      </div>
       }
     </div>
 
     <!-- Preview Video -->
-    <div class="form-field-container">
-      <label for="previewVideo">Preview Video</label>
+    <div class="form-field-container upload-section">
+      <label for="previewVideo" class="upload-label">
+        <mat-icon>movie</mat-icon>
+        Preview Video
+      </label>
       @if (previewFileURL || (previewVideoKey && uploadProgress['preview'] ===
       100)) {
       <div class="existing-file">
-        <div>
+        <div class="file-info">
+          <mat-icon>video_file</mat-icon>
           <span>
             {{
               (previewFileURL ? previewFileURL.split("/").pop() : "") ||
@@ -421,8 +464,13 @@
         </button> -->
         }
       </div>
-      } @else { @if (uploadProgress['preview']) {
+      } @else if (uploadProgress['preview'] && uploadProgress['preview'] > 0 &&
+      uploadProgress['preview'] < 100) {
       <div class="progress">
+        <div class="progress-header">
+          <mat-icon>cloud_upload</mat-icon>
+          <span>Uploading preview video...</span>
+        </div>
         <mat-progress-bar
           mode="determinate"
           [value]="uploadProgress['preview']"
@@ -470,34 +518,49 @@
         </div>
       </div>
       } @else {
-      <input
-        matInput
-        type="file"
-        id="previewVideo"
-        formControlName="previewvideo"
-        (change)="onPreviewVideoSelected($event)"
-        accept="video/*"
-        class="form-control-file"
-      />
+      <div
+        class="upload-area"
+        (click)="triggerFileInput('previewVideo')"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event, 'preview')"
+      >
+        <input
+          type="file"
+          #previewFileInput
+          id="previewVideo"
+          formControlName="previewvideo"
+          (change)="onPreviewVideoSelected($event)"
+          accept="video/*"
+          class="form-control-file"
+        />
+      </div>
+
       } @if(previewErrorMessage()) {
       <mat-error>{{ previewErrorMessage() }}</mat-error>
-      } } @if (previewFilePresignedURL) {
-      <video
-        class="previewMedia"
-        [src]="previewFilePresignedURL"
-        alt="preview-video"
-        controls
-        preload="metadata"
-      ></video>
+      } @if (previewFilePresignedURL) {
+      <div class="preview-container">
+        <video
+          class="previewMedia"
+          [src]="previewFilePresignedURL"
+          alt="Preview video"
+          controls
+          preload="metadata"
+        ></video>
+      </div>
       }
     </div>
 
     <!-- Full Video -->
-    <div class="form-field-container">
-      <label for="fullVideo">Full Video</label>
+    <div class="form-field-container upload-section">
+      <label for="fullVideo" class="upload-label">
+        <mat-icon>theaters</mat-icon>
+        Full Video
+      </label>
       @if (fullFileURL || (fullVideoKey && uploadProgress['full'] === 100)) {
       <div class="existing-file">
-        <div>
+        <div class="file-info">
+          <mat-icon>video_file</mat-icon>
           <span>
             {{
               (fullFileURL ? fullFileURL.split("/").pop() : "") ||
@@ -517,8 +580,13 @@
         </button> -->
         }
       </div>
-      } @else { @if (uploadProgress['full']) {
+      } @else if (uploadProgress['full'] && uploadProgress['full'] > 0 &&
+      uploadProgress['full'] < 100) {
       <div class="progress">
+        <div class="progress-header">
+          <mat-icon>cloud_upload</mat-icon>
+          <span>Uploading full video...</span>
+        </div>
         <mat-progress-bar mode="determinate" [value]="uploadProgress['full']">
         </mat-progress-bar>
         <div class="progress-info">
@@ -563,18 +631,37 @@
         </div>
       </div>
       } @else {
-      <input
-        matInput
-        type="file"
-        id="fullVideo"
-        formControlName="fullvideo"
-        (change)="onFullVideoSelected($event)"
-        accept="video/*"
-        class="form-control-file"
-      />
+      <div
+        class="upload-area"
+        (click)="triggerFileInput('fullVideo')"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event, 'full')"
+      >
+        <input
+          type="file"
+          #fullFileInput
+          id="fullVideo"
+          formControlName="fullvideo"
+          (change)="onFullVideoSelected($event)"
+          accept="video/*"
+          class="form-control-file"
+        />
+      </div>
+
       } @if(fullErrorMessage()) {
       <mat-error>{{ fullErrorMessage() }}</mat-error>
-      } }
+      } @if (fullFilePresignedURL) {
+      <div class="preview-container">
+        <video
+          class="previewMedia"
+          [src]="fullFilePresignedURL"
+          alt="Full video"
+          controls
+          preload="metadata"
+        ></video>
+      </div>
+      }
     </div>
   </form>
 

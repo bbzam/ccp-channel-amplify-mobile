@@ -34,8 +34,9 @@ export class SharedService {
 
       const results = await Promise.allSettled([
         this.client.queries.contentStatistics({}),
-        this.client.queries.totalUsersFunction({}),
-        this.client.queries.groupCountsFunction({}),
+        this.client.queries.getCountersFunction({}),
+        // this.client.queries.totalUsersFunction({}),
+        // this.client.queries.groupCountsFunction({}),
         this.client.queries.newRegistrationsFunction({}),
       ]);
 

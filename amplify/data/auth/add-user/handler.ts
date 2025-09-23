@@ -4,6 +4,9 @@ import {
   AdminCreateUserCommand,
   CognitoIdentityProviderClient,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
 import * as crypto from 'crypto';
 
 type Handler = Schema['addUser']['functionHandler'];
@@ -18,6 +21,8 @@ const ALLOWED_ROLES = [
 ];
 
 export const handler: Handler = async (event: any) => {
+  const dynamoClient = new DynamoDBClient({});
+  const docClient = DynamoDBDocumentClient.from(dynamoClient);
   const userPoolId = process.env.UserPoolId;
   console.log(userPoolId);
 
@@ -119,6 +124,23 @@ export const handler: Handler = async (event: any) => {
   try {
     const response = await client.send(command);
 
+    await docClient.send(
+      new UpdateCommand({
+        TableName: process.env.COUNTER_TABLE,
+        Key: { counterName: 'totalAllUsers' },
+        UpdateExpression:
+          'SET #counter = if_not_exists(#counter, :zero) + :inc',
+        ExpressionAttributeNames: {
+          '#counter': 'counter',
+        },
+        ExpressionAttributeValues: {
+          ':zero': 0,
+          ':inc': 1,
+        },
+        ReturnValues: 'UPDATED_NEW',
+      })
+    );
+
     // You'll need to use AWS SDK to add the user to the group
     const groupCommand = new AdminAddUserToGroupCommand({
       GroupName: body.role,
@@ -129,6 +151,23 @@ export const handler: Handler = async (event: any) => {
     console.log(groupCommand);
 
     await client.send(groupCommand);
+
+    await docClient.send(
+      new UpdateCommand({
+        TableName: process.env.COUNTER_TABLE,
+        Key: { counterName: `total${body.role}s` },
+        UpdateExpression:
+          'SET #counter = if_not_exists(#counter, :zero) + :inc',
+        ExpressionAttributeNames: {
+          '#counter': 'counter',
+        },
+        ExpressionAttributeValues: {
+          ':zero': 0,
+          ':inc': 1,
+        },
+        ReturnValues: 'UPDATED_NEW',
+      })
+    );
 
     return response;
   } catch (error) {

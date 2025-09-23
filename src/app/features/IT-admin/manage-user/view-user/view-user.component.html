@@ -4,7 +4,16 @@
       <h2>User Details</h2>
       @if (userRole === 'IT_ADMIN' || userRole === 'SUPER_ADMIN') {
       <div class="buttons">
-        @if (Enabled && isEditing()) {
+        @if (UserStatus === 'FORCE_CHANGE_PASSWORD') {
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="resendInvitationOnClick()"
+          matTooltip="Resend Invitation"
+        >
+          <mat-icon>mail</mat-icon>
+        </button>
+        } @if (Enabled && isEditing()) {
         <button
           mat-icon-button
           color="primary"
