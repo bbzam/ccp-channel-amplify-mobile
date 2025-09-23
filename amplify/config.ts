@@ -8,6 +8,7 @@ export const config = {
   CONTENTTOUSER_TABLE: 'contentToUser-yadmibjwpbgh7k7qylqq6ae4we-NONE',
   CUSTOMFIELDS_TABLE: 'customFields-yadmibjwpbgh7k7qylqq6ae4we-NONE',
   PAYMENTTOUSER_TABLE: 'paymentToUser-yadmibjwpbgh7k7qylqq6ae4we-NONE',
+  COUNTER_TABLE: 'counter-yadmibjwpbgh7k7qylqq6ae4we-NONE',
   MEDIACONVERT_ROLE: 'role/service-role/MediaConvert_Default_Role',
   SPEKE_URL:
     'https://27jahlsoj3.execute-api.ap-southeast-1.amazonaws.com/production/copyProtection',
