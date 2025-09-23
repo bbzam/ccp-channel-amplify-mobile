@@ -27,6 +27,8 @@ import { leastViewedContentFunction } from './content/statistics/content-statist
 import { averageViewsFunction } from './content/statistics/content-statistics/average-views/resource';
 import { recentContentFunction } from './content/statistics/content-statistics/recent-content/resource';
 import { monthlyStatsFunction } from './content/statistics/content-statistics/monthly-stats/resource';
+import { getCountersFunction } from './content/counter/get-counter/resource';
+import { resendInvitation } from './auth/resend-invitation/resource';
 
 const schema = a.schema({
   Content: a
@@ -158,6 +160,27 @@ const schema = a.schema({
       allow.groups(['CONTENT_CREATOR', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(updateContentFunction))
+    .returns(a.json()),
+
+  counter: a
+    .model({
+      counterName: a.string().required(),
+      counter: a.integer(),
+    })
+    .identifier(['counterName'])
+    .authorization((allow) => [
+      allow
+        .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
+        .to(['read', 'create', 'update']),
+    ]),
+
+  getCountersFunction: a
+    .query()
+    .arguments({})
+    .authorization((allow) => [
+      allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']),
+    ])
+    .handler(a.handler.function(getCountersFunction))
     .returns(a.json()),
 
   customFields: a
@@ -319,6 +342,15 @@ const schema = a.schema({
     })
     .authorization((allow) => [allow.groups(['IT_ADMIN', 'SUPER_ADMIN'])])
     .handler(a.handler.function(addUser))
+    .returns(a.json()),
+
+  resendInvitation: a
+    .mutation()
+    .arguments({
+      email: a.string().required(),
+    })
+    .authorization((allow) => [allow.groups(['IT_ADMIN', 'SUPER_ADMIN'])])
+    .handler(a.handler.function(resendInvitation))
     .returns(a.json()),
 
   // statistics: a

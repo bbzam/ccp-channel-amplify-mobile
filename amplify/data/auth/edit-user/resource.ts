@@ -5,5 +5,6 @@ export const editUser = defineFunction({
   name: 'edit-user',
   environment: {
     UserPoolId: config.USER_POOL_ID,
+    COUNTER_TABLE: config.COUNTER_TABLE,
   },
 });

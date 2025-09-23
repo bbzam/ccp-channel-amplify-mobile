@@ -4,10 +4,14 @@ import {
   AdminRemoveUserFromGroupCommand,
   CognitoIdentityProviderClient,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
 const client = new CognitoIdentityProviderClient();
 
 export const handler: Handler = async (event) => {
+  const dynamoClient = new DynamoDBClient({});
+  const docClient = DynamoDBDocumentClient.from(dynamoClient);
   const userPoolId = process.env.UserPoolId;
   const email = event.arguments.email;
   console.log('event', event);
@@ -44,12 +48,46 @@ export const handler: Handler = async (event) => {
     });
     await client.send(removeGroupCommand);
 
+    await docClient.send(
+      new UpdateCommand({
+        TableName: process.env.COUNTER_TABLE,
+        Key: { counterName: `total${currentRole}s` },
+        UpdateExpression:
+          'SET #counter = if_not_exists(#counter, :zero) - :inc',
+        ExpressionAttributeNames: {
+          '#counter': 'counter',
+        },
+        ExpressionAttributeValues: {
+          ':zero': 0,
+          ':inc': 1,
+        },
+        ReturnValues: 'UPDATED_NEW',
+      })
+    );
+
     const addGroupCommand = new AdminAddUserToGroupCommand({
       GroupName: 'USER',
       Username: email,
       UserPoolId: userPoolId,
     });
     await client.send(addGroupCommand);
+
+    await docClient.send(
+      new UpdateCommand({
+        TableName: process.env.COUNTER_TABLE,
+        Key: { counterName: 'totalUSERs' },
+        UpdateExpression:
+          'SET #counter = if_not_exists(#counter, :zero) + :inc',
+        ExpressionAttributeNames: {
+          '#counter': 'counter',
+        },
+        ExpressionAttributeValues: {
+          ':zero': 0,
+          ':inc': 1,
+        },
+        ReturnValues: 'UPDATED_NEW',
+      })
+    );
 
     console.log('Role updated successfully');
   } catch (error) {

@@ -1,10 +1,9 @@
 import { defineFunction } from '@aws-amplify/backend';
 import { config } from '../../../config';
 
-export const addUser = defineFunction({
-  name: 'add-user',
+export const resendInvitation = defineFunction({
+  name: 'resend-invitation',
   environment: {
     UserPoolId: config.USER_POOL_ID,
-    COUNTER_TABLE: config.COUNTER_TABLE,
   },
 });

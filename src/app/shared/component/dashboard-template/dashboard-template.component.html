@@ -7,20 +7,31 @@
       </mat-card-header>
       <mat-card-content>
         <span class="data"
-          >{{ formatNumber(userStats?.totalUsers || 0) }} Users</span
+          >{{ formatNumber(userStats?.totalAllUsers || 0) }} Users</span
         >
         <div class="sub-data">
-          @if(userStats?.groupCounts){
-          <div>
+          @if(userStats){
+          <!-- <div>
             Paid Subscribers:
             {{ formatNumber(userStats?.groupCounts?.PAID_SUBSCRIBER || 0) }}
           </div>
           <div>
             Free Subscribers:
             {{ formatNumber(userStats?.groupCounts?.FREE_SUBSCRIBER || 0) }}
+          </div> -->
+          <div>
+            Subscribers:
+            {{ formatNumber(userStats?.totalSUBSCRIBERs || 0) }}
+          </div>
+          <div>Guest Users: {{ formatNumber(userStats?.totalUSERs || 0) }}</div>
+          <div>
+            Curators: {{ formatNumber(userStats?.totalCONTENT_CREATORs || 0) }}
           </div>
           <div>
-            Guest Users: {{ formatNumber(userStats?.groupCounts?.USER || 0) }}
+            IT Admins: {{ formatNumber(userStats?.totalIT_ADMINs || 0) }}
+          </div>
+          <div>
+            Super Admins: {{ formatNumber(userStats?.totalSUPER_ADMINs || 0) }}
           </div>
           } @if(userStats?.newRegistrations){
           <div>

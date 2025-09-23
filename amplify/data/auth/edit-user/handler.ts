@@ -6,6 +6,8 @@ import {
   AdminUpdateUserAttributesCommand,
   CognitoIdentityProviderClient,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
 type Handler = Schema['editUser']['functionHandler'];
 const client = new CognitoIdentityProviderClient();
@@ -19,22 +21,17 @@ const ALLOWED_ROLES = [
 ];
 
 export const handler: Handler = async (event) => {
+  const dynamoClient = new DynamoDBClient({});
+  const docClient = DynamoDBDocumentClient.from(dynamoClient);
   const userPoolId = process.env.UserPoolId;
   console.log(userPoolId);
 
   const body = event.arguments;
 
-  // Check if the current user has the required role
   const userGroups =
     event.identity && 'claims' in event.identity
       ? (event.identity.claims['cognito:groups'] as string[]) || []
       : [];
-
-  if (!userGroups.includes('IT_ADMIN') && !userGroups.includes('SUPER_ADMIN')) {
-    throw new Error(
-      'Access denied. Only IT_ADMIN and SUPER_ADMIN can edit users.'
-    );
-  }
 
   // Role assignment restrictions based on admin type
   const isItAdmin =
@@ -117,12 +114,46 @@ export const handler: Handler = async (event) => {
       });
       await client.send(removeGroupCommand);
 
+      await docClient.send(
+        new UpdateCommand({
+          TableName: process.env.COUNTER_TABLE,
+          Key: { counterName: `total${currentRole}s` },
+          UpdateExpression:
+            'SET #counter = if_not_exists(#counter, :zero) - :inc',
+          ExpressionAttributeNames: {
+            '#counter': 'counter',
+          },
+          ExpressionAttributeValues: {
+            ':zero': 0,
+            ':inc': 1,
+          },
+          ReturnValues: 'UPDATED_NEW',
+        })
+      );
+
       const addGroupCommand = new AdminAddUserToGroupCommand({
         GroupName: body.role,
         Username: body.email,
         UserPoolId: userPoolId,
       });
       await client.send(addGroupCommand);
+
+      await docClient.send(
+        new UpdateCommand({
+          TableName: process.env.COUNTER_TABLE,
+          Key: { counterName: `total${body.role}s` },
+          UpdateExpression:
+            'SET #counter = if_not_exists(#counter, :zero) + :inc',
+          ExpressionAttributeNames: {
+            '#counter': 'counter',
+          },
+          ExpressionAttributeValues: {
+            ':zero': 0,
+            ':inc': 1,
+          },
+          ReturnValues: 'UPDATED_NEW',
+        })
+      );
     }
 
     return response;

@@ -58,7 +58,6 @@
 }
 
 .signin-main {
-  /* background-color: var(--secondary); */
   color: var(--primary);
   display: inline-table;
   width: 100%;
@@ -100,8 +99,6 @@
 
   form {
     padding: 2em;
-    /* max-height: 30em; */
-    /* overflow: auto; */
 
     .form-field-container {
       display: grid;
@@ -133,6 +130,7 @@
 
       input[type="file"] {
         padding: 0.7em;
+        display: none;
       }
 
       .progress {
@@ -204,7 +202,6 @@
         .field {
           display: flex;
           gap: 0.5em;
-          align-items: center;
         }
       }
     }
@@ -239,4 +236,193 @@
 .previewMedia::-webkit-media-controls-return-to-realtime-button,
 .previewMedia::-webkit-media-controls-panel {
   display: none !important;
+}
+
+/* Professional Upload Styling - Scoped to avoid conflicts */
+.signin-main form .form-field-container {
+  .form-control-file {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--gray);
+    border-radius: 12px;
+    background: rgba(102, 13, 33, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    width: 100%;
+
+    &::before {
+      content: "📁 Click or drag files here";
+      color: var(--gray);
+      font-size: 0.9em;
+      font-weight: 500;
+    }
+
+    &:hover {
+      border-color: var(--primary);
+      background: rgba(102, 13, 33, 0.1);
+      transform: translateY(-2px);
+    }
+  }
+
+  .progress {
+    background: rgba(102, 13, 33, 0.08);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(102, 13, 33, 0.15);
+
+    mat-progress-bar .mdc-linear-progress__bar-inner {
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .upload-controls button {
+      background: rgba(102, 13, 33, 0.1);
+      border-radius: 50%;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: var(--primary);
+        transform: scale(1.1);
+      }
+
+      mat-icon {
+        color: var(--primary);
+      }
+
+      &:hover mat-icon {
+        color: var(--tertiary);
+      }
+    }
+  }
+
+  .existing-file {
+    background: rgba(102, 13, 33, 0.08);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(102, 13, 33, 0.15);
+    justify-content: space-between;
+
+    span {
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    button:hover {
+      background: #dc3545;
+      transform: scale(1.1);
+    }
+  }
+
+  .previewMedia {
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(102, 13, 33, 0.3);
+    border: 2px solid rgba(102, 13, 33, 0.2);
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+}
+
+/* Additional Upload Section Styles */
+.upload-section {
+  .upload-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 1rem;
+
+    mat-icon {
+      color: var(--accent);
+    }
+  }
+
+  .form-control-file {
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+    width: 0;
+    height: 0;
+  }
+
+  .upload-area {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--gray);
+    border-radius: 12px;
+    background: rgba(102, 13, 33, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 1em;
+    padding: 2rem;
+
+    &::before {
+      content: "📁";
+      font-size: 2.5rem;
+      color: var(--gray);
+      margin-bottom: 0.5rem;
+    }
+
+    &::after {
+      content: "Click to browse or drag files here";
+      color: var(--gray);
+      font-size: 0.9em;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    &:hover {
+      border-color: var(--primary);
+      background: rgba(102, 13, 33, 0.1);
+      transform: translateY(-2px);
+
+      &::before {
+        color: var(--primary);
+      }
+
+      &::after {
+        color: var(--primary);
+      }
+    }
+  }
+
+  .file-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    mat-icon {
+      color: var(--accent);
+    }
+  }
+
+  .progress-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+
+    mat-icon {
+      color: var(--accent);
+    }
+
+    span {
+      color: var(--primary);
+      font-weight: 500;
+    }
+  }
+
+  .preview-container {
+    margin-top: 1rem;
+    text-align: center;
+  }
 }
