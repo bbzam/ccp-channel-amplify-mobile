@@ -139,7 +139,7 @@ export class ViewUserComponent implements OnInit {
       ?.valueChanges.pipe(takeUntilDestroyed())
       .subscribe((role) => {
         const paidUntilControl = this.editUserForm.get('paidUntil');
-        if (role === 'SUBSCRIBER') {
+        if (role === 'SUBSCRIBER' || role === 'FREE_SUBSCRIBER') {
           paidUntilControl?.setValidators([
             Validators.required,
             disallowCharacters(),
@@ -239,7 +239,7 @@ export class ViewUserComponent implements OnInit {
         birthdate: formData.birthdate,
         role: formData.role,
         paidUntil:
-          formData.role === 'SUBSCRIBER'
+          formData.role === 'SUBSCRIBER' || formData.role === 'FREE_SUBSCRIBER'
             ? `${formData.paidUntil} 00:00:00 UTC`
             : '',
       };

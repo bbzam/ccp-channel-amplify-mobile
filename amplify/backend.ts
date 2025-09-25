@@ -2,8 +2,6 @@ import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { storage } from './storage/resource';
-// import { statistics } from './data/content/statistics/resource';
-// import { userStatistics } from './data/content/statistics/user-statistics/resource';
 import { contentStatistics } from './data/content/statistics/content-statistics/resource';
 import { createContentToUserFunction } from './data/content/content-to-user/create-contentToUser/resource';
 import { getContentToUserFunction } from './data/content/content-to-user/get-contentToUser/resource';
@@ -19,8 +17,6 @@ import { createVttFunction } from './storage/create-vtt/resource';
 import { afterMediaConvertFunction } from './storage/after-mediaConvert/resource';
 import { createPaymentFunction } from './data/payment/create-payment/resource';
 import { listUsers } from './data/auth/list-users/resource';
-import { groupCountsFunction } from './data/content/statistics/user-statistics/group-counts/resource';
-import { totalUsersFunction } from './data/content/statistics/user-statistics/total-users/resource';
 import { newRegistrationsFunction } from './data/content/statistics/user-statistics/new-registrations/resource';
 import { totalContentFunction } from './data/content/statistics/content-statistics/total-content/resource';
 import { topViewedContentFunction } from './data/content/statistics/content-statistics/top-viewed-content/resource';
@@ -44,7 +40,6 @@ const backend = defineBackend({
   data,
   storage,
   contentStatistics,
-  // userStatistics,
   createContentToUserFunction,
   getContentToUserFunction,
   getUserFavoritesFunction,
@@ -59,8 +54,6 @@ const backend = defineBackend({
   afterMediaConvertFunction,
   createPaymentFunction,
   listUsers,
-  groupCountsFunction,
-  totalUsersFunction,
   newRegistrationsFunction,
   totalContentFunction,
   topViewedContentFunction,
@@ -131,8 +124,6 @@ const leastViewedContentQuery =
 const averageViewsQuery = backend.averageViewsFunction.resources.lambda;
 const recentContentQuery = backend.recentContentFunction.resources.lambda;
 const monthlyStatsQuery = backend.monthlyStatsFunction.resources.lambda;
-const groupCountsQuery = backend.groupCountsFunction.resources.lambda;
-const totalUsersQuery = backend.totalUsersFunction.resources.lambda;
 const newRegistrationsQuery = backend.newRegistrationsFunction.resources.lambda;
 const getcontentToUserQuery = backend.getContentToUserFunction.resources.lambda;
 const createContentToUserMutation =
@@ -237,23 +228,6 @@ const contentStatsStatement = new iam.PolicyStatement({
   actions: ['dynamodb:Scan'],
   resources: [
     `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.CONTENT_TABLE}`,
-  ],
-});
-
-const groupCountsStatement = new iam.PolicyStatement({
-  sid: 'groupCounts',
-  actions: ['cognito-idp:ListUsersInGroup', 'dynamodb:Scan'],
-  resources: [
-    `arn:aws:cognito-idp:${config.REGION}:${config.ACCOUNT_ID}:userpool/${config.USER_POOL_ID}`,
-    `arn:aws:dynamodb:${config.REGION}:${config.ACCOUNT_ID}:table/${config.PAYMENTTOUSER_TABLE}`,
-  ],
-});
-
-const totalUsersStatement = new iam.PolicyStatement({
-  sid: 'totalUsers',
-  actions: ['cognito-idp:ListUsersInGroup'],
-  resources: [
-    `arn:aws:cognito-idp:${config.REGION}:${config.ACCOUNT_ID}:userpool/${config.USER_POOL_ID}`,
   ],
 });
 
@@ -369,8 +343,6 @@ leastViewedContentQuery.addToRolePolicy(contentStatsStatement);
 averageViewsQuery.addToRolePolicy(contentStatsStatement);
 recentContentQuery.addToRolePolicy(contentStatsStatement);
 monthlyStatsQuery.addToRolePolicy(contentStatsStatement);
-groupCountsQuery.addToRolePolicy(groupCountsStatement);
-totalUsersQuery.addToRolePolicy(totalUsersStatement);
 newRegistrationsQuery.addToRolePolicy(newRegistrationsStatement);
 createContentToUserMutation.addToRolePolicy(createContentToUserStatement);
 getcontentToUserQuery.addToRolePolicy(getContentToUserStatement);

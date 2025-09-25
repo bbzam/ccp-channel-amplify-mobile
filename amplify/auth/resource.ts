@@ -136,7 +136,14 @@ export const auth = defineAuth({
       mutable: true,
     },
   },
-  groups: ['USER', 'SUBSCRIBER', 'CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN'],
+  groups: [
+    'USER',
+    'SUBSCRIBER',
+    'FREE_SUBSCRIBER',
+    'CONTENT_CREATOR',
+    'IT_ADMIN',
+    'SUPER_ADMIN',
+  ],
   triggers: {
     customMessage,
     postConfirmation,

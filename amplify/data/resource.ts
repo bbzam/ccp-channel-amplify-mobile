@@ -17,8 +17,6 @@ import { createPaymentFunction } from './payment/create-payment/resource';
 import { userStatistics } from './content/statistics/user-statistics/resource';
 import { contentStatistics } from './content/statistics/content-statistics/resource';
 import { unsubscribeUser } from './auth/unsubscribe-user/resource';
-import { totalUsersFunction } from './content/statistics/user-statistics/total-users/resource';
-import { groupCountsFunction } from './content/statistics/user-statistics/group-counts/resource';
 import { newRegistrationsFunction } from './content/statistics/user-statistics/new-registrations/resource';
 import { totalContentFunction } from './content/statistics/content-statistics/total-content/resource';
 import { topViewedContentFunction } from './content/statistics/content-statistics/top-viewed-content/resource';
@@ -65,7 +63,7 @@ const schema = a.schema({
       contentToUser: a.hasMany('contentToUser', 'contentId'),
     })
     .authorization((allow) => [
-      allow.groups(['SUBSCRIBER', 'IT_ADMIN']).to(['read']),
+      allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER', 'IT_ADMIN']).to(['read']),
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['read', 'create', 'update', 'delete']),
@@ -85,6 +83,7 @@ const schema = a.schema({
     .authorization((allow) => [
       allow.groups([
         'SUBSCRIBER',
+        'FREE_SUBSCRIBER',
         'CONTENT_CREATOR',
         'IT_ADMIN',
         'SUPER_ADMIN',
@@ -192,7 +191,7 @@ const schema = a.schema({
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
         .to(['read', 'create', 'update', 'delete']),
-      allow.groups(['SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER']).to(['read']),
     ]),
 
   contentToUser: a
@@ -204,7 +203,9 @@ const schema = a.schema({
       content: a.belongsTo('Content', 'contentId'),
     })
     .authorization((allow) => [
-      allow.groups(['SUBSCRIBER']).to(['create', 'update', 'read']),
+      allow
+        .groups(['SUBSCRIBER', 'FREE_SUBSCRIBER'])
+        .to(['create', 'update', 'read']),
       allow.groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR']).to(['read']),
     ]),
 
@@ -229,7 +230,7 @@ const schema = a.schema({
       pauseTime: a.string(),
       isFavorite: a.boolean(),
     })
-    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER'])])
     .handler(a.handler.function(createContentToUserFunction))
     .returns(a.json()),
 
@@ -238,21 +239,21 @@ const schema = a.schema({
     .arguments({
       contentId: a.string().required(),
     })
-    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER'])])
     .handler(a.handler.function(getContentToUserFunction))
     .returns(a.json()),
 
   getUserFavoritesFunction: a
     .query()
     .arguments({})
-    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER'])])
     .handler(a.handler.function(getUserFavoritesFunction))
     .returns(a.json()),
 
   getContinueWatchFunction: a
     .query()
     .arguments({})
-    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER'])])
     .handler(a.handler.function(getContinueWatchFunction))
     .returns(a.json()),
 
@@ -289,7 +290,7 @@ const schema = a.schema({
       ]),
     })
     .authorization((allow) => [
-      allow.groups(['SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER']).to(['read']),
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
         .to(['create', 'read', 'update', 'delete']),
@@ -303,7 +304,7 @@ const schema = a.schema({
       order: a.integer(),
     })
     .authorization((allow) => [
-      allow.groups(['SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER']).to(['read']),
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
         .to(['create', 'read', 'update', 'delete']),
@@ -323,7 +324,7 @@ const schema = a.schema({
       ]),
     })
     .authorization((allow) => [
-      allow.groups(['SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER']).to(['read']),
       allow
         .groups(['IT_ADMIN', 'SUPER_ADMIN', 'CONTENT_CREATOR'])
         .to(['create', 'read', 'update', 'delete']),
@@ -377,25 +378,6 @@ const schema = a.schema({
       allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
     ])
     .handler(a.handler.function(contentStatistics))
-    .returns(a.json()),
-
-  // User statistics functions
-  totalUsersFunction: a
-    .query()
-    .arguments({})
-    .authorization((allow) => [
-      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
-    ])
-    .handler(a.handler.function(totalUsersFunction))
-    .returns(a.json()),
-
-  groupCountsFunction: a
-    .query()
-    .arguments({})
-    .authorization((allow) => [
-      allow.groups(['CONTENT_CREATOR', 'IT_ADMIN', 'SUPER_ADMIN']),
-    ])
-    .handler(a.handler.function(groupCountsFunction))
     .returns(a.json()),
 
   newRegistrationsFunction: a
@@ -480,6 +462,7 @@ const schema = a.schema({
       allow.groups([
         'USER',
         'SUBSCRIBER',
+        'FREE_SUBSCRIBER',
         'CONTENT_CREATOR',
         'IT_ADMIN',
         'SUPER_ADMIN',
@@ -531,7 +514,7 @@ const schema = a.schema({
     .arguments({
       email: a.string().required(),
     })
-    .authorization((allow) => [allow.groups(['SUBSCRIBER'])])
+    .authorization((allow) => [allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER'])])
     .handler(a.handler.function(unsubscribeUser))
     .returns(a.json()),
 

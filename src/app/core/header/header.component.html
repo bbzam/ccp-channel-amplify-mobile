@@ -11,7 +11,7 @@
         Sign In
       </button>
     </div> -->
-    } @else { @if (role === 'SUBSCRIBER') {
+    } @else { @if (role === 'SUBSCRIBER' || role === 'FREE_SUBSCRIBER') {
     <div class="header-logo">
       <a href="/subscriber"
         ><img src="ccp-logo-rmvbg.png" alt="header-logo"
@@ -36,7 +36,7 @@
       </button>
       } -->
 
-      @if (role === 'SUBSCRIBER') {
+      @if (role === 'SUBSCRIBER' || role === 'FREE_SUBSCRIBER') {
       <button
         class="search"
         mat-icon-button
@@ -72,7 +72,7 @@
               </div>
             </mat-card-header>
             <mat-card-content>
-              @if(role === 'SUBSCRIBER') {
+              @if(role === 'SUBSCRIBER' || role === 'FREE_SUBSCRIBER') {
               <button mat-button color="primary" (click)="favoritesOnClick()">
                 <mat-icon>favorite</mat-icon><span>Favourites</span>
               </button>

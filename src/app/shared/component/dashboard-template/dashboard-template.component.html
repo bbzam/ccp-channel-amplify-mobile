@@ -20,8 +20,12 @@
             {{ formatNumber(userStats?.groupCounts?.FREE_SUBSCRIBER || 0) }}
           </div> -->
           <div>
-            Subscribers:
+            Paid Subscribers:
             {{ formatNumber(userStats?.totalSUBSCRIBERs || 0) }}
+          </div>
+          <div>
+            Free Subscribers:
+            {{ formatNumber(userStats?.totalFREE_SUBSCRIBERs || 0) }}
           </div>
           <div>Guest Users: {{ formatNumber(userStats?.totalUSERs || 0) }}</div>
           <div>

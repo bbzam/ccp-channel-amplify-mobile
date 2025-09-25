@@ -14,7 +14,7 @@ export interface ContentMetadata {
   director: string;
   writer: string;
   yearReleased: string;
-  userType: 'free' | 'subscriber';
+  userType: 'free' | 'subscriber'; //need to remove
   landscapeImageUrl: string;
   portraitImageUrl: string;
   previewVideoUrl: string;

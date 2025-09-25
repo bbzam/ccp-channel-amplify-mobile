@@ -127,7 +127,7 @@ export const routes: Routes = [
   {
     path: 'subscriber',
     canActivate: [roleGuard, authGuard],
-    data: { roles: ['SUBSCRIBER'] },
+    data: { roles: ['SUBSCRIBER', 'FREE_SUBSCRIBER'] },
     loadComponent: () =>
       import('./features/subscriber/subscriber/subscriber.component').then(
         (m) => m.SubscriberComponent

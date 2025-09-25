@@ -118,7 +118,7 @@
         <mat-option value="USER">Guest User</mat-option>
         <mat-option value="CONTENT_CREATOR">Content Curator</mat-option>
         @if (userRole === 'SUPER_ADMIN') {
-        <mat-option value="SUBSCRIBER">Subscriber</mat-option>
+        <mat-option value="FREE_SUBSCRIBER">Free Subscriber</mat-option>
         <mat-option value="IT_ADMIN">IT Admin</mat-option>
         <mat-option value="SUPER_ADMIN">Super Admin</mat-option>
         }
@@ -129,7 +129,8 @@
     </mat-form-field>
   </div>
 
-  @if (editUserForm.get('role')?.value === 'SUBSCRIBER') {
+  @if (editUserForm.get('role')?.value === 'SUBSCRIBER' ||
+  editUserForm.get('role')?.value === 'FREE_SUBSCRIBER') {
   <div class="form-field-container">
     <mat-form-field appearance="outline">
       <mat-label>Paid Until</mat-label>

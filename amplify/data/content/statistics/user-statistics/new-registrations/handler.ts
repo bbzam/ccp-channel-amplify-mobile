@@ -20,7 +20,7 @@ export const handler = async () => {
     const newRegistrations = { daily: 0, weekly: 0, monthly: 0 };
     const processedUsers = new Set();
 
-    for (const groupName of ['USER', 'SUBSCRIBER']) {
+    for (const groupName of ['USER', 'SUBSCRIBER', 'FREE_SUBSCRIBER']) {
       let nextToken;
       do {
         const response: ListUsersInGroupCommandOutput =

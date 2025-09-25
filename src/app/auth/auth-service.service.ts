@@ -69,6 +69,9 @@ export class AuthServiceService {
         case 'SUBSCRIBER':
           this.checkSubscriptionExpiry(paidUntil, email);
           break;
+        case 'FREE_SUBSCRIBER':
+          this.checkSubscriptionExpiry(paidUntil, email);
+          break;
         case 'CONTENT_CREATOR':
           this.router.navigate(['/content-curator']);
           this.sharedService.hideLoader();

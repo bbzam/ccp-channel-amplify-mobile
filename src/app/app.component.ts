@@ -106,6 +106,11 @@ export class AppComponent implements OnInit {
           this.router.navigate(['/subscriber']);
         }
         break;
+      case 'FREE_SUBSCRIBER':
+        if (publicRoutes.includes(currentUrl)) {
+          this.router.navigate(['/subscriber']);
+        }
+        break;
       case 'CONTENT_CREATOR':
         this.router.navigate(['/content-curator']);
         break;

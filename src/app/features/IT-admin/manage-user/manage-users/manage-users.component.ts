@@ -23,7 +23,7 @@ export class ManageUsersComponent {
   keyword!: string;
 
   private allTabs: Tab[] = [
-    { label: 'PAID SUBSCRIBERS', role: 'PAID_SUBSCRIBER' },
+    { label: 'PAID SUBSCRIBERS', role: 'SUBSCRIBER' },
     { label: 'FREE SUBSCRIBERS', role: 'FREE_SUBSCRIBER' },
     { label: 'GUEST USERS', role: 'USER' },
     { label: 'CONTENT CURATORS', role: 'CONTENT_CREATOR' },
@@ -47,7 +47,7 @@ export class ManageUsersComponent {
 
   get displayedColumns() {
     const excludeColumns =
-      this.role === 'PAID_SUBSCRIBER'
+      this.role === 'SUBSCRIBER'
         ? []
         : this.role === 'FREE_SUBSCRIBER'
         ? ['subscriptionType']
@@ -62,7 +62,7 @@ export class ManageUsersComponent {
 
   ngOnInit(): void {
     this.setTabsBasedOnUserRole();
-    this.role = 'PAID_SUBSCRIBER';
+    this.role = 'SUBSCRIBER';
     this.getAllUsers(this.role);
   }
 
@@ -72,20 +72,14 @@ export class ManageUsersComponent {
     switch (currentUserRole) {
       case 'CONTENT_CREATOR':
         this.tabs = this.allTabs.filter((tab) =>
-          ['USER', 'SUBSCRIBER', 'PAID_SUBSCRIBER', 'FREE_SUBSCRIBER'].includes(
-            tab.role
-          )
+          ['USER', 'SUBSCRIBER', 'FREE_SUBSCRIBER'].includes(tab.role)
         );
         break;
       case 'IT_ADMIN':
         this.tabs = this.allTabs.filter((tab) =>
-          [
-            'USER',
-            'SUBSCRIBER',
-            'PAID_SUBSCRIBER',
-            'FREE_SUBSCRIBER',
-            'CONTENT_CREATOR',
-          ].includes(tab.role)
+          ['USER', 'SUBSCRIBER', 'FREE_SUBSCRIBER', 'CONTENT_CREATOR'].includes(
+            tab.role
+          )
         );
         break;
       case 'SUPER_ADMIN':
@@ -113,10 +107,7 @@ export class ManageUsersComponent {
   }
 
   handleRowClick(row: any): void {
-    row.role =
-      this.role === 'PAID_SUBSCRIBER' || this.role === 'FREE_SUBSCRIBER'
-        ? 'SUBSCRIBER'
-        : this.role;
+    this.role = row.role;
     this.dialog
       .open(ViewUserComponent, {
         data: row,
