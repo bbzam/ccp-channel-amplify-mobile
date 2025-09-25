@@ -135,6 +135,10 @@ export const auth = defineAuth({
       dataType: 'DateTime',
       mutable: true,
     },
+    'custom:subscriptionType': {
+      dataType: 'String',
+      mutable: true,
+    },
   },
   groups: [
     'USER',
