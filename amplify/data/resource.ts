@@ -277,6 +277,7 @@ const schema = a.schema({
 
   FeaturedAll: a
     .model({
+      id: a.id().required(),
       selectedContent: a.string(),
       category: a.enum([
         'all',

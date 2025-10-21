@@ -5,8 +5,8 @@ import {
   HostListener,
   inject,
   Input,
-  OnInit,
   OnDestroy,
+  OnInit,
   QueryList,
   ViewChildren,
 } from '@angular/core';

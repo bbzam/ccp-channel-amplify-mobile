@@ -1,14 +1,14 @@
 export const config = {
-  USER_POOL_ID: 'ap-southeast-1_sfC1YPuEq',
+  USER_POOL_ID: 'ap-southeast-1_DilYeRpIg',
   REGION: 'ap-southeast-1',
   ACCOUNT_ID: '879639852836',
   BUCKET_NAME:
-    'amplify-d2qbkth99puqhd-tes-mystoragebucketb6b33049-9qztiddn4qvq',
-  CONTENT_TABLE: 'Content-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
-  CONTENTTOUSER_TABLE: 'contentToUser-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
-  CUSTOMFIELDS_TABLE: 'customFields-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
-  PAYMENTTOUSER_TABLE: 'paymentToUser-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
-  COUNTER_TABLE: 'counter-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
+    'amplify-d2qbkth99puqhd-mai-mystoragebucketb6b33049-nuoj9he3ejpe',
+  CONTENT_TABLE: 'Content-yadmibjwpbgh7k7qylqq6ae4we-NONE',
+  CONTENTTOUSER_TABLE: 'contentToUser-yadmibjwpbgh7k7qylqq6ae4we-NONE',
+  CUSTOMFIELDS_TABLE: 'customFields-yadmibjwpbgh7k7qylqq6ae4we-NONE',
+  PAYMENTTOUSER_TABLE: 'paymentToUser-yadmibjwpbgh7k7qylqq6ae4we-NONE',
+  COUNTER_TABLE: 'counter-yadmibjwpbgh7k7qylqq6ae4we-NONE',
   MEDIACONVERT_ROLE: 'role/service-role/MediaConvert_Default_Role',
   SPEKE_URL:
     'https://27jahlsoj3.execute-api.ap-southeast-1.amazonaws.com/production/copyProtection',
