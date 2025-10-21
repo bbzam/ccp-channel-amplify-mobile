@@ -3,7 +3,8 @@
     class="profile-content"
     [ngClass]="{
       'user-role-margin': userRole === 'USER',
-      'subscriber-role-margin': userRole === 'SUBSCRIBER'
+      'subscriber-role-margin':
+        userRole === 'SUBSCRIBER' || userRole === 'FREE_SUBSCRIBER'
     }"
   >
     <div class="edit-actions">

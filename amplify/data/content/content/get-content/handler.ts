@@ -10,7 +10,9 @@ export const handler = async (event: any) => {
     userGroups.includes('IT_ADMIN') ||
     userGroups.includes('CONTENT_CREATOR');
   const isSubscriber =
-    userGroups.includes('SUBSCRIBER') || userGroups.includes('USER');
+    userGroups.includes('SUBSCRIBER') ||
+    userGroups.includes('FREE_SUBSCRIBER') ||
+    userGroups.includes('USER');
 
   try {
     const ddbClient = new DynamoDBClient({});

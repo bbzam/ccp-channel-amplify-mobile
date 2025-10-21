@@ -66,6 +66,9 @@ export class Header2Component {
       case 'SUBSCRIBER':
         this.router.navigate(['subscriber/account-settings']);
         break;
+      case 'FREE_SUBSCRIBER':
+        this.router.navigate(['subscriber/account-settings']);
+        break;
       case 'CONTENT_CREATOR':
         this.router.navigate(['content-curator/account-settings']);
         break;

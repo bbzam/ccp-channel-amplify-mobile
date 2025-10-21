@@ -28,7 +28,7 @@ export const storage = defineStorage({
 
     // Preview Videos folder
     'preview-videos/*': [
-      allow.groups(['SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER']).to(['read']),
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['read', 'write', 'delete']),
@@ -37,7 +37,7 @@ export const storage = defineStorage({
 
     // Full Videos folder
     'full-videos/*': [
-      allow.groups(['SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER']).to(['read']),
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['read', 'write', 'delete']),
@@ -46,7 +46,7 @@ export const storage = defineStorage({
 
     // Flattened Landscape Images folder
     'processed-landscape-images/*': [
-      allow.groups(['SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER']).to(['read']),
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['read', 'write', 'delete']),
@@ -55,7 +55,7 @@ export const storage = defineStorage({
 
     // Flattened Portrait Images folder
     'processed-portrait-images/*': [
-      allow.groups(['SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER']).to(['read']),
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['read', 'write', 'delete']),
@@ -64,7 +64,7 @@ export const storage = defineStorage({
 
     // Processed Full Videos folder
     'processed-full-videos/*': [
-      allow.groups(['SUBSCRIBER']).to(['read']),
+      allow.groups(['SUBSCRIBER', 'FREE_SUBSCRIBER']).to(['read']),
       allow
         .groups(['CONTENT_CREATOR', 'SUPER_ADMIN'])
         .to(['read', 'write', 'delete']),

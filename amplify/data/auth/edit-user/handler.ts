@@ -15,6 +15,7 @@ const client = new CognitoIdentityProviderClient();
 const ALLOWED_ROLES = [
   'USER',
   'SUBSCRIBER',
+  'FREE_SUBSCRIBER',
   'CONTENT_CREATOR',
   'IT_ADMIN',
   'SUPER_ADMIN',
@@ -61,7 +62,7 @@ export const handler: Handler = async (event) => {
   }
 
   // Validate paidUntil required field in role SUBSCRIBER
-  if (['SUBSCRIBER'].includes(body.role) && !body.paidUntil) {
+  if (['SUBSCRIBER', 'FREE_SUBSCRIBER'].includes(body.role) && !body.paidUntil) {
     throw new Error(
       'Failed adding Subscriber. Missing required field: Paid until is required'
     );

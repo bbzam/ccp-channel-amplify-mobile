@@ -26,10 +26,15 @@ export const handler: Handler = async (event) => {
 
   console.log('User groups check', {
     userGroups,
-    hasSubscriber: userGroups.includes('SUBSCRIBER'),
+    hasSubscriber:
+      userGroups.includes('SUBSCRIBER') ||
+      userGroups.includes('FREE_SUBSCRIBER'),
   });
 
-  if (!userGroups.includes('SUBSCRIBER')) {
+  if (
+    !userGroups.includes('SUBSCRIBER') ||
+    !userGroups.includes('FREE_SUBSCRIBER')
+  ) {
     console.error('Access denied - not SUBSCRIBER');
     throw new Error(
       'Access denied. Only SUBSCRIBER can change their role to USER for Unsubscribing.'
@@ -37,7 +42,9 @@ export const handler: Handler = async (event) => {
   }
 
   try {
-    let currentRole = 'SUBSCRIBER';
+    let currentRole = userGroups.includes('SUBSCRIBER')
+      ? 'SUBSCRIBER'
+      : 'FREE_SUBSCRIBER';
 
     console.log('Updating user role', { from: currentRole, to: 'USER' });
 
