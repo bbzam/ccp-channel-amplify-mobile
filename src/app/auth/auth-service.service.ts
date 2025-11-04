@@ -52,7 +52,7 @@ export class AuthServiceService {
       const paidUntil = String(payload?.['custom:paidUntil']);
       const email = String(idToken?.payload['email']);
 
-      console.log(payload?.['custom:paidUntil']);
+      console.log("hello ", paidUntil);
 
       if (!accessToken || !idToken) {
         this.handleLogout();
@@ -62,7 +62,7 @@ export class AuthServiceService {
       switch (userRole) {
         case 'USER':
           this.router.navigate(['/user'], {
-            queryParams: { renew: paidUntil ? true : false },
+            queryParams: { renew: paidUntil && paidUntil !== "undefined" ? true : false },
           });
           this.sharedService.hideLoader();
           break;

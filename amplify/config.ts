@@ -1,7 +1,7 @@
 export const config = {
   USER_POOL_ID: 'ap-southeast-1_sfC1YPuEq',
   REGION: 'ap-southeast-1',
-  ACCOUNT_ID: '879639852836',
+  ACCOUNT_ID: '832480578571', //'879639852836',
   BUCKET_NAME:
     'amplify-d2qbkth99puqhd-tes-mystoragebucketb6b33049-9qztiddn4qvq',
   CONTENT_TABLE: 'Content-ysjl3qu4l5hqzduhk7jxbmzxou-NONE',
@@ -12,8 +12,8 @@ export const config = {
   MEDIACONVERT_ROLE: 'role/service-role/MediaConvert_Default_Role',
   SPEKE_URL:
     'https://27jahlsoj3.execute-api.ap-southeast-1.amazonaws.com/production/copyProtection',
-  SHARP_LAYER: 'node-js-sharp:1',
-  FFMPEG_LAYER: 'ffmpeg:2',
+  SHARP_LAYER: 'sharpLayer:2', //'node-js-sharp:1',
+  FFMPEG_LAYER: 'ffmpeg:1', //'ffmpeg:2',
   PAYMENT_URL: 'https://test.dragonpay.ph/api/collect/v1/',
   MERCHANT_ID: 'CCP3',
   API_KEY: 'SfJXiEKxxZqscfs',
