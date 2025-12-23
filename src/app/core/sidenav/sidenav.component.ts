@@ -132,15 +132,6 @@ export class SidenavComponent implements OnInit {
       case 'FREE_SUBSCRIBER':
         this.router.navigate(['subscriber/account-settings']);
         break;
-      case 'CONTENT_CREATOR':
-        this.router.navigate(['content-curator/account-settings']);
-        break;
-      case 'IT_ADMIN':
-        this.router.navigate(['it-admin/account-settings']);
-        break;
-      case 'SUPER_ADMIN':
-        this.router.navigate(['super-admin/account-settings']);
-        break;
     }
   }
 

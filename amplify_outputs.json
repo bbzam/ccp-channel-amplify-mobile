@@ -1,0 +1,1843 @@
+{
+  "auth": {
+    "user_pool_id": "ap-southeast-1_xIhcxelQK",
+    "aws_region": "ap-southeast-1",
+    "user_pool_client_id": "3tbneuu7fcunaunicn64sjm3a8",
+    "identity_pool_id": "ap-southeast-1:efed449c-b114-47b8-9b0d-4031d5adad60",
+    "mfa_methods": [],
+    "standard_required_attributes": [
+      "email",
+      "given_name",
+      "family_name",
+      "birthdate"
+    ],
+    "username_attributes": [
+      "email"
+    ],
+    "user_verification_types": [
+      "email"
+    ],
+    "groups": [
+      {
+        "USER": {
+          "precedence": 0
+        }
+      },
+      {
+        "SUBSCRIBER": {
+          "precedence": 1
+        }
+      },
+      {
+        "FREE_SUBSCRIBER": {
+          "precedence": 2
+        }
+      },
+      {
+        "CONTENT_CREATOR": {
+          "precedence": 3
+        }
+      },
+      {
+        "IT_ADMIN": {
+          "precedence": 4
+        }
+      },
+      {
+        "SUPER_ADMIN": {
+          "precedence": 5
+        }
+      }
+    ],
+    "mfa_configuration": "NONE",
+    "password_policy": {
+      "min_length": 8,
+      "require_lowercase": true,
+      "require_numbers": true,
+      "require_symbols": true,
+      "require_uppercase": true
+    },
+    "unauthenticated_identities_enabled": true
+  },
+  "data": {
+    "url": "https://cvdxldazk5eqvjbreflyomrruq.appsync-api.ap-southeast-1.amazonaws.com/graphql",
+    "aws_region": "ap-southeast-1",
+    "default_authorization_type": "AMAZON_COGNITO_USER_POOLS",
+    "authorization_types": [
+      "AWS_IAM"
+    ],
+    "model_introspection": {
+      "version": 1,
+      "models": {
+        "Content": {
+          "name": "Content",
+          "fields": {
+            "id": {
+              "name": "id",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": true,
+              "attributes": []
+            },
+            "title": {
+              "name": "title",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "description": {
+              "name": "description",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "category": {
+              "name": "category",
+              "isArray": false,
+              "type": {
+                "enum": "ContentCategory"
+              },
+              "isRequired": false,
+              "attributes": []
+            },
+            "subCategory": {
+              "name": "subCategory",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "director": {
+              "name": "director",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "writer": {
+              "name": "writer",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "yearReleased": {
+              "name": "yearReleased",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "userType": {
+              "name": "userType",
+              "isArray": false,
+              "type": {
+                "enum": "ContentUserType"
+              },
+              "isRequired": false,
+              "attributes": []
+            },
+            "landscapeImageUrl": {
+              "name": "landscapeImageUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "portraitImageUrl": {
+              "name": "portraitImageUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "previewVideoUrl": {
+              "name": "previewVideoUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "fullVideoUrl": {
+              "name": "fullVideoUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "vttUrl": {
+              "name": "vttUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "processedFullVideoUrl": {
+              "name": "processedFullVideoUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "runtime": {
+              "name": "runtime",
+              "isArray": false,
+              "type": "Float",
+              "isRequired": true,
+              "attributes": []
+            },
+            "resolution": {
+              "name": "resolution",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "status": {
+              "name": "status",
+              "isArray": false,
+              "type": "Boolean",
+              "isRequired": true,
+              "attributes": []
+            },
+            "publishDate": {
+              "name": "publishDate",
+              "isArray": false,
+              "type": "AWSDate",
+              "isRequired": false,
+              "attributes": []
+            },
+            "viewCount": {
+              "name": "viewCount",
+              "isArray": false,
+              "type": "Int",
+              "isRequired": false,
+              "attributes": []
+            },
+            "customFields": {
+              "name": "customFields",
+              "isArray": false,
+              "type": "AWSJSON",
+              "isRequired": false,
+              "attributes": []
+            },
+            "contentToUser": {
+              "name": "contentToUser",
+              "isArray": true,
+              "type": {
+                "model": "contentToUser"
+              },
+              "isRequired": false,
+              "attributes": [],
+              "isArrayNullable": true,
+              "association": {
+                "connectionType": "HAS_MANY",
+                "associatedWith": [
+                  "contentId"
+                ]
+              }
+            },
+            "createdAt": {
+              "name": "createdAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            },
+            "updatedAt": {
+              "name": "updatedAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            }
+          },
+          "syncable": true,
+          "pluralName": "Contents",
+          "attributes": [
+            {
+              "type": "model",
+              "properties": {}
+            },
+            {
+              "type": "key",
+              "properties": {
+                "fields": [
+                  "id"
+                ]
+              }
+            },
+            {
+              "type": "auth",
+              "properties": {
+                "rules": [
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "read"
+                    ],
+                    "groups": [
+                      "SUBSCRIBER",
+                      "FREE_SUBSCRIBER",
+                      "IT_ADMIN"
+                    ]
+                  },
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "read",
+                      "create",
+                      "update",
+                      "delete"
+                    ],
+                    "groups": [
+                      "CONTENT_CREATOR",
+                      "SUPER_ADMIN"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "primaryKeyInfo": {
+            "isCustomPrimaryKey": false,
+            "primaryKeyFieldName": "id",
+            "sortKeyFieldNames": []
+          }
+        },
+        "counter": {
+          "name": "counter",
+          "fields": {
+            "counterName": {
+              "name": "counterName",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "counter": {
+              "name": "counter",
+              "isArray": false,
+              "type": "Int",
+              "isRequired": false,
+              "attributes": []
+            },
+            "createdAt": {
+              "name": "createdAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            },
+            "updatedAt": {
+              "name": "updatedAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            }
+          },
+          "syncable": true,
+          "pluralName": "counters",
+          "attributes": [
+            {
+              "type": "model",
+              "properties": {}
+            },
+            {
+              "type": "key",
+              "properties": {
+                "fields": [
+                  "counterName"
+                ]
+              }
+            },
+            {
+              "type": "auth",
+              "properties": {
+                "rules": [
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "read",
+                      "create",
+                      "update"
+                    ],
+                    "groups": [
+                      "IT_ADMIN",
+                      "SUPER_ADMIN",
+                      "CONTENT_CREATOR"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "primaryKeyInfo": {
+            "isCustomPrimaryKey": true,
+            "primaryKeyFieldName": "counterName",
+            "sortKeyFieldNames": []
+          }
+        },
+        "customFields": {
+          "name": "customFields",
+          "fields": {
+            "id": {
+              "name": "id",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": true,
+              "attributes": []
+            },
+            "fieldName": {
+              "name": "fieldName",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "order": {
+              "name": "order",
+              "isArray": false,
+              "type": "Int",
+              "isRequired": false,
+              "attributes": []
+            },
+            "createdAt": {
+              "name": "createdAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            },
+            "updatedAt": {
+              "name": "updatedAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            }
+          },
+          "syncable": true,
+          "pluralName": "customFields",
+          "attributes": [
+            {
+              "type": "model",
+              "properties": {}
+            },
+            {
+              "type": "auth",
+              "properties": {
+                "rules": [
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "read",
+                      "create",
+                      "update",
+                      "delete"
+                    ],
+                    "groups": [
+                      "IT_ADMIN",
+                      "SUPER_ADMIN",
+                      "CONTENT_CREATOR"
+                    ]
+                  },
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "read"
+                    ],
+                    "groups": [
+                      "SUBSCRIBER",
+                      "FREE_SUBSCRIBER"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "primaryKeyInfo": {
+            "isCustomPrimaryKey": false,
+            "primaryKeyFieldName": "id",
+            "sortKeyFieldNames": []
+          }
+        },
+        "contentToUser": {
+          "name": "contentToUser",
+          "fields": {
+            "id": {
+              "name": "id",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": true,
+              "attributes": []
+            },
+            "userId": {
+              "name": "userId",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "pauseTime": {
+              "name": "pauseTime",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "isFavorite": {
+              "name": "isFavorite",
+              "isArray": false,
+              "type": "Boolean",
+              "isRequired": false,
+              "attributes": []
+            },
+            "contentId": {
+              "name": "contentId",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": true,
+              "attributes": []
+            },
+            "content": {
+              "name": "content",
+              "isArray": false,
+              "type": {
+                "model": "Content"
+              },
+              "isRequired": false,
+              "attributes": [],
+              "association": {
+                "connectionType": "BELONGS_TO",
+                "targetNames": [
+                  "contentId"
+                ]
+              }
+            },
+            "createdAt": {
+              "name": "createdAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            },
+            "updatedAt": {
+              "name": "updatedAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            }
+          },
+          "syncable": true,
+          "pluralName": "contentToUsers",
+          "attributes": [
+            {
+              "type": "model",
+              "properties": {}
+            },
+            {
+              "type": "auth",
+              "properties": {
+                "rules": [
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "create",
+                      "update",
+                      "read"
+                    ],
+                    "groups": [
+                      "SUBSCRIBER",
+                      "FREE_SUBSCRIBER"
+                    ]
+                  },
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "read"
+                    ],
+                    "groups": [
+                      "IT_ADMIN",
+                      "SUPER_ADMIN",
+                      "CONTENT_CREATOR"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "primaryKeyInfo": {
+            "isCustomPrimaryKey": false,
+            "primaryKeyFieldName": "id",
+            "sortKeyFieldNames": []
+          }
+        },
+        "paymentToUser": {
+          "name": "paymentToUser",
+          "fields": {
+            "id": {
+              "name": "id",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": true,
+              "attributes": []
+            },
+            "transactionId": {
+              "name": "transactionId",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "userId": {
+              "name": "userId",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "subscriptionType": {
+              "name": "subscriptionType",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true,
+              "attributes": []
+            },
+            "status": {
+              "name": "status",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "message": {
+              "name": "message",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "createdAt": {
+              "name": "createdAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            },
+            "updatedAt": {
+              "name": "updatedAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            }
+          },
+          "syncable": true,
+          "pluralName": "paymentToUsers",
+          "attributes": [
+            {
+              "type": "model",
+              "properties": {}
+            },
+            {
+              "type": "auth",
+              "properties": {
+                "rules": [
+                  {
+                    "allow": "public",
+                    "provider": "iam",
+                    "operations": [
+                      "update"
+                    ]
+                  },
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "create"
+                    ],
+                    "groups": [
+                      "USER"
+                    ]
+                  },
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "read"
+                    ],
+                    "groups": [
+                      "IT_ADMIN",
+                      "SUPER_ADMIN",
+                      "CONTENT_CREATOR"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "primaryKeyInfo": {
+            "isCustomPrimaryKey": false,
+            "primaryKeyFieldName": "id",
+            "sortKeyFieldNames": []
+          }
+        },
+        "FeaturedAll": {
+          "name": "FeaturedAll",
+          "fields": {
+            "id": {
+              "name": "id",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": true,
+              "attributes": []
+            },
+            "selectedContent": {
+              "name": "selectedContent",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "category": {
+              "name": "category",
+              "isArray": false,
+              "type": {
+                "enum": "FeaturedAllCategory"
+              },
+              "isRequired": false,
+              "attributes": []
+            },
+            "createdAt": {
+              "name": "createdAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            },
+            "updatedAt": {
+              "name": "updatedAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            }
+          },
+          "syncable": true,
+          "pluralName": "FeaturedAlls",
+          "attributes": [
+            {
+              "type": "model",
+              "properties": {}
+            },
+            {
+              "type": "auth",
+              "properties": {
+                "rules": [
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "read"
+                    ],
+                    "groups": [
+                      "SUBSCRIBER",
+                      "FREE_SUBSCRIBER"
+                    ]
+                  },
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "create",
+                      "read",
+                      "update",
+                      "delete"
+                    ],
+                    "groups": [
+                      "IT_ADMIN",
+                      "SUPER_ADMIN",
+                      "CONTENT_CREATOR"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "primaryKeyInfo": {
+            "isCustomPrimaryKey": false,
+            "primaryKeyFieldName": "id",
+            "sortKeyFieldNames": []
+          }
+        },
+        "tags": {
+          "name": "tags",
+          "fields": {
+            "id": {
+              "name": "id",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": true,
+              "attributes": []
+            },
+            "tag": {
+              "name": "tag",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "isVisible": {
+              "name": "isVisible",
+              "isArray": false,
+              "type": "Boolean",
+              "isRequired": false,
+              "attributes": []
+            },
+            "selectedContent": {
+              "name": "selectedContent",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "order": {
+              "name": "order",
+              "isArray": false,
+              "type": "Int",
+              "isRequired": false,
+              "attributes": []
+            },
+            "createdAt": {
+              "name": "createdAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            },
+            "updatedAt": {
+              "name": "updatedAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            }
+          },
+          "syncable": true,
+          "pluralName": "tags",
+          "attributes": [
+            {
+              "type": "model",
+              "properties": {}
+            },
+            {
+              "type": "auth",
+              "properties": {
+                "rules": [
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "read"
+                    ],
+                    "groups": [
+                      "SUBSCRIBER",
+                      "FREE_SUBSCRIBER"
+                    ]
+                  },
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "create",
+                      "read",
+                      "update",
+                      "delete"
+                    ],
+                    "groups": [
+                      "IT_ADMIN",
+                      "SUPER_ADMIN",
+                      "CONTENT_CREATOR"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "primaryKeyInfo": {
+            "isCustomPrimaryKey": false,
+            "primaryKeyFieldName": "id",
+            "sortKeyFieldNames": []
+          }
+        },
+        "FeaturedLandingPage": {
+          "name": "FeaturedLandingPage",
+          "fields": {
+            "id": {
+              "name": "id",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": true,
+              "attributes": []
+            },
+            "selectedContent": {
+              "name": "selectedContent",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "category": {
+              "name": "category",
+              "isArray": false,
+              "type": {
+                "enum": "FeaturedLandingPageCategory"
+              },
+              "isRequired": false,
+              "attributes": []
+            },
+            "createdAt": {
+              "name": "createdAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            },
+            "updatedAt": {
+              "name": "updatedAt",
+              "isArray": false,
+              "type": "AWSDateTime",
+              "isRequired": false,
+              "attributes": [],
+              "isReadOnly": true
+            }
+          },
+          "syncable": true,
+          "pluralName": "FeaturedLandingPages",
+          "attributes": [
+            {
+              "type": "model",
+              "properties": {}
+            },
+            {
+              "type": "auth",
+              "properties": {
+                "rules": [
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "read"
+                    ],
+                    "groups": [
+                      "SUBSCRIBER",
+                      "FREE_SUBSCRIBER"
+                    ]
+                  },
+                  {
+                    "groupClaim": "cognito:groups",
+                    "provider": "userPools",
+                    "allow": "groups",
+                    "operations": [
+                      "create",
+                      "read",
+                      "update",
+                      "delete"
+                    ],
+                    "groups": [
+                      "IT_ADMIN",
+                      "SUPER_ADMIN",
+                      "CONTENT_CREATOR"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "primaryKeyInfo": {
+            "isCustomPrimaryKey": false,
+            "primaryKeyFieldName": "id",
+            "sortKeyFieldNames": []
+          }
+        }
+      },
+      "enums": {
+        "ContentCategory": {
+          "name": "ContentCategory",
+          "values": [
+            "theater",
+            "film",
+            "music",
+            "dance",
+            "education",
+            "ccpspecials",
+            "ccpclassics"
+          ]
+        },
+        "ContentUserType": {
+          "name": "ContentUserType",
+          "values": [
+            "free",
+            "subscriber"
+          ]
+        },
+        "CreateContentFunctionCategory": {
+          "name": "CreateContentFunctionCategory",
+          "values": [
+            "theater",
+            "film",
+            "music",
+            "dance",
+            "education",
+            "ccpspecials",
+            "ccpclassics"
+          ]
+        },
+        "CreateContentFunctionUserType": {
+          "name": "CreateContentFunctionUserType",
+          "values": [
+            "free",
+            "subscriber"
+          ]
+        },
+        "UpdateContentFunctionCategory": {
+          "name": "UpdateContentFunctionCategory",
+          "values": [
+            "theater",
+            "film",
+            "music",
+            "dance",
+            "education",
+            "ccpspecials",
+            "ccpclassics"
+          ]
+        },
+        "UpdateContentFunctionUserType": {
+          "name": "UpdateContentFunctionUserType",
+          "values": [
+            "free",
+            "subscriber"
+          ]
+        },
+        "FeaturedAllCategory": {
+          "name": "FeaturedAllCategory",
+          "values": [
+            "all",
+            "theater",
+            "film",
+            "music",
+            "dance",
+            "education",
+            "ccpspecials",
+            "ccpclassics"
+          ]
+        },
+        "FeaturedLandingPageCategory": {
+          "name": "FeaturedLandingPageCategory",
+          "values": [
+            "theater",
+            "film",
+            "music",
+            "dance",
+            "education",
+            "ccpspecials",
+            "ccpclassics"
+          ]
+        }
+      },
+      "nonModels": {},
+      "queries": {
+        "getContentFunction": {
+          "name": "getContentFunction",
+          "isArray": false,
+          "type": "String",
+          "isRequired": false,
+          "arguments": {
+            "category": {
+              "name": "category",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "status": {
+              "name": "status",
+              "isArray": false,
+              "type": "Boolean",
+              "isRequired": false
+            },
+            "keyword": {
+              "name": "keyword",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "fields": {
+              "name": "fields",
+              "isArray": true,
+              "type": "String",
+              "isRequired": false,
+              "isArrayNullable": true
+            },
+            "filterBy": {
+              "name": "filterBy",
+              "isArray": false,
+              "type": "AWSJSON",
+              "isRequired": false
+            }
+          }
+        },
+        "getCountersFunction": {
+          "name": "getCountersFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false
+        },
+        "getContentToUserFunction": {
+          "name": "getContentToUserFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "contentId": {
+              "name": "contentId",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            }
+          }
+        },
+        "getUserFavoritesFunction": {
+          "name": "getUserFavoritesFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false
+        },
+        "getContinueWatchFunction": {
+          "name": "getContinueWatchFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false
+        },
+        "contentStatistics": {
+          "name": "contentStatistics",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false
+        },
+        "newRegistrationsFunction": {
+          "name": "newRegistrationsFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false
+        },
+        "totalContentFunction": {
+          "name": "totalContentFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false
+        },
+        "topViewedContentFunction": {
+          "name": "topViewedContentFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false
+        },
+        "contentByCategoryFunction": {
+          "name": "contentByCategoryFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false
+        },
+        "leastViewedContentFunction": {
+          "name": "leastViewedContentFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false
+        },
+        "averageViewsFunction": {
+          "name": "averageViewsFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false
+        },
+        "recentContentFunction": {
+          "name": "recentContentFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false
+        },
+        "monthlyStatsFunction": {
+          "name": "monthlyStatsFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false
+        },
+        "listUser": {
+          "name": "listUser",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "email": {
+              "name": "email",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            }
+          }
+        },
+        "listUsers": {
+          "name": "listUsers",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "role": {
+              "name": "role",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "limit": {
+              "name": "limit",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "keyword": {
+              "name": "keyword",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            }
+          }
+        },
+        "createPayment": {
+          "name": "createPayment",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "rate": {
+              "name": "rate",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "ProcId": {
+              "name": "ProcId",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "email": {
+              "name": "email",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            }
+          }
+        }
+      },
+      "mutations": {
+        "createContentFunction": {
+          "name": "createContentFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "title": {
+              "name": "title",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "description": {
+              "name": "description",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "category": {
+              "name": "category",
+              "isArray": false,
+              "type": {
+                "enum": "CreateContentFunctionCategory"
+              },
+              "isRequired": false
+            },
+            "subCategory": {
+              "name": "subCategory",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "director": {
+              "name": "director",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "writer": {
+              "name": "writer",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "yearReleased": {
+              "name": "yearReleased",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "userType": {
+              "name": "userType",
+              "isArray": false,
+              "type": {
+                "enum": "CreateContentFunctionUserType"
+              },
+              "isRequired": false
+            },
+            "landscapeImageUrl": {
+              "name": "landscapeImageUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "portraitImageUrl": {
+              "name": "portraitImageUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "previewVideoUrl": {
+              "name": "previewVideoUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "fullVideoUrl": {
+              "name": "fullVideoUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "runtime": {
+              "name": "runtime",
+              "isArray": false,
+              "type": "Float",
+              "isRequired": true
+            },
+            "resolution": {
+              "name": "resolution",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "status": {
+              "name": "status",
+              "isArray": false,
+              "type": "Boolean",
+              "isRequired": true
+            },
+            "publishDate": {
+              "name": "publishDate",
+              "isArray": false,
+              "type": "AWSDate",
+              "isRequired": false
+            },
+            "customFields": {
+              "name": "customFields",
+              "isArray": false,
+              "type": "AWSJSON",
+              "isRequired": false
+            }
+          }
+        },
+        "updateContentFunction": {
+          "name": "updateContentFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "id": {
+              "name": "id",
+              "isArray": false,
+              "type": "ID",
+              "isRequired": true
+            },
+            "title": {
+              "name": "title",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "description": {
+              "name": "description",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "category": {
+              "name": "category",
+              "isArray": false,
+              "type": {
+                "enum": "UpdateContentFunctionCategory"
+              },
+              "isRequired": false
+            },
+            "subCategory": {
+              "name": "subCategory",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "director": {
+              "name": "director",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "writer": {
+              "name": "writer",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "yearReleased": {
+              "name": "yearReleased",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "userType": {
+              "name": "userType",
+              "isArray": false,
+              "type": {
+                "enum": "UpdateContentFunctionUserType"
+              },
+              "isRequired": false
+            },
+            "landscapeImageUrl": {
+              "name": "landscapeImageUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "portraitImageUrl": {
+              "name": "portraitImageUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "previewVideoUrl": {
+              "name": "previewVideoUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "fullVideoUrl": {
+              "name": "fullVideoUrl",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "runtime": {
+              "name": "runtime",
+              "isArray": false,
+              "type": "Float",
+              "isRequired": false
+            },
+            "resolution": {
+              "name": "resolution",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "status": {
+              "name": "status",
+              "isArray": false,
+              "type": "Boolean",
+              "isRequired": false
+            },
+            "publishDate": {
+              "name": "publishDate",
+              "isArray": false,
+              "type": "AWSDate",
+              "isRequired": false
+            },
+            "customFields": {
+              "name": "customFields",
+              "isArray": false,
+              "type": "AWSJSON",
+              "isRequired": false
+            }
+          }
+        },
+        "createContentToUserFunction": {
+          "name": "createContentToUserFunction",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "contentId": {
+              "name": "contentId",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "pauseTime": {
+              "name": "pauseTime",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            },
+            "isFavorite": {
+              "name": "isFavorite",
+              "isArray": false,
+              "type": "Boolean",
+              "isRequired": false
+            }
+          }
+        },
+        "addUser": {
+          "name": "addUser",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "firstname": {
+              "name": "firstname",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "lastname": {
+              "name": "lastname",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "email": {
+              "name": "email",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "birthdate": {
+              "name": "birthdate",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "role": {
+              "name": "role",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "paidUntil": {
+              "name": "paidUntil",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            }
+          }
+        },
+        "resendInvitation": {
+          "name": "resendInvitation",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "email": {
+              "name": "email",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            }
+          }
+        },
+        "editUser": {
+          "name": "editUser",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "firstname": {
+              "name": "firstname",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "lastname": {
+              "name": "lastname",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "email": {
+              "name": "email",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "birthdate": {
+              "name": "birthdate",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "role": {
+              "name": "role",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            },
+            "paidUntil": {
+              "name": "paidUntil",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false
+            }
+          }
+        },
+        "unsubscribeUser": {
+          "name": "unsubscribeUser",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "email": {
+              "name": "email",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            }
+          }
+        },
+        "disableUser": {
+          "name": "disableUser",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "email": {
+              "name": "email",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            }
+          }
+        },
+        "enableUser": {
+          "name": "enableUser",
+          "isArray": false,
+          "type": "AWSJSON",
+          "isRequired": false,
+          "arguments": {
+            "email": {
+              "name": "email",
+              "isArray": false,
+              "type": "String",
+              "isRequired": true
+            }
+          }
+        }
+      }
+    }
+  },
+  "storage": {
+    "aws_region": "ap-southeast-1",
+    "bucket_name": "amplify-d2toqg40qzl998-mai-mystoragebucketb6b33049-at9lra4voyoy",
+    "buckets": [
+      {
+        "name": "mystorage",
+        "bucket_name": "amplify-d2toqg40qzl998-mai-mystoragebucketb6b33049-at9lra4voyoy",
+        "aws_region": "ap-southeast-1",
+        "paths": {
+          "landscape-images/*": {
+            "groupsCONTENT_CREATOR": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ],
+            "groupsSUPER_ADMIN": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ]
+          },
+          "portrait-images/*": {
+            "groupsCONTENT_CREATOR": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ],
+            "groupsSUPER_ADMIN": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ]
+          },
+          "preview-videos/*": {
+            "groupsSUBSCRIBER": [
+              "get",
+              "list"
+            ],
+            "groupsFREE_SUBSCRIBER": [
+              "get",
+              "list"
+            ],
+            "groupsCONTENT_CREATOR": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ],
+            "groupsSUPER_ADMIN": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ]
+          },
+          "full-videos/*": {
+            "groupsSUBSCRIBER": [
+              "get",
+              "list"
+            ],
+            "groupsFREE_SUBSCRIBER": [
+              "get",
+              "list"
+            ],
+            "groupsCONTENT_CREATOR": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ],
+            "groupsSUPER_ADMIN": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ]
+          },
+          "processed-landscape-images/*": {
+            "groupsSUBSCRIBER": [
+              "get",
+              "list"
+            ],
+            "groupsFREE_SUBSCRIBER": [
+              "get",
+              "list"
+            ],
+            "groupsCONTENT_CREATOR": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ],
+            "groupsSUPER_ADMIN": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ]
+          },
+          "processed-portrait-images/*": {
+            "groupsSUBSCRIBER": [
+              "get",
+              "list"
+            ],
+            "groupsFREE_SUBSCRIBER": [
+              "get",
+              "list"
+            ],
+            "groupsCONTENT_CREATOR": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ],
+            "groupsSUPER_ADMIN": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ]
+          },
+          "processed-full-videos/*": {
+            "groupsSUBSCRIBER": [
+              "get",
+              "list"
+            ],
+            "groupsFREE_SUBSCRIBER": [
+              "get",
+              "list"
+            ],
+            "groupsCONTENT_CREATOR": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ],
+            "groupsSUPER_ADMIN": [
+              "get",
+              "list",
+              "write",
+              "delete"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "version": "1.3"
+}

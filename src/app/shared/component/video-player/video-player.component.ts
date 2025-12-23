@@ -115,8 +115,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit {
             },
             advanced: {
               'com.widevine.alpha': {
-                videoRobustness: 'HW_SECURE_ALL',
-                audioRobustness: 'HW_SECURE_CRYPTO',
+                videoRobustness: 'SW_SECURE_CRYPTO',
+                audioRobustness: 'SW_SECURE_CRYPTO',
               },
             },
           },

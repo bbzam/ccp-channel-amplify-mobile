@@ -12,15 +12,13 @@ import {
   AmplifyAuthenticatorModule,
   AuthenticatorService,
 } from '@aws-amplify/ui-angular';
-import { ContentCuratorComponent } from './features/content-curator/content-curator.component';
 import { Router, RouterOutlet } from '@angular/router';
 import { PublicViewComponent } from './features/public-view/public-view/public-view.component';
 import { AuthServiceService } from './auth/auth-service.service';
-import { ItAdminComponent } from './features/IT-admin/it-admin/it-admin.component';
-import { SuperAdminComponent } from './features/super-admin/super-admin/super-admin.component';
 import { LoaderComponent } from './shared/component/loader/loader.component';
 import { SharedService } from './shared/shared.service';
 import { IdleTimerService } from './auth/idle-timer.service';
+import { PrivacyScreen } from '@capacitor-community/privacy-screen';
 
 @Component({
   selector: 'app-root',
@@ -66,11 +64,18 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.handleRoleBasedRedirection();
     // this.detectScreenRecording();
+    this.enablePrivacyScreen();
   }
 
   constructor() {
     Amplify.configure(outputs);
   }
+
+  private async enablePrivacyScreen() {
+    try {
+      await PrivacyScreen.enable();
+    } catch {}
+  }
 
   get userRole(): string {
     return String(sessionStorage.getItem('role'));
@@ -110,15 +115,6 @@ export class AppComponent implements OnInit {
         if (publicRoutes.includes(currentUrl)) {
           this.router.navigate(['/subscriber']);
         }
-        break;
-      case 'CONTENT_CREATOR':
-        this.router.navigate(['/content-curator']);
-        break;
-      case 'IT_ADMIN':
-        this.router.navigate(['/it-admin']);
-        break;
-      case 'SUPER_ADMIN':
-        this.router.navigate(['/super-admin']);
         break;
       default:
         if (publicRoutes.includes(currentUrl)) {

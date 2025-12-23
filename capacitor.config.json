@@ -1,0 +1,6 @@
+{
+  "appId": "com.ccpchannel.app",
+  "appName": "ccp-channel-mobile",
+  "webDir": "dist/amplify-angular-template/browser",
+  "bundledWebRuntime": false
+}

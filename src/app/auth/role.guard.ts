@@ -73,27 +73,5 @@ export const roleGuard: CanActivateFn = (route, state) => {
     router.navigate(['/subscriber']);
     return false;
   }
-
-  // For CONTENT_CREATOR, restrict to only content-curator routes
-  if (
-    userRole === 'CONTENT_CREATOR' &&
-    !state.url.startsWith('/content-curator')
-  ) {
-    router.navigate(['/content-curator']);
-    return false;
-  }
-
-  // For IT_ADMIN, restrict to only it-admin routes
-  if (userRole === 'IT_ADMIN' && !state.url.startsWith('/it-admin')) {
-    router.navigate(['/it-admin']);
-    return false;
-  }
-
-  // For SUPER_ADMIN, restrict to only super-admin routes
-  if (userRole === 'SUPER_ADMIN' && !state.url.startsWith('/super-admin')) {
-    router.navigate(['/super-admin']);
-    return false;
-  }
-
   return true;
 };

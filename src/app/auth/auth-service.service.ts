@@ -72,18 +72,6 @@ export class AuthServiceService {
         case 'FREE_SUBSCRIBER':
           this.checkSubscriptionExpiry(paidUntil, email);
           break;
-        case 'CONTENT_CREATOR':
-          this.router.navigate(['/content-curator']);
-          this.sharedService.hideLoader();
-          break;
-        case 'IT_ADMIN':
-          this.router.navigate(['/it-admin']);
-          this.sharedService.hideLoader();
-          break;
-        case 'SUPER_ADMIN':
-          this.router.navigate(['/super-admin']);
-          this.sharedService.hideLoader();
-          break;
         default:
           this.router.navigate(['/landing-page']);
           this.sharedService.hideLoader();
