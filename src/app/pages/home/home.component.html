@@ -1,0 +1,31 @@
+<app-header></app-header>
+
+<div class="super-main">
+  <div class="banner">
+    <app-banner [banners]="banners"></app-banner>
+  </div>
+  
+  <div class="featured-images">
+    <h1>Gain premier access to the best local productions</h1>
+    <div class="featured-container">
+      @for (item of images; track item) {
+      <div class="card" (click)="signIn()">
+        <img [src]="item.portraitImageUrl" [alt]="item.name">
+      </div>
+      }
+    </div>
+  </div>
+  
+  <div class="gallery">
+    <h1>Explore an ever-growing library of CCP originals</h1>
+    <div class="gallery-container">
+      @for (item of allFeatured; track item) {
+      <div class="card">
+        <img [src]="item.landscapeImageUrl" [alt]="item.title">
+      </div>
+      }
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

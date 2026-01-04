@@ -1,0 +1,18 @@
+<div class="modal-overlay" *ngIf="isVisible" (click)="close()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="card">
+      <h2 [class]="type">
+        <span class="message-icon">{{ getIcon() }}</span>
+        <span>{{ getTitle() }}</span>
+      </h2>
+      <div class="content">
+        {{ processedMessage }}
+      </div>
+      <div class="flex-end">
+        <button class="buttonTertiary" (click)="close()">
+          Okay
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

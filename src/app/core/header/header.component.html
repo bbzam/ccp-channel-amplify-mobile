@@ -1,0 +1,26 @@
+<header class="main-header" [class.scrolled]="isScrolled">
+  <div class="contents">
+    @if (!isAuthenticated()) {
+    <div class="header-logo">
+      <a routerLink="/home" (click)="scrollToTop()"
+        ><img src="ccp-logo-rmvbg.png" alt="header-logo"
+      /></a>
+    </div>
+    } @else {
+    <!-- AUTHENTICATED SECTION -->
+    <div class="header-logo">
+      <a routerLink="/subscriber" (click)="scrollToTop()"
+        ><img src="ccp-logo-rmvbg.png" alt="header-logo"
+      /></a>
+    </div>
+    
+    <!-- Always visible logout button -->
+    <div class="auth-actions">
+      <span class="user-info">{{ username() || email() }}</span>
+      <button (click)="logout()" class="logout-btn">
+        🚪 Logout
+      </button>
+    </div>
+    }
+  </div>
+</header>

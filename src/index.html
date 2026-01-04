@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CCP Channel Mobile</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+    <!-- Mobile-specific meta tags -->
+    <meta name="theme-color" content="#660d21" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- crossorigin attribute and SRI hash for external resources -->
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="anonymous"
+    />
+
+    <!-- integrity hash for FontAwesome -->
+    <script
+      src="https://kit.fontawesome.com/31845056ac.js"
+      crossorigin="anonymous"
+      defer
+      referrerpolicy="strict-origin"
+    ></script>
+
+    <!-- integrity hash for Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+      crossorigin="anonymous"
+      referrerpolicy="strict-origin"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+      crossorigin="anonymous"
+      referrerpolicy="strict-origin"
+    />
+
+    <!-- Shaka Player for video streaming -->
+    <script src="https://cdn.jsdelivr.net/npm/mux.js@5.5.3/dist/mux.min.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/shaka-player@4.3.6/dist/controls.css"
+    />
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/shaka-player@4.3.6/dist/shaka-player.compiled.js"
+      crossorigin="anonymous"
+      defer
+      referrerpolicy="strict-origin"
+    ></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/shaka-player@4.3.6/dist/shaka-player.ui.js"
+      crossorigin="anonymous"
+      defer
+      referrerpolicy="strict-origin"
+    ></script>
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
+</html>

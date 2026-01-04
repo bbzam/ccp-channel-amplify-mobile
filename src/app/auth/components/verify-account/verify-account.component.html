@@ -1,0 +1,60 @@
+<div class="modal-overlay" *ngIf="isVisible" (click)="close()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <img src="ccp-logo-rmvbg.png" alt="CCP Logo" class="logo" />
+      <button class="close-btn" (click)="close()" type="button">
+        ×
+      </button>
+    </div>
+    
+    <div class="modal-content">
+      <h2>Email Confirmation</h2>
+      <p>Enter the code we emailed to {{ email }}</p>
+      
+      <form [formGroup]="verifyForm" (ngSubmit)="confirm()" class="verify-form">
+        <div class="form-group">
+          <label for="code">Confirmation Code</label>
+          <input
+            id="code"
+            type="text"
+            placeholder="Enter your code"
+            formControlName="code"
+            class="form-input code-input"
+            maxlength="6"
+            autocomplete="off"
+            (blur)="verifyForm.get('code')?.markAsTouched()"
+            [class.error]="verifyForm.get('code')?.invalid && verifyForm.get('code')?.touched"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="verifyForm.invalid || isLoading()"
+        >
+          {{ isLoading() ? "Verifying..." : "Verify" }}
+        </button>
+
+        <div class="divider"></div>
+
+        <button
+          type="button"
+          class="btn-secondary"
+          [disabled]="isLoading() || resendCooldown() > 0"
+          (click)="resendCode()"
+        >
+          {{ resendCooldown() > 0 ? `Resend code in ${resendCooldown()}s` : 'Resend Code' }}
+        </button>
+        
+        <!-- Emergency close button for iPhone SE -->
+        <button
+          type="button"
+          class="btn-close-emergency"
+          (click)="close()"
+        >
+          ✕ Close
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

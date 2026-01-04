@@ -1,0 +1,36 @@
+<app-header></app-header>
+
+<main class="main-content">
+  <div class="subscriber-dashboard">
+    <h1>Subscriber Dashboard</h1>
+    <p>Welcome back, {{ username }}!</p>
+    <p>Role: {{ role }}</p>
+    
+    <div class="content-grid">
+      <div class="content-card">
+        <h3>Theater</h3>
+        <p>Explore theatrical performances</p>
+      </div>
+      <div class="content-card">
+        <h3>Film</h3>
+        <p>Watch exclusive films</p>
+      </div>
+      <div class="content-card">
+        <h3>Music</h3>
+        <p>Listen to musical performances</p>
+      </div>
+      <div class="content-card">
+        <h3>Dance</h3>
+        <p>Experience dance performances</p>
+      </div>
+    </div>
+    
+    <div class="actions">
+      <button class="btn-danger" (click)="logout()">
+        Logout
+      </button>
+    </div>
+  </div>
+</main>
+
+<app-footer></app-footer>

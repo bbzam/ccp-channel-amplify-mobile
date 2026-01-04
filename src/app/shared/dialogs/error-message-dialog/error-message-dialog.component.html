@@ -1,0 +1,18 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="card">
+      <h2 class="red">
+        <span class="error-icon">⚠️</span>
+        <span>Error Message</span>
+      </h2>
+      <div class="content">
+        {{ message }}
+      </div>
+      <div class="flex-end">
+        <button class="buttonTertiary" (click)="close()">
+          Okay
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

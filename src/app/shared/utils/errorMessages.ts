@@ -1,0 +1,15 @@
+export const errorMessages = {
+  REQUIRED: 'You must enter a value',
+  INVALIDEMAIL: 'Not a valid email',
+  DISALLOWEDCHARACTERS: 'Invalid characters detected',
+  PASSWORDMINLENGTH: 'Must be at least 8 characters long',
+  HASUPPERCASE: 'Must have at least 1 uppercase',
+  HASLOWERCASE: 'Must have at least 1 lowercase',
+  HASNUMBER: 'Must have at least 1 numeric',
+  HASSPECIALCHARACTER: 'Must have special character',
+  PASSWORDNOTMATCH: 'Password not match',
+  MAX100CHARACTERS: 'Maximum 100 characters',
+  MAX6CHARACTERS: 'Maximum 6 characters',
+  ONLYNUMERICAL: 'Only numbers allowed',
+  UNDERAGE: 'You must be 18 years or older',
+};

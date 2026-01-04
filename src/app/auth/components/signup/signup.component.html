@@ -1,0 +1,142 @@
+<div class="modal-overlay" *ngIf="isVisible" (click)="close()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <img src="ccp-logo-rmvbg.png" alt="CCP Logo" class="logo" />
+      <button class="close-btn" (click)="close()" type="button">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-content">
+      <h2>Sign Up</h2>
+      
+      <form [formGroup]="signupForm" (ngSubmit)="signUp()" class="signup-form">
+        <div class="form-group">
+          <label for="firstname">First Name</label>
+          <input
+            id="firstname"
+            type="text"
+            placeholder="Enter your first name"
+            formControlName="firstname"
+            class="form-input"
+            (blur)="signupForm.get('firstname')?.markAsTouched()"
+            [class.error]="signupForm.get('firstname')?.invalid && signupForm.get('firstname')?.touched"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="lastname">Last Name</label>
+          <input
+            id="lastname"
+            type="text"
+            placeholder="Enter your last name"
+            formControlName="lastname"
+            class="form-input"
+            (blur)="signupForm.get('lastname')?.markAsTouched()"
+            [class.error]="signupForm.get('lastname')?.invalid && signupForm.get('lastname')?.touched"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="Enter your email"
+            formControlName="email"
+            class="form-input"
+            autocomplete="off"
+            (blur)="signupForm.get('email')?.markAsTouched()"
+            [class.error]="signupForm.get('email')?.invalid && signupForm.get('email')?.touched"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="birthdate">Birthdate</label>
+          <input
+            id="birthdate"
+            type="date"
+            formControlName="birthdate"
+            class="form-input date-input"
+            (blur)="signupForm.get('birthdate')?.markAsTouched()"
+            [class.error]="signupForm.get('birthdate')?.invalid && signupForm.get('birthdate')?.touched"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-input-container">
+            <input
+              id="password"
+              [type]="isPasswordVisible ? 'text' : 'password'"
+              placeholder="Enter your password"
+              formControlName="password"
+              class="form-input"
+              autocomplete="off"
+              (blur)="signupForm.get('password')?.markAsTouched()"
+              [class.error]="signupForm.get('password')?.invalid && signupForm.get('password')?.touched"
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+            >
+              {{ isPasswordVisible ? '👁️' : '🙈' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <div class="password-input-container">
+            <input
+              id="confirmPassword"
+              [type]="isConfirmPasswordVisible ? 'text' : 'password'"
+              placeholder="Confirm your password"
+              formControlName="confirmPassword"
+              class="form-input"
+              autocomplete="off"
+              (blur)="signupForm.get('confirmPassword')?.markAsTouched()"
+              [class.error]="signupForm.get('confirmPassword')?.invalid && signupForm.get('confirmPassword')?.touched"
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="toggleConfirmPasswordVisibility()"
+            >
+              {{ isConfirmPasswordVisible ? '👁️' : '🙈' }}
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="signupForm.invalid || isLoading()"
+        >
+          {{ isLoading() ? "Signing Up..." : "Sign Up" }}
+        </button>
+
+        <div class="divider"></div>
+
+        <button
+          type="button"
+          class="btn-secondary"
+          [disabled]="isLoading()"
+          (click)="signInOnClick()"
+        >
+          Already have an account? Sign In
+        </button>
+        
+        <!-- Emergency close button for iPhone SE -->
+        <button
+          type="button"
+          class="btn-close-emergency"
+          (click)="close()"
+        >
+          ✕ Close
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

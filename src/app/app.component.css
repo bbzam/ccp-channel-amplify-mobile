@@ -1,0 +1,22 @@
+/* Platform-specific styles */
+:host {
+  display: block;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Mobile platform styles */
+:host-context(.mobile-platform) {
+  /* Mobile-specific overrides */
+}
+
+/* TV platform styles */
+:host-context(.tv-platform) {
+  /* TV-specific overrides */
+  font-size: 1.2em;
+}
+
+/* Web platform styles */
+:host-context(.web-platform) {
+  /* Web-specific overrides */
+}

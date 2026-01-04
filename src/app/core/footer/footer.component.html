@@ -1,0 +1,86 @@
+<footer class="footer-main">
+  <div class="about">
+    <h1>{{ aboutDetails[0].title }}</h1>
+    <p>{{ aboutDetails[0].description }}</p>
+  </div>
+  <div class="divider"></div>
+  <br />
+  <div class="level2">
+    <div class="navigations">
+      <div>
+        <a
+          href="https://culturalcenter.gov.ph/"
+          target="_blank"
+          rel="noopener noreferrer"
+          ><img src="logo.png" alt="ccp-logo"
+        /></a>
+      </div>
+      @for (section of contents; track section) {
+      <div>
+        <div class="footer-section">
+          <h4>{{ section.title }}</h4>
+          @if (section.items) {
+          <ul>
+            @for (item of section.items; track item) {
+            <li>
+              @if (item.url && item.url.startsWith('/')) {
+              <a [routerLink]="item.url">{{ item.label }}</a>
+              } @else {
+              <a [href]="item.url" [class.disabled]="!item.url">{{ item.label }}</a>
+              }
+            </li>
+            }
+          </ul>
+          } @if (section.email || section.phone) {
+          <div>
+            @if (section.email) {
+            <p>
+              <a
+                [href]="'mailto:' + section.email"
+                [class.disabled]="!section.email"
+                >{{ section.email }}</a
+              >
+            </p>
+            } @if (section.phone) {
+            <p>
+              <a
+                [href]="'tel:' + section.phone"
+                [class.disabled]="!section.phone"
+                >{{ section.phone }}</a
+              >
+            </p>
+            }
+          </div>
+          } @if (section.items) {
+          <div class="socials">
+            @for (item of section.items; track item) {
+            <div>
+              @if (item.icon) {
+              <div>
+                <a
+                  [href]="item.url"
+                  [class.disabled]="!item.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <button class="icon-button">
+                    <i class="{{ item.icon }}"></i>
+                  </button>
+                </a>
+              </div>
+              }
+            </div>
+            }
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  <div class="level1">
+    <p class="copyright">
+      © 2025 Cultural Center of the Philippines. All Rights Reserved.
+    </p>
+  </div>
+</footer>
