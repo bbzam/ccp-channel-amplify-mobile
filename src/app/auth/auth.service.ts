@@ -10,6 +10,7 @@ import {
 } from 'aws-amplify/auth';
 import { MessageDialogComponent, MessageType } from '../shared/dialogs/message-dialog/message-dialog.component';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
+import { LoadingService } from '../shared/services/loading.service';
 
 interface CognitoIdTokenPayload {
   'cognito:groups'?: string[];
@@ -23,6 +24,7 @@ export class AuthService {
   isLoggedIn = false;
   private appRef = inject(ApplicationRef);
   private injector = inject(EnvironmentInjector);
+  private loadingService = inject(LoadingService);
   private messageDialogRef: ComponentRef<MessageDialogComponent> | null = null;
   private verifyDialogRef: ComponentRef<VerifyAccountComponent> | null = null;
 
@@ -87,6 +89,7 @@ export class AuthService {
   }
 
   async signIn(username: string, password: string): Promise<boolean> {
+    this.loadingService.show('Signing in...');
     try {
       const { nextStep } = await signIn({
         username: username,
@@ -109,10 +112,13 @@ export class AuthService {
       console.error('Sign in error:', error);
       this.handleError(error);
       return false;
+    } finally {
+      this.loadingService.hide();
     }
   }
 
   async signUp(data: any): Promise<boolean> {
+    this.loadingService.show('Creating account...');
     try {
       const { nextStep } = await signUp({
         username: data.email,
@@ -155,6 +161,8 @@ export class AuthService {
       
       this.handleError(error);
       return false;
+    } finally {
+      this.loadingService.hide();
     }
   }
 

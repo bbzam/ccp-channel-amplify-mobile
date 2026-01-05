@@ -28,7 +28,8 @@ This is the mobile version of the CCP Channel application, designed to work acro
 - **Database**: AWS DynamoDB
 - **Storage**: AWS S3
 - **Video Streaming**: Shaka Player
-- **UI Components**: Angular Material
+- **UI Framework**: Vanilla CSS (Mobile-Optimized)
+- **Modal System**: Custom Vanilla Implementation
 
 ## Getting Started
 
@@ -86,6 +87,21 @@ npm run cap:build
 npx cap open android
 ```
 
+## Mobile Optimizations
+
+### Vanilla CSS Implementation
+- **No Angular Material** - Removed for better mobile performance
+- **Custom Modal System** - Vanilla dialogs with mobile-first design
+- **Touch-Optimized** - Large touch targets and smooth interactions
+- **iPhone SE Support** - Emergency close buttons for small screens
+- **Responsive Design** - Works seamlessly across all screen sizes
+
+### Authentication Flow
+- **Unified Modal System** - Consistent signin/signup/verify experience
+- **Form Persistence** - Auto-save functionality prevents data loss
+- **Mobile Validation** - Red border indicators instead of text messages
+- **Error Handling** - Professional dialog system replacing browser alerts
+
 ## Platform-Specific Features
 
 ### Mobile (Android/iOS)
@@ -106,12 +122,20 @@ npx cap open android
 src/
 ├── app/
 │   ├── auth/                 # Authentication components
+│   │   ├── components/       # Signin, Signup, Verify modals
+│   │   └── auth.service.ts   # Vanilla auth service
 │   ├── core/                 # Core layout components
-│   ├── features/             # Feature modules
-│   │   ├── public-view/      # Landing pages
-│   │   ├── user/             # User/paywall pages
-│   │   └── subscriber/       # Subscriber content pages
+│   │   ├── header/           # Mobile-optimized header
+│   │   └── footer/           # Vanilla footer
+│   ├── pages/                # Page components
+│   │   ├── home/             # Landing page
+│   │   ├── user/             # User dashboard
+│   │   ├── subscriber/       # Subscriber dashboard
+│   │   └── privacy-policy/   # Privacy policy
 │   └── shared/               # Shared components and services
+│       ├── components/       # Reusable components
+│       ├── dialogs/          # Vanilla modal dialogs
+│       └── utils/            # Validators and utilities
 ├── environments/             # Environment configurations
 └── assets/                   # Static assets
 ```

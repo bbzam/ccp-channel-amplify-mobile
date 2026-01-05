@@ -1,1 +1,5 @@
 <router-outlet />
+<app-loader 
+  [isLoading]="loadingService.isLoading()" 
+  [message]="loadingService.message()" 
+/>

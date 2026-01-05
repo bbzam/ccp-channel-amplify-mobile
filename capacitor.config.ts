@@ -3,7 +3,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.ccp.channel.mobile',
   appName: 'CCP Channel',
-  webDir: 'dist/ccp-channel-mobile',
+  webDir: 'dist/ccp-channel-mobile/browser',
   server: {
     androidScheme: 'https'
   },

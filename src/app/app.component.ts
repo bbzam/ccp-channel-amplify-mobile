@@ -15,12 +15,15 @@ import {
 import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 import { Capacitor } from '@capacitor/core';
+import { LoaderComponent } from './shared/components/loader/loader.component';
+import { LoadingService } from './shared/services/loading.service';
 
 @Component({
   selector: 'app-root',
   imports: [
     AmplifyAuthenticatorModule,
     RouterOutlet,
+    LoaderComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
@@ -32,6 +35,7 @@ export class AppComponent implements OnInit {
   readonly elementRef = inject(ElementRef);
   readonly router = inject(Router);
   readonly authService = inject(AuthService);
+  readonly loadingService = inject(LoadingService);
 
   // Platform detection
   isNative = Capacitor.isNativePlatform();
@@ -62,6 +66,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.handleRoleBasedRedirection();
     this.setupPlatformSpecificFeatures();
+    this.hideInitialLoader();
   }
 
   constructor() {
@@ -162,6 +167,15 @@ export class AppComponent implements OnInit {
   private focusPrevious(elements: NodeListOf<Element>, currentIndex: number) {
     const prevIndex = currentIndex <= 0 ? elements.length - 1 : currentIndex - 1;
     (elements[prevIndex] as HTMLElement).focus();
+  }
+
+  private hideInitialLoader() {
+    const loader = document.getElementById('initial-loader');
+    if (loader) {
+      loader.style.opacity = '0';
+      loader.style.transition = 'opacity 0.3s ease-out';
+      setTimeout(() => loader.remove(), 300);
+    }
   }
 
   private handleRoleBasedRedirection() {

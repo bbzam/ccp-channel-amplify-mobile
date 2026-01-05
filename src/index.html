@@ -70,6 +70,59 @@
     ></script>
   </head>
   <body>
+    <!-- Loading spinner shown until Angular loads -->
+    <div id="initial-loader" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    ">
+      <div style="
+        position: relative;
+        width: 4em;
+        height: 4em;
+        border: 5px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 5px solid #660d21;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      ">
+        <img src="logo.png" alt="ccp-logo" style="
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 3em;
+          height: 3em;
+          animation: anti-spin 1s linear infinite;
+        " />
+      </div>
+      <div style="
+        color: white;
+        font-family: 'Inter', sans-serif;
+        font-size: 16px;
+        font-weight: 500;
+      ">Loading CCP Channel...</div>
+    </div>
+    
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes anti-spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(-360deg); }
+      }
+    </style>
+    
     <app-root></app-root>
   </body>
 </html>
