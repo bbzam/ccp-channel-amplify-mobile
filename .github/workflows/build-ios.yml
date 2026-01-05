@@ -25,6 +25,13 @@ jobs:
     - name: Build Angular app
       run: npm run build
       
+    - name: Debug build output
+      run: |
+        echo "Checking build output:"
+        ls -la dist/
+        ls -la dist/ccp-channel-mobile/
+        ls -la dist/ccp-channel-mobile/browser/
+      
     - name: Add iOS platform
       run: npx cap add ios
         
